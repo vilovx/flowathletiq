@@ -96,20 +96,11 @@
     return '<a href="' + esc(href) + '" target="_blank" rel="' + rel + '">' + text + ' <span class="sr-only">(' + esc(t("opensNewTab")) + ")</span></a>";
   }
 
-  // Self-made SVG cover art, generated per article (no external images).
+  // Section cover art (assets/covers/*, set per category in css/styles.css); dark gradient fallback.
   function cover(a, big) {
     var c = cat(a.category);
-    var seed = 0; for (var i = 0; i < a.id.length; i++) seed = (seed * 31 + a.id.charCodeAt(i)) >>> 0;
-    var shapes = "";
-    for (var k = 0; k < 6; k++) {
-      seed = (seed * 1103515245 + 12345) >>> 0;
-      var x = seed % 400, y = (seed >> 8) % 225, r = 20 + (seed >> 16) % 70;
-      shapes += '<polygon points="' + x + "," + (y - r) + " " + (x + r) + "," + (y + r) + " " + (x - r) + "," + (y + r) +
-        '" fill="none" stroke="' + (k % 2 ? c.color : "#00f0ff") + '" stroke-opacity=".35" stroke-width="2"/>';
-    }
-    return '<div class="cover' + (big ? " cover-big" : "") + '" style="--game:' + c.color + '" aria-hidden="true">' +
-      '<svg viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice">' + shapes +
-      '<text x="20" y="205" class="cover-label">' + esc(cshort(c).toUpperCase()) + "</text></svg></div>";
+    return '<div class="cover' + (big ? " cover-big" : "") + '" data-cat="' + esc(c.slug) + '" style="--game:' + c.color + '" aria-hidden="true">' +
+      '<span class="cover-label">' + esc(cshort(c).toUpperCase()) + "</span></div>";
   }
   function badgeText(c) {
     var p = catBySlug[c.parent];
