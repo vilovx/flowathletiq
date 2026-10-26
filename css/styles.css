@@ -315,3 +315,36 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .top-table td, .top-table th { padding: .55rem .45rem; }
   .top-table .player { max-width: 150px; }
 }
+
+/* Virsliga */
+.vl-widget h2 small { font-size: .8rem; color: var(--muted); font-weight: 600; margin-left: .3rem; }
+.vl-widget h3 { font-size: 1rem; margin: 1.1rem 0 .5rem; }
+.vl-table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.vl-table th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); padding: .45rem .5rem; border-bottom: 1px solid var(--line); }
+.vl-table td { padding: .5rem; border-bottom: 1px solid var(--line); }
+.vl-table tr:last-child td { border-bottom: 0; }
+.vl-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.vl-table .pos { width: 2.2ch; color: var(--muted); font-weight: 800; font-family: var(--display); }
+.vl-table tr.top .pos { color: var(--neon); }
+.vl-table .team { font-weight: 700; overflow-wrap: anywhere; }
+.vl-table .team a { color: var(--text); text-decoration: none; } .vl-table .team a:hover { color: var(--neon); }
+.vl-table .pts { font-weight: 800; color: var(--neon); }
+.vl-table .pos-rd { color: #22e06b; } .vl-table .neg-rd { color: #ff6b7a; }
+.vl-table abbr { text-decoration: none; cursor: help; }
+.vl-table.compact { font-size: .86rem; } .vl-table.compact td, .vl-table.compact th { padding: .38rem .35rem; }
+.vl-matches { list-style: none; margin: 0; padding: 0; display: grid; gap: .45rem; }
+.vl-matches a { display: grid; grid-template-columns: 1fr auto; gap: .1rem .6rem; padding: .55rem .7rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; color: var(--text); text-decoration: none; }
+.vl-matches a:hover { border-color: var(--neon); }
+.vl-when { grid-column: 1 / -1; font-size: .8rem; color: var(--muted); }
+.vl-when strong { color: var(--text); }
+.vl-teams { font-weight: 700; } .vl-teams em { font-style: normal; color: var(--muted); font-weight: 500; margin: 0 .25rem; }
+.vl-bo { align-self: center; font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .05rem .5rem; }
+.vl-live { color: #ff4d5e; font-weight: 800; text-transform: uppercase; font-size: .7rem; }
+.vl-more { display: inline-block; margin-top: .9rem; font-weight: 700; color: var(--neon); }
+.vl-meta { margin: .8rem 0 0; font-size: .78rem; color: var(--muted); }
+.vl-meta a { color: var(--muted); }
+.vl-note { font-size: .82rem; color: var(--muted); margin: .9rem 0 0; } .vl-note a { color: var(--neon); }
+.vl-empty { color: var(--muted); margin: 0; }
+.vl-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-top: 1.5rem; }
+.vl-grid h2 { margin: 0 0 .8rem; font-family: var(--display); font-size: 1.35rem; }
+@media (max-width: 900px) { .vl-grid { grid-template-columns: 1fr; } }

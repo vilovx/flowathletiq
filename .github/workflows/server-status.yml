@@ -1,10 +1,11 @@
 name: CS2 server status
 
-# Polls flowathletiq.dat.gg:25082 over A2S (+ Ranks plugin MySQL leaderboard) and publishes JSON to the `server-data` branch.
+# Polls flowathletiq.dat.gg:25082 over A2S (+ Ranks plugin MySQL leaderboard, + Virsliga every 2 h) and publishes JSON to the `server-data` branch.
 # The branch is force-pushed as a single commit each run, so main's history and Pages builds stay clean.
 on:
   schedule:
     - cron: "*/5 * * * *"
+    - cron: "17 */2 * * *" # Virsliga standings/calendar (every 2 h)
   workflow_dispatch:
 
 permissions:
@@ -30,8 +31,8 @@ jobs:
         run: |
           mkdir -p out
           if git fetch -q --depth=1 origin server-data 2>/dev/null; then
-            git show FETCH_HEAD:server-history.json > out/server-history.json || rm -f out/server-history.json
-            git show FETCH_HEAD:server-top.json > out/server-top.json || rm -f out/server-top.json
+            # keep every previously published file (history, top, virsliga); steps below overwrite what they refresh
+            git archive FETCH_HEAD | tar -x -C out
           fi
       - name: Query server
         run: python scripts/server_status.py out
@@ -44,12 +45,16 @@ jobs:
           DB_PASS: ${{ secrets.DB_PASS }}
           DB_NAME: ${{ secrets.DB_NAME }}
         run: python scripts/server_top.py out
+      - name: Virsliga standings + calendar (kleverr.gg)
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 */2 * * *' || hashFiles('out/virsliga.json') == ''
+        continue-on-error: true
+        run: python scripts/virsliga.py out
       - name: Publish to server-data branch
         run: |
           cd out
           git init -q -b server-data
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add server-status.json server-history.json $(ls server-top.json 2>/dev/null)
+          git add -A
           git commit -qm "server status $(date -u +%FT%TZ) [skip ci]"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" server-data
