@@ -12,9 +12,18 @@
 <body data-page="article">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header" id="site-header"></header>
-  <div class="example-banner" role="note">Example content: all articles and matches on this preview are placeholders, not real news.</div>
+  <div class="example-banner" role="note">Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.</div>
   <main id="main" tabindex="-1">
-    <article class="container article" id="article"></article>
+    <div class="container layout article-layout">
+      <article class="article" id="article"></article>
+      <aside class="sidebar" aria-label="Sidebar">
+        <div class="ad-slot" data-placement="sidebar"></div>
+        <section class="side-box" aria-labelledby="matches-h">
+          <h2 id="matches-h">Upcoming matches</h2>
+          <ol class="matches" id="matches"></ol>
+        </section>
+      </aside>
+    </div>
     <section class="container related" aria-labelledby="related-h">
       <h2 id="related-h">More from FlowAthletiq</h2>
       <div class="grid" id="news-grid"></div>

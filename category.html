@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game news — FlowAthletiq</title>
-  <meta name="description" content="Esports news by game.">
+  <title>Category — FlowAthletiq</title>
+  <meta name="description" content="FlowAthletiq news by category.">
   <meta name="theme-color" content="#07080f">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
@@ -12,7 +12,7 @@
 <body data-page="category">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header" id="site-header"></header>
-  <div class="example-banner" role="note">Example content: all articles and matches on this preview are placeholders, not real news.</div>
+  <div class="example-banner" role="note">Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.</div>
   <main id="main" tabindex="-1">
     <section class="container cat-hero" id="cat-hero"></section>
     <div class="container layout">
@@ -20,9 +20,12 @@
         <div class="section-head"><h2 id="cat-latest-h">Articles</h2></div>
         <div class="grid" id="news-grid"></div>
       </section>
-      <aside class="sidebar" aria-labelledby="matches-h">
-        <h2 id="matches-h">Upcoming matches</h2>
-        <ol class="matches" id="matches"></ol>
+      <aside class="sidebar" aria-label="Sidebar">
+        <section class="side-box" aria-labelledby="matches-h">
+          <h2 id="matches-h">Upcoming matches</h2>
+          <ol class="matches" id="matches"></ol>
+        </section>
+        <div class="ad-slot" data-placement="sidebar"></div>
       </aside>
     </div>
   </main>

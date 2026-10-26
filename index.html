@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FlowAthletiq — Esports & Gaming News</title>
-  <meta name="description" content="Esports and gaming news, guides, and match schedules.">
+  <title>FlowAthletiq — Counter-Strike & Esports News</title>
+  <meta name="description" content="Counter-Strike 2, Dota 2, League of Legends and MMORPG news, guides and match schedules.">
   <meta name="theme-color" content="#07080f">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
@@ -12,20 +12,24 @@
 <body data-page="index">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header" id="site-header"></header>
-  <div class="example-banner" role="note">Example content: all articles and matches on this preview are placeholders, not real news.</div>
+  <div class="example-banner" role="note">Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.</div>
   <main id="main" tabindex="-1">
     <section class="hero container" id="hero" aria-label="Top story"></section>
+    <div class="container ad-slot ad-wide" data-placement="full-width"></div>
     <div class="container layout">
       <section aria-labelledby="latest-h">
         <div class="section-head">
           <h2 id="latest-h">Latest news</h2>
-          <div class="filters" id="filters" role="group" aria-label="Filter by game"></div>
+          <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
         </div>
         <div class="grid" id="news-grid"></div>
       </section>
-      <aside class="sidebar" aria-labelledby="matches-h">
-        <h2 id="matches-h">Upcoming matches</h2>
-        <ol class="matches" id="matches"></ol>
+      <aside class="sidebar" aria-label="Sidebar">
+        <section class="side-box" aria-labelledby="matches-h">
+          <h2 id="matches-h">Upcoming matches</h2>
+          <ol class="matches" id="matches"></ol>
+        </section>
+        <div class="ad-slot" data-placement="sidebar"></div>
       </aside>
     </div>
   </main>
