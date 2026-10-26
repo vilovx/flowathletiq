@@ -367,7 +367,8 @@
       '<img class="dc-img" src="assets/discord/discord-banner.jpg" srcset="assets/discord/discord-banner-640.jpg 640w, assets/discord/discord-banner.jpg 1280w" sizes="(max-width: 760px) 100vw, 1000px" alt="" width="1280" height="720" loading="lazy"></picture>' +
       '<span class="dc-pill" aria-hidden="true"><img src="assets/brand/discord/Discord-Symbol-White.svg" alt="" width="40" height="30">' +
       '<span>' + esc(t("discordCta")) + '</span><span class="dc-arrow">↗</span></span></a>' +
-      '<p class="dc-tm">' + esc(t("discordTm")) + "</p></section>";
+      '<p class="dc-tm">' + esc(t("discordTm")) + "</p></section>" +
+      '<p class="privacy-note">' + esc(t("analyticsNote")) + "</p>";
   }
 
 
