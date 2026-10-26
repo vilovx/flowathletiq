@@ -578,8 +578,6 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .tour-prize dt { color: #ffcf4d; }
 .tour-prize dd { font-weight: 400; color: var(--muted); max-width: 75ch; }
 .tour-prize dd strong { color: var(--text); font-weight: 700; }
-.tour-actions + .tour-intro { margin-top: -.5rem; }
-.tour-intro { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem 1rem; margin: 0 1.5rem 1.5rem; padding: .8rem 1rem; border-radius: 12px; background: var(--bg-2); border: 1px dashed var(--line); }
-.tour-intro p { margin: 0; flex: 1 1 280px; color: var(--muted); font-size: .95rem; }
-.tour-intro .btn-ghost { text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; font-size: .9rem; }
-@media (max-width: 760px) { .tour-intro { margin: 0 1.1rem 1.25rem; } .tour-intro .btn-ghost { width: 100%; justify-content: center; } }
+.tour-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
+.tour-intro-btn { text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; font-size: .9rem; }
+@media (max-width: 760px) { .tour-actions .tour-register, .tour-intro-btn { width: 100%; justify-content: center; text-align: center; } }
