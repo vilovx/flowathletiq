@@ -4,7 +4,7 @@ name: CS2 server status
 # The branch is force-pushed as a single commit each run, so main's history and Pages builds stay clean.
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "4-59/5 * * * *" # every 5 min, offset from :00 (high-load minute)
     - cron: "17 */2 * * *" # Virsliga standings/calendar (every 2 h)
   workflow_dispatch:
 
