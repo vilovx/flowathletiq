@@ -574,3 +574,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .tour-teams { margin: 0 1.1rem 1.25rem; }
   .tt-list { grid-template-columns: 1fr; }
 }
+.tour-facts > .tour-prize { grid-column: 1 / -1; background: linear-gradient(90deg, rgba(255,184,0,.12), rgba(176,0,255,.08)), var(--card); border-left: 3px solid #ffb800; }
+.tour-prize dt { color: #ffcf4d; }
+.tour-prize dd { font-weight: 400; color: var(--muted); max-width: 75ch; }
+.tour-prize dd strong { color: var(--text); font-weight: 700; }

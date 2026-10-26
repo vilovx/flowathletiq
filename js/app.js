@@ -428,6 +428,10 @@
   function tourCard(x) {
     var T = t("tour"), past = x.status === "finished" || x.date < todayStr();
     function row(k, v) { return "<div><dt>" + esc(k) + "</dt><dd>" + v + "</dd></div>"; }
+    function prizeRow(k, txt) {
+      var m = String(txt).match(/^(.*?[.!?])\s+([\s\S]+)$/);
+      return '<div class="tour-prize"><dt>' + esc(k) + "</dt><dd>" + (m ? "<strong>" + esc(m[1]) + '</strong> <span>' + esc(m[2]) + "</span>" : esc(txt)) + "</dd></div>";
+    }
     var series = x.series === "BO3" ? T.seriesBo3 : x.series;
     var fmt = esc(x.format) + (x.bracket === "single" ? " · " + esc(T.bracketSingle) : "");
     return '<article class="tour-card" id="' + esc(x.id) + '">' +
@@ -440,7 +444,7 @@
         row(T.teams, esc(t("tour").teamsN.replace("{n}", x.teams))) +
         row(T.platform, esc(x.platform)) +
         row(T.region, esc(x.region)) +
-        (x.prize ? row(T.prize, esc(L(x.prize))) : "") +
+        (x.prize ? prizeRow(T.prize, L(x.prize)) : "") +
       "</dl>" +
       '<p class="tour-elig">' + esc(T.eligibility) + "</p>" +
       (!past && x.registerUrl ? '<div class="tour-actions"><a class="btn tour-register" href="' + esc(x.registerUrl) + '" target="_blank" rel="noopener">' +

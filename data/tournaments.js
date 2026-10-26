@@ -5,6 +5,7 @@
  *  - faceitChampionshipId: FACEIT championship id (from the tournament URL .../championship/<id>/...).
  *                 When set (and status is not "finished"), the "CS2 server status" workflow fetches the
  *                 registered teams via the official FACEIT Data API and the page lists them automatically.
+ *  - prize:       null, or { lv, en, ru } text for the "Balvas" row (first sentence is shown bold)
  *  - status:      "open" (registration open), "soon" (announced), "finished"
  */
 window.FA_TOURNAMENTS = [
@@ -23,6 +24,11 @@ window.FA_TOURNAMENTS = [
     teams: 16,
     platform: "FACEIT",
     region: "EU",
-    prize: null
+    // prize: shown as a full-width "Balvas" row; first sentence is highlighted
+    prize: {
+      lv: "Pie balvu fonda pašlaik strādājam. Šis ir pirmais FlowAthletiq kopienas turnīrs — iesildīšanās mūsu komandai un iespēja redzēt, cik liela ir interese.",
+      en: "We're currently working on a prize pool. This is the first FlowAthletiq community tournament — a warm-up for our team and a chance to see how much interest there is.",
+      ru: "Над призовым фондом сейчас работаем. Это первый комьюнити-турнир FlowAthletiq — разминка для нашей команды и возможность понять, насколько велик интерес."
+    }
   }
 ];
