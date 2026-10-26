@@ -7,7 +7,7 @@
   var HOST = "flowathletiq.dat.gg:25082";
   // Join password shown on the page (public by design). Set to "" if the server has no password.
   var PASSWORD = "underpressure";
-  var CONNECT_CMD = "connect " + HOST + (PASSWORD ? "; password " + PASSWORD : "");
+  var CONNECT_CMD = (PASSWORD ? "password " + PASSWORD + "; " : "") + "connect " + HOST; // CS2 needs the password set before connecting
   var STEAM_URL = "steam://connect/" + HOST + (PASSWORD ? "/" + encodeURIComponent(PASSWORD) : "");
   var RAW = "https://raw.githubusercontent.com/vilovx/flowathletiq/server-data/";
   var state = { status: null, history: null, top: null, failed: false, loaded: false };
