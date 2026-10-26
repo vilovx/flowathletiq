@@ -545,3 +545,32 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .tour-register { display: block; text-align: center; }
   .tour-facts { grid-template-columns: repeat(2, 1fr); }
 }
+/* Registered teams (FACEIT) */
+.tour-teams { margin: 0 1.5rem 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.tt-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.tt-head h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.35rem; letter-spacing: .02em; }
+.tt-count { font-family: var(--display); font-size: 1.1rem; color: var(--muted); }
+.tt-count strong { font-size: 1.6rem; color: var(--text); }
+.tt-bar { height: 8px; border-radius: 999px; background: var(--bg-2); border: 1px solid var(--line); overflow: hidden; margin: .5rem 0 1rem; }
+.tt-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--neon), var(--neon-2)); }
+.tt-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.tt-team { display: flex; align-items: center; gap: .75rem; padding: .6rem .75rem; border-radius: 12px; background: var(--bg-2); border: 1px solid var(--line); min-width: 0; }
+.tt-n { font-family: var(--display); color: var(--muted); width: 2ch; text-align: right; flex: none; }
+.tt-av { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex: none; background: var(--card); border: 1px solid var(--line); }
+.tt-av-x { display: grid; place-items: center; font-weight: 800; font-size: .9rem; color: #000; background: linear-gradient(135deg, var(--neon), var(--neon-2)); border: 0; }
+.tt-body { min-width: 0; }
+.tt-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-name a { color: var(--text); text-decoration: none; }
+.tt-name a:hover, .tt-name a:focus-visible { color: var(--neon); text-decoration: underline; }
+.tt-players { list-style: none; margin: .1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .15rem .7rem; font-size: .85rem; color: var(--muted); }
+.tt-players a { color: var(--muted); text-decoration: none; }
+.tt-players a:hover, .tt-players a:focus-visible { color: var(--text); text-decoration: underline; }
+.tt-lvl { display: inline-block; min-width: 1.4em; padding: 0 .3em; border-radius: 999px; font-size: .7rem; font-weight: 800; line-height: 1.4; text-align: center; color: #000; background: #ff8a00; }
+.tt-sub { font-size: .75rem; }
+.tt-empty { margin: 0; padding: .9rem 1rem; border-radius: 12px; border: 1px dashed var(--line); color: var(--muted); text-align: center; }
+.tt-upd { margin: .7rem 0 0; font-size: .78rem; color: var(--muted); }
+.tour-teaser-reg { color: var(--text) !important; }
+@media (max-width: 760px) {
+  .tour-teams { margin: 0 1.1rem 1.25rem; }
+  .tt-list { grid-template-columns: 1fr; }
+}

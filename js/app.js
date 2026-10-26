@@ -374,6 +374,50 @@
   // ---------- tournaments (data/tournaments.js) ----------
   var TOURS = (window.FA_TOURNAMENTS || []).slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
   function todayStr() { return new Date().toISOString().slice(0, 10); }
+  // Registered teams: tournament-teams.json on the server-data branch (scripts/faceit_teams.py, official FACEIT Data API),
+  // fallback data/tournament-teams.json. If neither exists the list is simply not shown.
+  var TEAMS_RAW = "https://raw.githubusercontent.com/vilovx/flowathletiq/server-data/tournament-teams.json";
+  var TEAMS = null, teamsStarted = false;
+  function loadTeams() {
+    if (teamsStarted) return; teamsStarted = true;
+    function get(u) { return fetch(u + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw r.status; return r.json(); }); }
+    function go() {
+      get(TEAMS_RAW).catch(function () { return get("data/tournament-teams.json"); })
+        .then(function (d) { TEAMS = (d && d.tournaments) ? d : null; }, function () {})
+        .then(function () { if (page === "tournaments") renderTournaments(); if (page === "index") renderTourTeaser(); });
+    }
+    go(); setInterval(go, 5 * 60000);
+  }
+  function teamsFor(x) { return TEAMS && TEAMS.tournaments[x.id] || null; }
+  function regCount(x) { var d = teamsFor(x); return d ? d.teams.length + "/" + (d.slots || x.teams) : ""; }
+  function initials(n) { return String(n || "?").replace(/[^\p{L}\p{N}]/gu, "").slice(0, 2).toUpperCase() || "?"; }
+  function teamsHTML(x) {
+    var d = teamsFor(x); if (!d) return "";
+    var T = t("tour"), slots = d.slots || x.teams, n = d.teams.length;
+    var pct = Math.min(100, Math.round(n / slots * 100));
+    function nick(p) {
+      var lvl = p.skillLevel ? ' <span class="tt-lvl" title="FACEIT level ' + esc(p.skillLevel) + '">' + esc(p.skillLevel) + "</span>" : "";
+      var inner = esc(p.nickname) + lvl;
+      return "<li>" + (p.faceitUrl ? '<a href="' + esc(p.faceitUrl) + '" target="_blank" rel="noopener">' + inner + "</a>" : inner) + "</li>";
+    }
+    var list = d.teams.map(function (tm, i) {
+      var av = tm.avatar
+        ? '<img class="tt-av" src="' + esc(tm.avatar) + '" alt="" width="44" height="44" loading="lazy" referrerpolicy="no-referrer">'
+        : '<span class="tt-av tt-av-x" aria-hidden="true">' + esc(initials(tm.name)) + "</span>";
+      var name = tm.faceitUrl ? '<a href="' + esc(tm.faceitUrl) + '" target="_blank" rel="noopener" title="' + esc(T.regOnFaceit) + '">' + esc(tm.name) + "</a>" : esc(tm.name);
+      return '<li class="tt-team"><span class="tt-n">' + (i + 1) + "</span>" + av + '<div class="tt-body"><strong class="tt-name">' + name + "</strong>" +
+        ((tm.players || []).length || (tm.substitutes || []).length ? '<ul class="tt-players">' + (tm.players || []).map(nick).join("") +
+          (tm.substitutes || []).map(function (p) { return nick(p).replace("</li>", ' <span class="tt-sub">(' + esc(T.regSubs) + ")</span></li>"); }).join("") + "</ul>" : "") +
+        "</div></li>";
+    }).join("");
+    var upd = d.fetchedAt || (TEAMS && TEAMS.updated);
+    var updTxt = upd ? new Date(upd).toLocaleString(locale(), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Riga" }) : "";
+    return '<section class="tour-teams" aria-labelledby="tt-h-' + esc(x.id) + '">' +
+      '<div class="tt-head"><h3 id="tt-h-' + esc(x.id) + '">' + esc(T.regTeams) + '</h3><span class="tt-count"><strong>' + n + "</strong>/" + esc(slots) + "</span></div>" +
+      '<div class="tt-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + esc(slots) + '" aria-valuenow="' + n + '" aria-label="' + esc(T.regTeams) + '"><span style="width:' + pct + '%"></span></div>' +
+      (n ? '<ol class="tt-list">' + list + "</ol>" : '<p class="tt-empty">' + esc(T.regEmpty) + "</p>") +
+      (updTxt ? '<p class="tt-upd">' + esc(T.regUpdated.replace("{t}", updTxt)) + "</p>" : "") + "</section>";
+  }
   function upcomingTours() { var d = todayStr(); return TOURS.filter(function (x) { return x.status !== "finished" && x.date >= d; }); }
   function tourStatus(x) {
     var T = t("tour"), st = x.status === "finished" || x.date < todayStr() ? "finished" : x.status === "open" ? "open" : "soon";
@@ -401,6 +445,7 @@
       '<p class="tour-elig">' + esc(T.eligibility) + "</p>" +
       (!past && x.registerUrl ? '<div class="tour-actions"><a class="btn tour-register" href="' + esc(x.registerUrl) + '" target="_blank" rel="noopener">' +
         esc(T.register) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></div>" : "") +
+      (!past ? teamsHTML(x) : "") +
       "</article>";
   }
   function renderTournaments() {
@@ -425,6 +470,7 @@
       '<h2 id="tour-teaser-h">' + esc(L(x.name)) + "</h2>" +
       '<p class="tour-teaser-when"><time datetime="' + esc(x.date) + '">' + fmtDate(x.date) + "</time> · " + esc(T.time) + ": " + tourTime(x) + "</p>" +
       '<p class="tour-teaser-facts">' + esc(x.format) + " · " + esc(x.series) + " · " + esc(T.teamsN.replace("{n}", x.teams)) + " · " + esc(x.platform) + "</p>" +
+      (teamsFor(x) ? '<p class="tour-teaser-reg">' + esc(T.regTeams) + ": <strong>" + esc(regCount(x)) + "</strong></p>" : "") +
       '<a class="btn" href="tournaments.html#' + esc(x.id) + '">' + esc(x.status === "open" ? T.statusOpen : T.teaserMore) + " →</a>";
   }
 
@@ -448,6 +494,8 @@
     if (page === "about") renderAbout();
     if (page === "tournaments") renderTournaments();
     if (page === "index") renderTourTeaser();
+    // Only fetch once a cup is linked to a FACEIT championship (avoids 404 noise before that).
+    if ((page === "tournaments" || page === "index") && TOURS.some(function (x) { return x.faceitChampionshipId; })) loadTeams();
     if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
       show: page === "category" && params.get("cat") === "cs2-latvia" });
     if (window.FA_renderVirsliga) window.FA_renderVirsliga({ t: t, lang: LANG, locale: locale(), esc: esc,

@@ -2,3 +2,4 @@
 node_modules/
 data/server-status.json
 data/server-history.json
+__pycache__/
