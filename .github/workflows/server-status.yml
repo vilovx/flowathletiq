@@ -49,6 +49,11 @@ jobs:
         if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 */2 * * *' || hashFiles('out/virsliga.json') == ''
         continue-on-error: true
         run: python scripts/virsliga.py out
+      - name: Kleverr S7 leagues (Virsliga + 1./2./3. liga groups, rosters, calendar)
+        # Every 2h with the Virsliga step; team rosters are refetched when older than 20h (or missing).
+        if: github.event_name == 'workflow_dispatch' || github.event.schedule == '17 */2 * * *' || hashFiles('out/leagues.json') == ''
+        continue-on-error: true
+        run: python scripts/leagues.py out
       - name: Publish to server-data branch
         run: |
           cd out
