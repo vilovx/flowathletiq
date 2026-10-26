@@ -68,7 +68,7 @@
         w.hidden = false;
         w.innerHTML = '<h2 id="vl-h">' + esc(s("short")) + ' <small>' + esc(s("seasonShort")) + "</small></h2>" + table(d.standings, true) +
           '<h3>' + esc(s("upcoming")) + "</h3>" + matchList(d.upcoming || [], 3) +
-          '<a class="vl-more" href="virsliga.html">' + esc(s("full")) + " →</a>" + meta(d);
+          '<a class="vl-more" href="category.html?cat=cs2-latvia&amp;liga=virsliga#ligas">' + esc(s("full")) + " →</a>" + meta(d);
       }
     }
     var root = document.getElementById("virsliga-root");

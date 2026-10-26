@@ -358,3 +358,39 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .vl-grid h2 { margin: 0 0 .8rem; font-family: var(--display); font-size: 1.35rem; }
 @media (max-width: 900px) { .vl-grid { grid-template-columns: 1fr; } }
 .hero-card .cover[data-cat] { background-position: 72% center; }
+
+/* ---- Leagues (Kleverr S7) inside CS2 Latvija ---- */
+.leagues { margin-top: 2rem; scroll-margin-top: 90px; }
+.lg-head h2 { margin: 0 0 .3rem; } .lg-head h2 small { font-size: .85rem; color: var(--muted); font-weight: 600; margin-left: .4rem; }
+.lg-head p { color: var(--muted); margin: 0 0 1rem; }
+.lg-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .9rem; }
+.lg-tabs button { font: inherit; font-weight: 700; font-size: .9rem; color: var(--muted); background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; padding: .45rem 1rem; min-height: 40px; cursor: pointer; }
+.lg-tabs button[aria-selected="true"] { color: #05060c; background: var(--neon); border-color: var(--neon); }
+.lg-tabs button:focus-visible, .lg-team:focus-visible { outline: 2px solid var(--neon); outline-offset: 2px; }
+.lg-hint { color: var(--muted); font-size: .85rem; margin: 0 0 .8rem; }
+.lg-groups { display: grid; gap: 1.25rem; } .lg-groups.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.lg-group h3, .lg-up h3 { margin: 0 0 .6rem; font-size: 1.05rem; }
+.lg-team { font: inherit; font-weight: 700; color: var(--text); background: none; border: 0; padding: .15rem 0; cursor: pointer; text-align: left; display: inline-flex; align-items: center; gap: .4rem; min-height: 32px; }
+.lg-team:hover { color: var(--neon); }
+.lg-caret { width: .5rem; height: .5rem; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .15s; opacity: .7; }
+.lg-team[aria-expanded="true"] .lg-caret { transform: rotate(-135deg); }
+.lg-table tr.is-open td { border-bottom-color: transparent; }
+.lg-roster-row td { background: var(--bg-2); padding: .8rem .9rem; }
+.lg-rblock h4 { margin: 0 0 .35rem; font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+.lg-rblock + .lg-rblock { margin-top: .7rem; }
+.lg-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .35rem; }
+.lg-chips li { display: inline-flex; align-items: center; gap: .35rem; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: .2rem .65rem; font-size: .85rem; }
+.lg-chips a { color: var(--text); text-decoration: none; font-weight: 700; } .lg-chips a:hover { color: var(--neon); }
+.lg-ig { font-size: .68rem; color: var(--neon); text-transform: uppercase; letter-spacing: .05em; }
+.lg-cc { font-size: .68rem; color: var(--muted); }
+.lg-empty { color: var(--muted); font-size: .85rem; margin: 0; }
+.lg-links { margin: .7rem 0 0; font-size: .82rem; } .lg-links a { color: var(--neon); }
+.lg-up { margin-top: 1.25rem; }
+.lg-matches { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+@media (max-width: 760px) {
+  .lg-groups.two { grid-template-columns: 1fr; }
+  .lg-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .lg-tabs button { flex: 0 0 auto; }
+  .lg-group, .lg-up { padding: 1rem .8rem; }
+  .lg-table td, .lg-table th { padding: .45rem .35rem; }
+}

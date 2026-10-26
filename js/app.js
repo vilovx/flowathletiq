@@ -369,8 +369,10 @@
     if (page === "article") renderArticle();
     if (page === "partners") renderPartners();
     if (page === "about") renderAbout();
+    if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
+      show: page === "category" && params.get("cat") === "cs2-latvia" });
     if (window.FA_renderVirsliga) window.FA_renderVirsliga({ t: t, lang: LANG, locale: locale(), esc: esc,
-      showWidget: page === "index" || (page === "category" && (params.get("cat") === "cs2-latvia")) });
+      showWidget: page === "index" });
     if ((page === "server" || page === "server-top") && window.FA_renderServer) window.FA_renderServer({ t: t, lang: LANG, locale: locale(), esc: esc });
     fillSlots();
   }
