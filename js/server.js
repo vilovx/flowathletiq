@@ -8,7 +8,6 @@
   // Join password shown on the page (public by design). Set to "" if the server has no password.
   var PASSWORD = "underpressure";
   var CONNECT_CMD = (PASSWORD ? "password " + PASSWORD + "; " : "") + "connect " + HOST; // CS2 needs the password set before connecting
-  var STEAM_URL = "steam://connect/" + HOST + (PASSWORD ? "/" + encodeURIComponent(PASSWORD) : "");
   var RAW = "https://raw.githubusercontent.com/vilovx/flowathletiq/server-data/";
   var state = { status: null, history: null, top: null, failed: false, loaded: false };
   var ctx = null, timer = null;
@@ -121,9 +120,7 @@
       '<div class="srv-players"><div class="srv-count"><span>' + esc(s("players")) + "</span><strong>" + (humans + bots) + "/" + max + "</strong></div>" + bar +
       '<p class="srv-legend"><span class="lg-h"></span>' + esc(s("humans")) + " " + humans + ' <span class="lg-b"></span>' + esc(s("bots")) + " " + bots + "</p></div>" +
       '<div class="srv-actions">' +
-      '<button type="button" class="btn-ghost" data-copy="' + esc(CONNECT_CMD) + '">' + esc(s("copyConnect")) + "</button>" +
-      '<button type="button" class="btn-ghost" data-copy="' + HOST + '">' + esc(s("copyIp")) + "</button>" +
-      '<a class="btn" href="' + esc(STEAM_URL) + '">' + esc(s("instant")) + " ▶</a></div>" +
+      '<button type="button" class="btn" data-copy="' + esc(CONNECT_CMD) + '">' + esc(s("copyConnect")) + "</button></div>" +
       '<div class="srv-chart-wrap"><h3>' + esc(s("chart")) + '</h3>' + chartSVG(state.history && state.history.points) +
       '<p class="srv-legend"><span class="lg-line"></span>' + esc(s("legendHumans")) + ' <span class="lg-dash"></span>' + esc(s("legendTotal")) + "</p>" +
       ((state.history && state.history.points || []).length < 3 ? '<p class="srv-note small">' + esc(s("noData")) + "</p>" : "") + "</div>" +
