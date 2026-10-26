@@ -188,7 +188,7 @@ window.FA_I18N = {
       article: "Raksts — FlowAthletiq",
       category: "Kategorija — FlowAthletiq",
       partners: "Partneri — FlowAthletiq",
-      about: "Par mums — FlowAthletiq"
+      about: "FlowAthletiq Discord serveris — Par mums"
     },
     metaDesc: "CS2 ziņas no Latvijas un pasaules: CS2 Latvijā, Major turnīri un lielākie notikumi.",
     aboutPage: {
@@ -382,7 +382,7 @@ window.FA_I18N = {
       article: "Article — FlowAthletiq",
       category: "Category — FlowAthletiq",
       partners: "Partners — FlowAthletiq",
-      about: "About — FlowAthletiq"
+      about: "FlowAthletiq Discord server — About"
     },
     metaDesc: "CS2 news from Latvia and around the world: the Latvian CS2 scene, Majors and big events.",
     aboutPage: {
@@ -576,7 +576,7 @@ window.FA_I18N = {
       article: "Статья — FlowAthletiq",
       category: "Категория — FlowAthletiq",
       partners: "Партнёры — FlowAthletiq",
-      about: "О нас — FlowAthletiq"
+      about: "Discord-сервер FlowAthletiq — О нас"
     },
     metaDesc: "Новости CS2 из Латвии и со всего мира: латвийская сцена CS2, мейджоры и крупные турниры.",
     aboutPage: {

@@ -347,9 +347,8 @@
   }
   var DISCORD_URL = "https://discord.gg/xMrxBh8FzU";
   function renderAbout() {
-    var ab = t("aboutPage");
-    $("about").innerHTML = "<h1>" + ab.title + '</h1><p class="lead">' + esc(ab.lead) + "</p>" +
-      '<section class="discord-block" aria-labelledby="dc-h"><h2 id="dc-h">' + esc(t("discordTitle")) + "</h2><p>" + esc(t("discordText")) + "</p>" +
+    $("about").innerHTML =
+      '<section class="discord-block" aria-labelledby="dc-h"><h1 id="dc-h">' + esc(t("discordTitle")) + "</h1><p>" + esc(t("discordText")) + "</p>" +
       '<a class="dc-banner" href="' + DISCORD_URL + '" target="_blank" rel="noopener" aria-label="' + esc(t("discordCta") + " (" + t("discordNew") + ")") + '">' +
       '<picture><source type="image/webp" srcset="assets/discord/discord-banner-640.webp 640w, assets/discord/discord-banner.webp 1280w" sizes="(max-width: 760px) 100vw, 1000px">' +
       '<img class="dc-img" src="assets/discord/discord-banner.jpg" srcset="assets/discord/discord-banner-640.jpg 640w, assets/discord/discord-banner.jpg 1280w" sizes="(max-width: 760px) 100vw, 1000px" alt="" width="1280" height="720" loading="lazy"></picture>' +
@@ -363,7 +362,7 @@
     document.documentElement.lang = LANG;
     var titles = t("titles");
     document.title = titles[page] || "FlowAthletiq";
-    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", t("metaDesc"));
+    var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", page === "about" ? t("discordText") : t("metaDesc"));
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = t(e.dataset.i18n); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (e) { e.innerHTML = t(e.dataset.i18nHtml); });
     document.querySelectorAll("[data-i18n-label]").forEach(function (e) { e.setAttribute("aria-label", t(e.dataset.i18nLabel)); });
