@@ -168,3 +168,7 @@ git config user.email "you@example.com"   # or your GitHub noreply address
 
 Any static host works: point it at this folder, with no build command and the output directory set to `/` (root).
 Then add `flowathletiq.com` as a custom domain in the host's dashboard and update DNS at your registrar.
+
+## Cache busting
+CSS/JS includes in every *.html and the cover image URLs in css/styles.css carry `?v=YYYYMMDDx`. After changing CSS/JS/covers, bump it everywhere, e.g.:
+`sed -i "s/?v=20261026b/?v=NEW/g" *.html css/styles.css`
