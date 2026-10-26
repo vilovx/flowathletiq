@@ -30,8 +30,9 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; }
 .site-header { position: sticky; top: 0; z-index: 50; background: rgba(7,8,15,.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 0; }
 .brand { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--text); }
-.wordmark { font-family: var(--display); font-weight: 800; font-size: 1.35rem; letter-spacing: .08em; }
-.wordmark span { color: var(--neon); text-shadow: 0 0 12px rgba(0,240,255,.6); }
+.brand picture { display: block; line-height: 0; }
+.brand-logo { display: block; height: 64px; width: auto; }
+.site-footer .brand-logo { height: 64px; }
 .nav ul { list-style: none; margin: 0; padding: 0; }
 .nav-list { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; }
 .nav a, .sub-toggle { display: block; padding: .45rem .75rem; border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 600; font-size: .92rem; }
@@ -218,7 +219,6 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
 }
 @media (max-width: 440px) {
-  .wordmark { font-size: 1.02rem; letter-spacing: .05em; }
-  .brand img { width: 30px; height: 30px; }
+  .brand-logo { height: 48px; }
   .lang-switch button { padding: .3rem .45rem; min-width: 32px; }
 }

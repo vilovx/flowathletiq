@@ -219,8 +219,8 @@
       }).join("") + "</div>";
     $("site-header").innerHTML =
       '<div class="container header-inner">' +
-      '<a class="brand" href="index.html" aria-label="FlowAthletiq — ' + esc(t("home")) + '"><img src="assets/logo.svg" alt="" width="36" height="36">' +
-      '<span class="wordmark">FLOW<span>ATHLETIQ</span></span></a>' +
+      '<a class="brand" href="index.html" aria-label="FlowAthletiq — ' + esc(t("home")) + '"><picture><source srcset="assets/logo.webp" type="image/webp">' +
+      '<img class="brand-logo" src="assets/logo.png" alt="FlowAthletiq" width="480" height="236"></picture></a>' +
       '<nav id="primary-nav" class="nav" aria-label="' + esc(t("primaryNav")) + '"><ul class="nav-list">' + items + "</ul></nav>" +
       langs +
       '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav"><span class="sr-only">' + esc(t("menu")) +
@@ -229,7 +229,7 @@
   function renderFooter() {
     $("site-footer").innerHTML =
       '<div class="container footer-inner">' +
-      '<div><a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="28" height="28"><span class="wordmark">FLOW<span>ATHLETIQ</span></span></a>' +
+      '<div><a class="brand" href="index.html"><picture><source srcset="assets/logo.webp" type="image/webp"><img class="brand-logo" src="assets/logo.png" alt="FlowAthletiq" width="480" height="236" loading="lazy"></picture></a>' +
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +

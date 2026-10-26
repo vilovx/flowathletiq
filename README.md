@@ -23,7 +23,7 @@ data/articles.js      Categories, hand-written articles, matches, partner banner
 data/imported.js      GENERATED from content/news.json by the import script (don't edit by hand)
 content/news.json     News articles (source for the import)
 scripts/import-news.js  news.json -> data/imported.js
-assets/logo.svg, assets/banners/, favicon.svg, css/styles.css
+assets/logo.png + logo.webp (header logo), assets/og-image.jpg, assets/icons/, favicon.ico, apple-touch-icon.png, assets/banners/, css/styles.css
 screenshots/          Preview screenshots
 ```
 
