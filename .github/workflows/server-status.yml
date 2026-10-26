@@ -1,6 +1,6 @@
 name: CS2 server status
 
-# Polls flowathletiq.dat.gg:25082 over A2S and publishes JSON to the `server-data` branch.
+# Polls flowathletiq.dat.gg:25082 over A2S (+ Ranks plugin MySQL leaderboard) and publishes JSON to the `server-data` branch.
 # The branch is force-pushed as a single commit each run, so main's history and Pages builds stay clean.
 on:
   schedule:
@@ -25,21 +25,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install --disable-pip-version-check -q "python-a2s>=1.3"
+      - run: pip install --disable-pip-version-check -q "python-a2s>=1.3" "pymysql>=1.1"
       - name: Restore previous history
         run: |
           mkdir -p out
           if git fetch -q --depth=1 origin server-data 2>/dev/null; then
             git show FETCH_HEAD:server-history.json > out/server-history.json || rm -f out/server-history.json
+            git show FETCH_HEAD:server-top.json > out/server-top.json || rm -f out/server-top.json
           fi
       - name: Query server
         run: python scripts/server_status.py out
+      - name: Export ranks leaderboard (top 100)
+        # On failure the previous server-top.json (if any) is kept.
+        continue-on-error: true
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+        run: python scripts/server_top.py out
       - name: Publish to server-data branch
         run: |
           cd out
           git init -q -b server-data
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add server-status.json server-history.json
+          git add server-status.json server-history.json $(ls server-top.json 2>/dev/null)
           git commit -qm "server status $(date -u +%FT%TZ) [skip ci]"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" server-data
