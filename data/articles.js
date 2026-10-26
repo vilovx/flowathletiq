@@ -60,6 +60,13 @@ window.FA_ARTICLES = [
  * FA_SHOW_EXAMPLE_MATCHES is true. If nothing is left to show, the box is hidden.
  * ------------------------------------------------------------------------- */
 window.FA_SHOW_EXAMPLE_MATCHES = false;
+
+/*
+ * Partners section switch. false = hidden everywhere: no Partners nav/footer link, no banners on
+ * any page, no affiliate disclosure, and partners.html redirects to the home page.
+ * Set back to true to restore it (also remove the noindex/redirect lines marked in partners.html).
+ */
+window.FA_SHOW_PARTNERS = false;
 var EV_MAJOR = { lv: "Piemēra Major — 1. posms", en: "Example Major — Stage 1", ru: "Пример мейджора — стадия 1" };
 var EV_LV = { lv: "Latvijas CS līga (piemērs) — 5. kārta", en: "Latvian CS League (example) — Round 5", ru: "Латвийская лига CS (пример) — 5-й тур" };
 window.FA_MATCHES = [

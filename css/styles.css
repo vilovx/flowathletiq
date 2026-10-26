@@ -282,3 +282,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .srv-actions > * { flex: 1 1 100%; text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) { .srv-dot { animation: none; } }
+.srv-pass { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem .7rem; margin-top: 1.1rem; padding: .6rem .8rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; }
+.srv-pass span { font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); }
+.srv-pass code { font-size: 1.05rem; color: var(--neon); background: transparent; padding: 0; user-select: all; }
+.btn-sm { padding: .35rem .8rem; min-height: 36px; font-size: .85rem; margin-left: auto; }

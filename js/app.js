@@ -14,8 +14,10 @@
   var MATCHES = (window.FA_MATCHES || []).filter(function (m) {
     return catBySlug[m.category] && (!m.example || window.FA_SHOW_EXAMPLE_MATCHES);
   });
-  var BANNERS = window.FA_BANNERS || [];
+  var SHOW_PARTNERS = window.FA_SHOW_PARTNERS !== false;
+  var BANNERS = SHOW_PARTNERS ? (window.FA_BANNERS || []) : [];
   var page = document.body.dataset.page;
+  if (page === "partners" && !SHOW_PARTNERS) { location.replace("index.html" + location.search); return; }
   var params = new URLSearchParams(location.search);
   var REL = "sponsored nofollow noopener";
   var LANG = pickLang();
@@ -211,7 +213,7 @@
         return '<li class="has-sub"><button type="button" class="sub-toggle' + (trail.indexOf(c.slug) !== -1 ? " active" : "") +
           '" aria-expanded="false" aria-controls="sub-' + c.slug + '">' + esc(cname(c)) +
           ' <span class="caret" aria-hidden="true"></span></button>' + subList(c.slug, 1) + "</li>";
-      }).join("") + plain("server.html", "server", "server") + plain("partners.html", "partners", "partners") + plain("about.html", "about", "about");
+      }).join("") + plain("server.html", "server", "server") + (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about");
     var langs = '<div class="lang-switch" role="group" aria-label="' + esc(t("language")) + '">' +
       LANGS.map(function (l) {
         return '<button type="button" data-lang="' + l.code + '" lang="' + l.code + '" aria-pressed="' + (l.code === LANG) +
@@ -233,8 +235,8 @@
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
-      '<li><a href="server.html">' + esc(t("server")) + '</a></li><li><a href="partners.html">' + esc(t("partners")) + '</a></li><li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
-      '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" +
+      '<li><a href="server.html">' + esc(t("server")) + '</a></li>' + (SHOW_PARTNERS ? '<li><a href="partners.html">' + esc(t("partners")) + '</a></li>' : "") + '<li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
+      (SHOW_PARTNERS ? '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" : "") +
       '<p class="copy">© ' + new Date().getFullYear() + " FlowAthletiq · flowathletiq.com</p></div>";
   }
 
