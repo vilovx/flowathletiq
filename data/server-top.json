@@ -1,5 +1,5 @@
 {
-  "status": "coming_soon",
-  "note": "Rank TOP 5 will be filled from the server's ranks database once it is connected. No player data yet.",
+  "status": "empty",
+  "note": "Fallback only. The live leaderboard is published to the server-data branch by .github/workflows/server-status.yml.",
   "players": []
 }

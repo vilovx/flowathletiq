@@ -23,7 +23,7 @@
     return Promise.all([
       getJSON([RAW + "server-status.json", "data/server-status.json"]).catch(function () { return null; }),
       getJSON([RAW + "server-history.json", "data/server-history.json"]).catch(function () { return null; }),
-      getJSON(["data/server-top.json"]).catch(function () { return null; })
+      getJSON([RAW + "server-top.json", "data/server-top.json"]).catch(function () { return null; })
     ]).then(function (r) {
       state.status = r[0]; state.history = r[1]; state.top = r[2]; state.failed = !r[0]; state.loaded = true;
       paint();
@@ -37,6 +37,34 @@
   function fmtTime(sec) {
     try { return new Date(sec * 1000).toLocaleString(ctx.locale, { hour: "2-digit", minute: "2-digit", day: "numeric", month: "short" }); }
     catch (e) { return new Date(sec * 1000).toISOString(); }
+  }
+
+  function topPlayers() { return (state.top && state.top.players) || []; }
+  function playerLink(p) {
+    var n = ctx.esc(p.name);
+    return p.profile && /^https:\/\/steamcommunity\.com\/profiles\/\d+$/.test(p.profile)
+      ? '<a href="' + p.profile + '" target="_blank" rel="noopener nofollow">' + n + "</a>" : n;
+  }
+  function fmtMin(m) { m = m || 0; return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  function paintTop() {
+    var root = document.getElementById("server-top-root"), esc = ctx.esc;
+    var head = '<a class="srv-back" href="server.html">← ' + esc(s("back")) + '</a><span class="kicker">' + esc(s("kicker")) + "</span><h1>" + s("top100H1") + "</h1>" +
+      '<p class="lead">' + esc(s("top100Lead")) + "</p>";
+    if (!state.loaded) { root.innerHTML = head + '<p class="srv-note">' + esc(s("loading")) + "</p>"; return; }
+    var pl = topPlayers();
+    var meta = state.top && state.top.updated ? '<p class="srv-updated">' + esc(s("playersTotal", { n: state.top.totalPlayers || pl.length })) + " · " + esc(s("updated", { t: fmtTime(state.top.updated) })) + "</p>" : "";
+    if (!pl.length) { root.innerHTML = head + '<p class="srv-note">' + esc(s("topEmpty")) + "</p>"; return; }
+    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRank"), "rank hide-sm"], [s("colPoints"), "num"], [s("colKills"), "num hide-sm"],
+      [s("colDeaths"), "num hide-sm"], [s("colKd"), "num"], [s("colHs"), "num hide-md"], [s("colTime"), "num hide-md"]];
+    root.innerHTML = head + '<div class="srv-card top-table-wrap"><table class="top-table"><caption class="sr-only">' + esc(s("top100H1").replace(/<[^>]+>/g, "")) + "</caption><thead><tr>" +
+      cols.map(function (c) { return '<th scope="col" class="' + c[1] + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+      pl.map(function (p) {
+        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) +
+          '<small class="show-sm">' + esc(p.rank) + "</small></td>" +
+          '<td class="rank hide-sm">' + esc(p.rank) + '</td><td class="num pts">' + esc(p.points) + '</td><td class="num hide-sm">' + esc(p.kills) +
+          '</td><td class="num hide-sm">' + esc(p.deaths) + '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num hide-md">' + esc(p.headshots) +
+          '</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
+      }).join("") + "</tbody></table></div>" + meta;
   }
 
   function chartSVG(points) {
@@ -72,8 +100,10 @@
   }
 
   function paint() {
+    if (!ctx) return;
+    if (document.getElementById("server-top-root")) return paintTop();
     var root = document.getElementById("server-root");
-    if (!root || !ctx) return;
+    if (!root) return;
     var esc = ctx.esc, st = state.status;
     var head = '<span class="kicker">' + esc(s("kicker")) + "</span><h1>" + s("h1") + '</h1><p class="lead">' + esc(s("lead")) + "</p>";
     if (!state.loaded) { root.innerHTML = head + '<p class="srv-note">' + esc(s("loading")) + "</p>"; return; }
@@ -101,11 +131,15 @@
       ((state.history && state.history.points || []).length < 3 ? '<p class="srv-note small">' + esc(s("noData")) + "</p>" : "") + "</div>" +
       '<p class="srv-updated">' + (st && st.updated ? esc(s("updated", { t: fmtTime(st.updated) })) + " · " : "") + esc(s("refresh")) + "</p>" +
       "</article>";
-    var top = state.top && state.top.players && state.top.players.length ? state.top.players.slice(0, 5) : null;
+    var top = topPlayers().slice(0, 5);
     var topBox = '<aside class="srv-card srv-rank"><h2>' + esc(s("top")) + "</h2>" +
-      (top ? "<ol>" + top.map(function (p) { return "<li><span>" + esc(p.name) + "</span><strong>" + esc(p.points) + "</strong></li>"; }).join("") + "</ol>"
+      (top.length ? '<ol class="srv-rank-list">' + top.map(function (p) {
+          return '<li><span class="pos">' + p.pos + '</span><span class="who">' + playerLink(p) +
+            '<small>' + esc(p.rank) + "</small></span><strong>" + esc(p.points) + "</strong></li>";
+        }).join("") + "</ol>"
         : '<ol class="srv-rank-empty" aria-hidden="true">' + [1, 2, 3, 4, 5].map(function (n) { return "<li><span>#" + n + "</span><i></i></li>"; }).join("") + "</ol>" +
-          '<p class="srv-soon">' + esc(s("topSoon")) + "</p>") + "</aside>";
+          '<p class="srv-soon">' + esc(s("topEmpty")) + "</p>") +
+      '<a class="srv-more" href="server-top.html">' + esc(s("seeTop100")) + " →</a></aside>";
     root.innerHTML = head + '<div class="srv-grid">' + card + topBox + "</div>";
   }
 

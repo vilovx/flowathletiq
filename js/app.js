@@ -206,7 +206,7 @@
         (depth === 1 ? '<li><a class="sub-all" href="' + catUrl(slug) + '">' + esc(cname(cat(slug))) + "</a></li>" : "") +
         kids.map(function (k) { return "<li>" + navLink(k) + subList(k.slug, depth + 1) + "</li>"; }).join("") + "</ul>";
     }
-    function plain(href, key, pg) { return '<li><a href="' + href + '"' + (page === pg ? ' aria-current="page"' : "") + ">" + esc(t(key)) + "</a></li>"; }
+    function plain(href, key, pg) { return '<li><a href="' + href + '"' + (page === pg || (pg === "server" && page === "server-top") ? ' aria-current="page"' : "") + ">" + esc(t(key)) + "</a></li>"; }
     // The logo links home, so the nav starts with the categories.
     var items = children(null).map(function (c) {
         if (!children(c.slug).length) return "<li>" + navLink(c) + "</li>";
@@ -378,7 +378,7 @@
     if (page === "article") renderArticle();
     if (page === "partners") renderPartners();
     if (page === "about") renderAbout();
-    if (page === "server" && window.FA_renderServer) window.FA_renderServer({ t: t, lang: LANG, locale: locale(), esc: esc });
+    if ((page === "server" || page === "server-top") && window.FA_renderServer) window.FA_renderServer({ t: t, lang: LANG, locale: locale(), esc: esc });
     fillSlots();
   }
 
