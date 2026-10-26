@@ -349,13 +349,15 @@
   function renderAbout() {
     var ab = t("aboutPage");
     $("about").innerHTML = "<h1>" + ab.title + '</h1><p class="lead">' + esc(ab.lead) + "</p>" +
-      '<section class="discord-cta" aria-labelledby="dc-h"><img class="discord-logo" src="assets/brand/discord/Discord-Logo-White.svg" alt="Discord" width="212" height="32">' +
-      '<div class="dc-text"><h2 id="dc-h">' + esc(t("discordTitle")) + "</h2><p>" + esc(t("discordText")) + "</p></div>" +
-      '<a class="dc-btn" href="' + DISCORD_URL + '" target="_blank" rel="noopener">' + esc(t("discordCta")) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a>" +
-      '<p class="dc-tm">' + esc(t("discordTm")) + "</p></section>" +
-      '<div class="about-grid">' + ab.cards.map(function (c) { return '<div class="card-plain"><h2>' + esc(c[0]) + "</h2><p>" + esc(c[1]) + "</p></div>"; }).join("") + "</div>" +
-      "<h2>" + esc(ab.contactH) + "</h2><p>" + ab.contact + '</p><p class="note">' + esc(ab.note) + "</p>";
+      '<section class="discord-block" aria-labelledby="dc-h"><h2 id="dc-h">' + esc(t("discordTitle")) + "</h2><p>" + esc(t("discordText")) + "</p>" +
+      '<a class="dc-banner" href="' + DISCORD_URL + '" target="_blank" rel="noopener" aria-label="' + esc(t("discordCta") + " (" + t("discordNew") + ")") + '">' +
+      '<picture><source type="image/webp" srcset="assets/discord/discord-banner-640.webp 640w, assets/discord/discord-banner.webp 1280w" sizes="(max-width: 760px) 100vw, 1000px">' +
+      '<img class="dc-img" src="assets/discord/discord-banner.jpg" srcset="assets/discord/discord-banner-640.jpg 640w, assets/discord/discord-banner.jpg 1280w" sizes="(max-width: 760px) 100vw, 1000px" alt="" width="1280" height="720" loading="lazy"></picture>' +
+      '<span class="dc-pill" aria-hidden="true"><img src="assets/brand/discord/Discord-Symbol-White.svg" alt="" width="40" height="30">' +
+      '<span>' + esc(t("discordCta")) + '</span><span class="dc-arrow">↗</span></span></a>' +
+      '<p class="dc-tm">' + esc(t("discordTm")) + "</p></section>";
   }
+
 
   function render() {
     document.documentElement.lang = LANG;
