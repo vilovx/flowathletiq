@@ -134,6 +134,16 @@ window.FA_I18N = {
       hoursAgo: "pirms {h} h",
       now: "tagad"
     },
+    promo: {
+      label: "Partneris",
+      text: "Izmanto kodu {code} un saņem $5 pirmajā darījumā + 35% papildināšanas bonusu.",
+      codeLabel: "Kods",
+      copy: "Kopēt",
+      copyAria: "Kopēt kodu {code}",
+      copied: "Nokopēts",
+      cta: "Atvērt Tradeit",
+      disclosure: "Partnera saite. 18+."
+    },
     tournaments: "Turnīri",
     tour: {
       kicker: "FACEIT turnīri",
@@ -369,6 +379,16 @@ window.FA_I18N = {
       hoursAgo: "{h}h ago",
       now: "now"
     },
+    promo: {
+      label: "Partner",
+      text: "Use code {code} to get $5 on your first trade + 35% top-up bonus.",
+      codeLabel: "Code",
+      copy: "Copy",
+      copyAria: "Copy code {code}",
+      copied: "Copied",
+      cta: "Open Tradeit",
+      disclosure: "Affiliate link. 18+."
+    },
     tournaments: "Tournaments",
     tour: {
       kicker: "FACEIT tournaments",
@@ -603,6 +623,16 @@ window.FA_I18N = {
       refresh: "Обновляется каждые 60 с",
       hoursAgo: "{h} ч назад",
       now: "сейчас"
+    },
+    promo: {
+      label: "Партнёр",
+      text: "Используй код {code} и получи $5 за первую сделку + 35% бонус к пополнению.",
+      codeLabel: "Код",
+      copy: "Копировать",
+      copyAria: "Скопировать код {code}",
+      copied: "Скопировано",
+      cta: "Открыть Tradeit",
+      disclosure: "Партнёрская ссылка. 18+."
     },
     tournaments: "Турниры",
     tour: {

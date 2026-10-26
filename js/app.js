@@ -480,6 +480,35 @@
       '<a class="btn" href="tournaments.html#' + esc(x.id) + '">' + esc(x.status === "open" ? T.statusOpen : T.teaserMore) + " →</a>";
   }
 
+  // ---------- sidebar promo (data/promo.js) ----------
+  function renderPromo() {
+    var box = $("promo-box"), P = window.FA_PROMO;
+    if (!box) return;
+    if (!P || !P.url) { box.hidden = true; return; }
+    var T = t("promo") || {}, code = esc(P.code || "");
+    var text = esc(T.text || "").replace(esc("{code}"), "<strong>" + code + "</strong>").replace("{code}", "<strong>" + code + "</strong>");
+    box.hidden = false;
+    box.innerHTML = '<span class="promo-label">' + esc(T.label) + "</span>" +
+      '<h2 class="promo-brand" id="promo-h">' + esc(P.brand) + "</h2>" +
+      '<p class="promo-text">' + text + "</p>" +
+      (P.code ? '<div class="promo-code"><code aria-label="' + esc(T.codeLabel) + '">' + code + "</code>" +
+        '<button type="button" class="promo-copy" data-code="' + code + '" aria-label="' + esc((T.copyAria || "").replace("{code}", P.code)) + '">' +
+        '<svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+        '<span class="promo-copy-t">' + esc(T.copy) + "</span></button></div>" +
+        '<span class="promo-status" role="status" aria-live="polite"></span>' : "") +
+      '<a class="btn promo-cta" href="' + esc(P.url) + '" target="_blank" rel="sponsored noopener">' + esc(T.cta) +
+        ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a>" +
+      '<p class="promo-disc">' + esc(T.disclosure) + "</p>";
+  }
+  function copyText(txt) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(txt);
+    return new Promise(function (ok, fail) {
+      var ta = document.createElement("textarea"); ta.value = txt; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy") ? ok() : fail(); } catch (e) { fail(e); } finally { ta.remove(); }
+    });
+  }
+
   function render() {
     document.documentElement.lang = LANG;
     var titles = t("titles");
@@ -499,6 +528,7 @@
     if (page === "partners") renderPartners();
     if (page === "about") renderAbout();
     if (page === "tournaments") renderTournaments();
+    renderPromo();
     if (page === "index") renderTourTeaser();
     // Only fetch once a cup is linked to a FACEIT championship (avoids 404 noise before that).
     if ((page === "tournaments" || page === "index") && TOURS.some(function (x) { return x.faceitChampionshipId; })) loadTeams();
@@ -539,6 +569,16 @@
       params.delete("notice"); var q = params.toString();
       history.replaceState(null, "", location.pathname + (q ? "?" + q : ""));
       renderNotice(); return;
+    }
+    var pc = e.target.closest(".promo-copy");
+    if (pc) {
+      var done = function () {
+        var T = t("promo") || {}, lbl = pc.querySelector(".promo-copy-t"), st = document.querySelector(".promo-status");
+        pc.classList.add("is-copied"); if (lbl) lbl.textContent = T.copied; if (st) st.textContent = T.copied;
+        clearTimeout(pc._t); pc._t = setTimeout(function () { pc.classList.remove("is-copied"); if (lbl) lbl.textContent = T.copy; if (st) st.textContent = ""; }, 2000);
+      };
+      copyText(pc.dataset.code).then(done, function () { var c = pc.parentNode.querySelector("code"); if (c) { var r = document.createRange(); r.selectNodeContents(c); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } });
+      return;
     }
     var fb = e.target.closest("#filters button");
     if (fb) { homeFilter = fb.dataset.cat; renderIndex(); fillSlots(); var nb = document.querySelector('#filters button[data-cat="' + homeFilter + '"]'); if (nb) nb.focus(); }

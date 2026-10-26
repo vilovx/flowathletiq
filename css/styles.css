@@ -581,3 +581,19 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .tour-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; }
 .tour-intro-btn { text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; font-size: .9rem; }
 @media (max-width: 760px) { .tour-actions .tour-register, .tour-intro-btn { width: 100%; justify-content: center; text-align: center; } }
+/* Sidebar promo (data/promo.js) */
+.promo-box { padding: 1rem 1.1rem 1.05rem; border-color: color-mix(in srgb, var(--line) 70%, #6b5cff); }
+.promo-box[hidden] { display: none; }
+.promo-label { display: inline-block; font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .1rem .55rem; }
+.sidebar .promo-brand { margin: .45rem 0 .25rem; font-family: var(--display); font-weight: 600; font-size: 1.3rem; letter-spacing: .02em; }
+.promo-text { margin: 0 0 .7rem; font-size: .88rem; color: var(--muted); line-height: 1.5; }
+.promo-text strong { color: var(--text); }
+.promo-code { display: flex; align-items: stretch; border: 1px dashed color-mix(in srgb, var(--neon) 55%, var(--line)); border-radius: 10px; background: var(--bg-2); overflow: hidden; }
+.promo-code code { flex: 1; display: flex; align-items: center; padding: .45rem .7rem; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: .95rem; font-weight: 700; letter-spacing: .08em; color: var(--text); background: none; user-select: all; }
+.promo-copy { display: inline-flex; align-items: center; gap: .35rem; min-height: 40px; padding: 0 .75rem; border: 0; border-left: 1px solid var(--line); background: transparent; color: var(--muted); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.promo-copy:hover, .promo-copy:focus-visible { color: var(--text); background: var(--card); }
+.promo-copy:focus-visible { outline: 2px solid var(--neon); outline-offset: -2px; }
+.promo-copy.is-copied { color: #22e06b; }
+.promo-status { display: block; height: 0; overflow: hidden; }
+.promo-cta { display: block; text-align: center; margin-top: .75rem; padding: .55rem 1rem; font-size: .88rem; text-decoration: none; }
+.promo-disc { margin: .5rem 0 0; font-size: .72rem; color: var(--muted); opacity: .85; }
