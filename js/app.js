@@ -226,7 +226,8 @@
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
-      '<li><a href="server.html">' + esc(t("server")) + '</a></li>' + (SHOW_PARTNERS ? '<li><a href="partners.html">' + esc(t("partners")) + '</a></li>' : "") + '<li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
+      '<li><a href="server.html">' + esc(t("server")) + '</a></li>' + (SHOW_PARTNERS ? '<li><a href="partners.html">' + esc(t("partners")) + '</a></li>' : "") + '<li><a href="about.html">' + esc(t("about")) + "</a></li>" +
+        '<li><a class="footer-discord" href="' + DISCORD_URL + '" target="_blank" rel="noopener"><img src="assets/brand/discord/Discord-Symbol-White.svg" alt="" width="18" height="14">Discord<span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></li></ul>" +
       (SHOW_PARTNERS ? '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" : "") +
       '<p class="copy">© ' + new Date().getFullYear() + " FlowAthletiq · flowathletiq.com</p></div>";
   }
@@ -344,9 +345,14 @@
         ' <span class="sr-only">' + esc(t("newTab")) + "</span>↗</a></div></section>";
     }).join("") : '<p class="empty">' + esc(t("noPartners")) + "</p>";
   }
+  var DISCORD_URL = "https://discord.gg/xMrxBh8FzU";
   function renderAbout() {
     var ab = t("aboutPage");
     $("about").innerHTML = "<h1>" + ab.title + '</h1><p class="lead">' + esc(ab.lead) + "</p>" +
+      '<section class="discord-cta" aria-labelledby="dc-h"><img class="discord-logo" src="assets/brand/discord/Discord-Logo-White.svg" alt="Discord" width="212" height="32">' +
+      '<div class="dc-text"><h2 id="dc-h">' + esc(t("discordTitle")) + "</h2><p>" + esc(t("discordText")) + "</p></div>" +
+      '<a class="dc-btn" href="' + DISCORD_URL + '" target="_blank" rel="noopener">' + esc(t("discordCta")) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a>" +
+      '<p class="dc-tm">' + esc(t("discordTm")) + "</p></section>" +
       '<div class="about-grid">' + ab.cards.map(function (c) { return '<div class="card-plain"><h2>' + esc(c[0]) + "</h2><p>" + esc(c[1]) + "</p></div>"; }).join("") + "</div>" +
       "<h2>" + esc(ab.contactH) + "</h2><p>" + ab.contact + '</p><p class="note">' + esc(ab.note) + "</p>";
   }
