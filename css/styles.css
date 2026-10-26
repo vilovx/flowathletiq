@@ -1,9 +1,83 @@
+/* Self-hosted fonts (SIL Open Font License): Inter + Oswald, subsets latin, latin-ext (LV), cyrillic (RU) */
+/* Inter cyrillic-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(../assets/fonts/inter-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* Inter cyrillic */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(../assets/fonts/inter-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* Inter latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(../assets/fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* Inter latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(../assets/fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Oswald cyrillic-ext */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../assets/fonts/oswald-cyrillic-ext.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* Oswald cyrillic */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../assets/fonts/oswald-cyrillic.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* Oswald latin-ext */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../assets/fonts/oswald-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* Oswald latin */
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../assets/fonts/oswald-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 :root {
   --bg: #07080f; --bg-2: #0e1020; --card: #12152a; --line: #23284a;
   --text: #eef1ff; --muted: #a3a9cc; --neon: #00f0ff; --neon-2: #b000ff;
   --radius: 14px; --max: 1200px;
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --display: "Rajdhani", "Oswald", "Arial Narrow", Impact, system-ui, sans-serif;
+  --display: "Oswald", "Arial Narrow", system-ui, sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
@@ -21,9 +95,11 @@ img, svg { display: block; max-width: 100%; }
 .skip-link:focus { top: 1rem; }
 :focus-visible { outline: 3px solid var(--neon); outline-offset: 3px; border-radius: 4px; }
 main:focus { outline: none; }
-h1, h2, h3 { font-family: var(--display); line-height: 1.15; letter-spacing: .01em; margin: 0 0 .5rem; }
-h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 800; }
-h2 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.2; letter-spacing: .02em; margin: 0 0 .5rem; font-synthesis-weight: none; }
+h1 { font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 600; line-height: 1.15; letter-spacing: .01em; }
+h2 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 600; }
+/* Small headings (card titles, sidebar sub-headings) use the readable text font */
+h3 { font-family: var(--font); font-weight: 700; line-height: 1.3; letter-spacing: 0; }
 .accent { background: linear-gradient(90deg, var(--neon), var(--neon-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* Header */
@@ -67,13 +143,13 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; }
 .cover svg { width: 100%; height: 100%; }
 .cover[data-cat] { background-size: cover; background-position: center; }
 .cover[data-cat]::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(7,8,15,.55), rgba(7,8,15,.1)); }
-.cover[data-cat="cs2-latvia"] { background-image: url("../assets/covers/cs2-latvija-800.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-latvija-800.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-latvija-800.jpg?v=20261026h") type("image/jpeg")); }
-.cover[data-cat="cs2-majors"] { background-image: url("../assets/covers/cs2-global-800.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-global-800.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-global-800.jpg?v=20261026h") type("image/jpeg")); }
-.cover[data-cat="cs2"] { background-image: url("../assets/covers/cs2-jaunumi-800.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-jaunumi-800.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-jaunumi-800.jpg?v=20261026h") type("image/jpeg")); }
-.cover-big[data-cat="cs2-latvia"] { background-image: url("../assets/covers/cs2-latvija.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-latvija.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-latvija.jpg?v=20261026h") type("image/jpeg")); }
-.cover-big[data-cat="cs2-majors"] { background-image: url("../assets/covers/cs2-global.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-global.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-global.jpg?v=20261026h") type("image/jpeg")); }
-.cover-big[data-cat="cs2"] { background-image: url("../assets/covers/cs2-jaunumi.jpg?v=20261026h"); background-image: image-set(url("../assets/covers/cs2-jaunumi.webp?v=20261026h") type("image/webp"), url("../assets/covers/cs2-jaunumi.jpg?v=20261026h") type("image/jpeg")); }
-.cover-label { position: absolute; z-index: 1; left: 5%; bottom: 7%; font-family: var(--display); font-weight: 800; font-size: clamp(14px, 3.2vw, 22px); color: #fff; opacity: .35; letter-spacing: 4px; line-height: 1; }
+.cover[data-cat="cs2-latvia"] { background-image: url("../assets/covers/cs2-latvija-800.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-latvija-800.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-latvija-800.jpg?v=20261026i") type("image/jpeg")); }
+.cover[data-cat="cs2-majors"] { background-image: url("../assets/covers/cs2-global-800.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-global-800.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-global-800.jpg?v=20261026i") type("image/jpeg")); }
+.cover[data-cat="cs2"] { background-image: url("../assets/covers/cs2-jaunumi-800.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-jaunumi-800.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-jaunumi-800.jpg?v=20261026i") type("image/jpeg")); }
+.cover-big[data-cat="cs2-latvia"] { background-image: url("../assets/covers/cs2-latvija.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-latvija.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-latvija.jpg?v=20261026i") type("image/jpeg")); }
+.cover-big[data-cat="cs2-majors"] { background-image: url("../assets/covers/cs2-global.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-global.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-global.jpg?v=20261026i") type("image/jpeg")); }
+.cover-big[data-cat="cs2"] { background-image: url("../assets/covers/cs2-jaunumi.jpg?v=20261026i"); background-image: image-set(url("../assets/covers/cs2-jaunumi.webp?v=20261026i") type("image/webp"), url("../assets/covers/cs2-jaunumi.jpg?v=20261026i") type("image/jpeg")); }
+.cover-label { position: absolute; z-index: 1; left: 5%; bottom: 7%; font-family: var(--display); font-weight: 600; font-size: clamp(14px, 3.2vw, 22px); color: #fff; opacity: .45; letter-spacing: .14em; line-height: 1; }
 .cover-big .cover-label { font-size: clamp(18px, 4vw, 30px); }
 .hero-card .cover-label { display: none; }
 .article .cover-big { border-radius: var(--radius); margin: 1.5rem 0; }
@@ -90,7 +166,7 @@ h2 { font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; }
 .card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s, border-color .2s, box-shadow .2s; }
 .card:hover, .card:focus-within { transform: translateY(-3px); border-color: var(--neon); box-shadow: 0 8px 30px rgba(0,240,255,.15); }
 .card-body { padding: 1rem 1.1rem 1.2rem; display: flex; flex-direction: column; gap: .45rem; flex: 1; }
-.card h3 { font-size: 1.25rem; margin: 0; }
+.card h3 { font-size: 1.2rem; line-height: 1.32; margin: 0; }
 .card h3 a { color: var(--text); text-decoration: none; }
 .stretched::after { content: ""; position: absolute; inset: 0; }
 .card p { margin: 0; color: var(--muted); font-size: .93rem; }
@@ -309,7 +385,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .srv-pass code { font-size: 1.05rem; color: var(--neon); background: transparent; padding: 0; user-select: all; }
 .btn-sm { padding: .35rem .8rem; min-height: 36px; font-size: .85rem; margin-left: auto; }
 .srv-rank-list li { gap: .6rem; }
-.srv-rank-list .pos { font-family: var(--display); font-weight: 800; color: var(--muted); width: 1.4ch; }
+.srv-rank-list .pos { font-family: var(--display); font-weight: 600; color: var(--muted); width: 1.4ch; }
 .srv-rank-list li:nth-child(1) .pos { color: #ffd23f; } .srv-rank-list li:nth-child(2) .pos { color: #cfd6e6; } .srv-rank-list li:nth-child(3) .pos { color: #e09a5a; }
 .srv-rank-list .who { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
 .srv-rank-list .who a, .srv-rank-list .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 700; }
@@ -323,7 +399,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .top-table td { padding: .6rem .7rem; border-bottom: 1px solid var(--line); }
 .top-table tr:last-child td { border-bottom: 0; }
 .top-table .num { text-align: right; font-variant-numeric: tabular-nums; }
-.top-table .pos { font-family: var(--display); font-weight: 800; color: var(--muted); width: 3ch; }
+.top-table .pos { font-family: var(--display); font-weight: 600; color: var(--muted); width: 3ch; }
 .top-table .player { font-weight: 700; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .top-table .player a { color: var(--text); }
 .top-table .pts { color: var(--neon); font-weight: 800; }
@@ -346,9 +422,9 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .vl-table td { padding: .5rem; border-bottom: 1px solid var(--line); }
 .vl-table tr:last-child td { border-bottom: 0; }
 .vl-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.vl-table .pos { width: 2.2ch; color: var(--muted); font-weight: 800; font-family: var(--display); }
+.vl-table .pos { width: 2.2ch; color: var(--muted); font-weight: 600; font-family: var(--display); }
 .vl-table tr.top .pos { color: var(--neon); }
-.vl-table .team { font-weight: 700; overflow-wrap: anywhere; }
+.vl-table .team { font-weight: 600; letter-spacing: .005em; overflow-wrap: anywhere; }
 .vl-table .team a { color: var(--text); text-decoration: none; } .vl-table .team a:hover { color: var(--neon); }
 .vl-table .pts { font-weight: 800; color: var(--neon); }
 .vl-table .pos-rd { color: #22e06b; } .vl-table .neg-rd { color: #ff6b7a; }
@@ -359,7 +435,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .vl-matches a:hover { border-color: var(--neon); }
 .vl-when { grid-column: 1 / -1; font-size: .8rem; color: var(--muted); }
 .vl-when strong { color: var(--text); }
-.vl-teams { font-weight: 700; } .vl-teams em { font-style: normal; color: var(--muted); font-weight: 500; margin: 0 .25rem; }
+.vl-teams { font-weight: 600; } .vl-teams em { font-style: normal; color: var(--muted); font-weight: 500; margin: 0 .25rem; }
 .vl-bo { align-self: center; font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .05rem .5rem; }
 .vl-live { color: #ff4d5e; font-weight: 800; text-transform: uppercase; font-size: .7rem; }
 .vl-more { display: inline-block; margin-top: .9rem; font-weight: 700; color: var(--neon); }
@@ -368,7 +444,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .vl-note { font-size: .82rem; color: var(--muted); margin: .9rem 0 0; } .vl-note a { color: var(--neon); }
 .vl-empty { color: var(--muted); margin: 0; }
 .vl-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.25rem; align-items: start; margin-top: 1.5rem; }
-.vl-grid h2 { margin: 0 0 .8rem; font-family: var(--display); font-size: 1.35rem; }
+.vl-grid h2 { margin: 0 0 .8rem; font-family: var(--display); font-size: 1.35rem; font-weight: 600; }
 @media (max-width: 900px) { .vl-grid { grid-template-columns: 1fr; } }
 .hero-card .cover[data-cat] { background-position: 72% center; }
 
