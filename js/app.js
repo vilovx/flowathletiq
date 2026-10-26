@@ -449,6 +449,8 @@
       '<p class="tour-elig">' + esc(T.eligibility) + "</p>" +
       (!past && x.registerUrl ? '<div class="tour-actions"><a class="btn tour-register" href="' + esc(x.registerUrl) + '" target="_blank" rel="noopener">' +
         esc(T.register) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></div>" : "") +
+      (!past && x.introFormUrl ? '<div class="tour-intro"><p>' + esc(T.introText) + '</p><a class="btn-ghost" href="' + esc(x.introFormUrl) + '" target="_blank" rel="noopener">' +
+        esc(T.introCta) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></div>" : "") +
       (!past ? teamsHTML(x) : "") +
       "</article>";
   }

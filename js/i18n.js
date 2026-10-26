@@ -170,6 +170,8 @@ window.FA_I18N = {
       regUpdated: "Atjaunots {t} · dati no FACEIT",
       regSubs: "rezerve",
       regOnFaceit: "Komanda FACEIT",
+      introText: "Reģistrējies? Pastāsti par savu duetu — atbildes izmantosim turnīra straumē.",
+      introCta: "Aizpildīt anketu",
       faceitNote: "FACEIT ir FACEIT Ltd. preču zīme. Reģistrācija notiek FACEIT platformā."
     },
     about: "Par mums",
@@ -404,6 +406,8 @@ window.FA_I18N = {
       regUpdated: "Updated {t} · data from FACEIT",
       regSubs: "sub",
       regOnFaceit: "Team on FACEIT",
+      introText: "Registered? Tell us about your duo — we'll use it on the tournament stream.",
+      introCta: "Fill in the form",
       faceitNote: "FACEIT is a trademark of FACEIT Ltd. Registration takes place on FACEIT."
     },
     about: "About",
@@ -638,6 +642,8 @@ window.FA_I18N = {
       regUpdated: "Обновлено {t} · данные FACEIT",
       regSubs: "запасной",
       regOnFaceit: "Команда на FACEIT",
+      introText: "Зарегистрировались? Расскажите о своём дуэте — используем это в трансляции турнира.",
+      introCta: "Заполнить анкету",
       faceitNote: "FACEIT — товарный знак FACEIT Ltd. Регистрация проходит на платформе FACEIT."
     },
     about: "О нас",

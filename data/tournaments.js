@@ -6,6 +6,7 @@
  *                 When set (and status is not "finished"), the "CS2 server status" workflow fetches the
  *                 registered teams via the official FACEIT Data API and the page lists them automatically.
  *  - prize:       null, or { lv, en, ru } text for the "Balvas" row (first sentence is shown bold)
+ *  - introFormUrl: optional team intro questionnaire link (secondary button; hidden once the cup is finished)
  *  - status:      "open" (registration open), "soon" (announced), "finished"
  */
 window.FA_TOURNAMENTS = [
@@ -16,6 +17,7 @@ window.FA_TOURNAMENTS = [
     time: "15:00",
     faceitChampionshipId: "6ec9f571-8137-485b-8ae6-40661daee26a",
     registerUrl: "https://www.faceit.com/en/championship/6ec9f571-8137-485b-8ae6-40661daee26a/FlowAthletiq%202v2%20Cup%201",
+    introFormUrl: "https://forms.gle/Kg3Nm8vnRVD8jHRo9",
     status: "open",
     format: "2v2",
     series: "BO3",
