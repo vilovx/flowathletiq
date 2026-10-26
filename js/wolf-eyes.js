@@ -1,7 +1,8 @@
 /* FlowAthletiq — ambient "wolf eyes" in the dark side margins (desktop only).
  * 4 wolves, 6 fixed spots (3 per side). Each wolf picks a random FREE spot (never one
- * that is occupied, never stacked/overlapping), fades in (~1.8 s), lingers 3–6 s with an
- * occasional blink, fades out, then hides for a random 5–14 s.
+ * that is occupied, never stacked/overlapping), fades in slowly (3.5–4.5 s), lingers 3–6 s
+ * narrowing into a slow squint with an occasional blink, fades out (3.5–4.5 s), then hides for a
+ * random 15–35 s. First appearances are staggered ~8–50 s after load.
  * Only rendered when each side margin is >= MIN_MARGIN px wide; never over content;
  * pointer-events: none; disabled entirely for prefers-reduced-motion. No assets. */
 (function () {
@@ -21,32 +22,39 @@
     ".fa-wolf-layer{position:fixed;inset:0;pointer-events:none;z-index:-1;overflow:hidden;contain:strict}" +
     ".fa-wolf-layer[hidden]{display:none}" +
     ".fa-wolf{position:absolute;width:" + EYE_W + "px;height:22px;opacity:0;" +
-      "transition:opacity 1.8s ease-in-out,transform 6s ease-in-out;will-change:opacity;" +
-      "filter:drop-shadow(0 0 3px rgba(255,40,20,.9)) drop-shadow(0 0 14px rgba(210,0,0,.6))}" +
-    ".fa-wolf.on{opacity:var(--fa-wolf-o,.85)}" +
+      "transition:opacity 4s cubic-bezier(.45,0,.25,1),transform 12s ease-in-out;will-change:opacity;" +
+      "filter:drop-shadow(0 0 2px rgba(255,70,30,.95)) drop-shadow(0 0 9px rgba(230,0,0,.7)) drop-shadow(0 0 22px rgba(150,0,0,.45))}" +
+    ".fa-wolf.on{opacity:var(--fa-wolf-o,.9)}" +
     ".fa-wolf svg{display:block;width:100%;height:100%;overflow:visible}" +
-    ".fa-wolf .lid{transform-box:fill-box;transform-origin:50% 50%}" +
-    ".fa-wolf.blink .lid{animation:fa-wolf-blink .26s ease-in-out}" +
-    "@keyframes fa-wolf-blink{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.08)}}" +
+    ".fa-wolf .sq,.fa-wolf .bl{transform-box:fill-box;transform-origin:50% 60%}" +
+    ".fa-wolf.hunt .sq{animation:fa-wolf-squint var(--fa-wolf-sq,8s) ease-in-out forwards}" +
+    ".fa-wolf.blink .bl{animation:fa-wolf-blink .3s ease-in-out}" +
+    "@keyframes fa-wolf-squint{0%{transform:scaleY(1)}100%{transform:scaleY(.7)}}" +
+    "@keyframes fa-wolf-blink{0%,100%{transform:scaleY(1)}45%,55%{transform:scaleY(.06)}}" +
     "@media (max-width:1199px),(prefers-reduced-motion:reduce){.fa-wolf-layer{display:none}}";
   var st = document.createElement("style");
   st.textContent = css;
   document.head.appendChild(st);
 
-  // Slanted almond eyes, outer corners tilted up; red iris with hot core and a dark slit pupil.
+  // Angry hunting eyes: sharp almond, outer corners raised, upper lid cut flat and sloping hard
+  // down toward the nose (heavy brow), hot yellow-white core fading to deep red, thin slit pupil.
   var uid = 0;
   function eyeSVG() {
     var g = "fawg" + (uid++);
     var eye = function (cx, flip) {
       var s = flip ? -1 : 1;
-      return '<g class="lid" transform="translate(' + cx + ',11) scale(' + s + ',1) rotate(16)">' +
-        '<path d="M-12 -1 C-7 -6 4 -6.5 11 1 C5 4.5 -4 4.5 -12 -1 Z" fill="url(#' + g + ')"/>' +
-        '<ellipse cx="0" cy="-0.6" rx="1.1" ry="3.4" fill="#1a0000" opacity=".8"/></g>';
+      return '<g transform="translate(' + cx + ',11) scale(' + s + ',1) rotate(9)"><g class="sq"><g class="bl">' +
+        // outer corner (-13,-4) -> nearly straight top lid down to the sharp inner corner (12,3),
+        // fuller curved lower lid back to the outer corner
+        '<path d="M-13 -4 L-4 -3.6 Q4 -2.6 12 3 Q4 5.6 -3 4.2 Q-9 2.6 -13 -4 Z" fill="url(#' + g + ')"/>' +
+        // dark brow shadow along the upper lid
+        '<path d="M-13.5 -4.6 L-4 -4.2 Q4 -3.2 12.5 2.6" fill="none" stroke="#120000" stroke-width="1.2" stroke-linecap="round" opacity=".9"/>' +
+        '<ellipse cx="0.6" cy="0.6" rx="0.55" ry="2.7" fill="#140000" opacity=".9"/></g></g></g>';
     };
     return '<svg viewBox="0 0 64 22" aria-hidden="true" focusable="false"><defs>' +
-      '<radialGradient id="' + g + '" cx="50%" cy="45%" r="60%">' +
-      '<stop offset="0" stop-color="#ffd2a0"/><stop offset=".25" stop-color="#ff3b1f"/>' +
-      '<stop offset=".7" stop-color="#b30000"/><stop offset="1" stop-color="#4a0000"/></radialGradient></defs>' +
+      '<radialGradient id="' + g + '" cx="45%" cy="55%" r="62%">' +
+      '<stop offset="0" stop-color="#fff4c8"/><stop offset=".18" stop-color="#ffb347"/><stop offset=".38" stop-color="#ff2a10"/>' +
+      '<stop offset=".72" stop-color="#c00000"/><stop offset="1" stop-color="#3a0000"/></radialGradient></defs>' +
       eye(17, false) + eye(47, true) + "</svg>";
   }
 
@@ -103,26 +111,31 @@
     occupied[pick] = idx; w.spot = pick; w.pos = pos; w.last = pick;
     var el = w.el, sc = rnd(0.8, 1.1);
     el.style.left = pos.x + "px"; el.style.top = pos.y + "px";
-    el.style.setProperty("--fa-wolf-o", rnd(0.6, 0.9).toFixed(2));
+    var fin = rnd(3500, 4500), fout = rnd(3500, 4500), hold = rnd(3000, 6000);
+    el.style.setProperty("--fa-wolf-o", rnd(0.65, 0.95).toFixed(2));
+    el.style.setProperty("--fa-wolf-sq", ((fin + hold) / 1000).toFixed(1) + "s");
     el.style.transition = "none";
     el.style.transform = "scale(" + sc.toFixed(2) + ")";
     void el.offsetWidth;
     el.style.transition = "";
-    el.classList.add("on");
+    el.style.transitionDuration = (fin / 1000).toFixed(2) + "s, 12s";
+    el.classList.add("on", "hunt");
     // slow lurking drift of a few px while visible
     var dx = Math.round(rnd(-6, 6));
     el.style.transform = "translateX(" + dx + "px) scale(" + sc.toFixed(2) + ")";
 
-    var hold = rnd(3000, 6000), visible = 1800 + hold;
-    if (Math.random() < 0.7) setTimeout(function () { el.classList.add("blink"); setTimeout(function () { el.classList.remove("blink"); }, 300); }, rnd(1900, 1800 + hold - 400));
-    if (Math.random() < 0.25) setTimeout(function () { el.classList.add("blink"); setTimeout(function () { el.classList.remove("blink"); }, 300); }, 1800 + hold - 300);
+    var blink = function () { el.classList.add("blink"); setTimeout(function () { el.classList.remove("blink"); }, 340); };
+    if (Math.random() < 0.6) setTimeout(blink, rnd(fin * 0.8, fin + hold - 500));
+    if (Math.random() < 0.2) setTimeout(blink, fin + hold - 200);
     w.t = setTimeout(function () {
+      el.style.transitionDuration = (fout / 1000).toFixed(2) + "s, 12s";
       el.classList.remove("on");
       setTimeout(function () {
+        el.classList.remove("hunt");
         delete occupied[w.spot]; w.spot = null; w.pos = null;
-        w.t = setTimeout(function () { appear(w, idx); }, rnd(5000, 14000));
-      }, 1900);
-    }, visible);
+        w.t = setTimeout(function () { appear(w, idx); }, rnd(15000, 35000));
+      }, fout + 150);
+    }, fin + hold);
   }
 
   measure();
@@ -133,7 +146,7 @@
     layer.appendChild(el);
     var w = { el: el, spot: null, pos: null, last: null, t: null };
     wolves.push(w);
-    (function (w, k) { w.t = setTimeout(function () { appear(w, k); }, 1500 + k * rnd(2500, 4500) + rnd(0, 1500)); })(w, k);
+    (function (w, k) { w.t = setTimeout(function () { appear(w, k); }, rnd(6000, 11000) + k * rnd(7000, 11000) + rnd(0, 4000)); })(w, k);
   }
   var rt;
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(measure, 200); });
