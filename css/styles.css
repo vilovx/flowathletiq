@@ -190,6 +190,11 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .src-host { color: var(--muted); font-size: .8rem; margin-left: .4rem; }
 .side-box[hidden], .hero[hidden] { display: none; }
 
+/* Notice (e.g. removed category) */
+.notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.25rem; padding: .85rem 1.1rem; border: 1px solid var(--neon); border-radius: 12px; background: color-mix(in srgb, var(--neon) 10%, var(--bg-2)); }
+.notice p { margin: 0; }
+.notice-close { font: inherit; font-weight: 700; color: #000; background: var(--neon); border: 0; border-radius: 999px; padding: .4rem .9rem; cursor: pointer; min-height: 36px; }
+
 /* Responsive */
 @media (max-width: 960px) {
   .layout, .article-layout { grid-template-columns: 1fr; }

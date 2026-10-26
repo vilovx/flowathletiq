@@ -19,6 +19,17 @@
   var params = new URLSearchParams(location.search);
   var REL = "sponsored nofollow noopener";
   var LANG = pickLang();
+  var ALIASES = window.FA_CATEGORY_ALIASES || {}, REMOVED = window.FA_REMOVED_CATEGORIES || [];
+  if (page === "category") {
+    var reqCat = params.get("cat") || params.get("game");
+    if (ALIASES[reqCat]) { // old URL -> canonical
+      params.delete("game"); params.set("cat", ALIASES[reqCat]);
+      history.replaceState(null, "", location.pathname + "?" + params.toString());
+    } else if (REMOVED.indexOf(reqCat) !== -1) { // removed game -> home with a friendly notice
+      location.replace("index.html?notice=removed" + (params.get("lang") ? "&lang=" + encodeURIComponent(params.get("lang")) : ""));
+      return;
+    }
+  }
   var homeFilter = "";
 
   // ---------- language ----------
@@ -190,12 +201,12 @@
     function subList(slug, depth) {
       var kids = children(slug); if (!kids.length) return "";
       return '<ul class="' + (depth === 1 ? "submenu" : "submenu-nested") + '"' + (depth === 1 ? ' id="sub-' + slug + '"' : "") + ">" +
-        (depth === 1 ? '<li><a class="sub-all" href="' + catUrl(slug) + '">' + esc(t("allCat", { name: cname(cat(slug)) })) + "</a></li>" : "") +
+        (depth === 1 ? '<li><a class="sub-all" href="' + catUrl(slug) + '">' + esc(cname(cat(slug))) + "</a></li>" : "") +
         kids.map(function (k) { return "<li>" + navLink(k) + subList(k.slug, depth + 1) + "</li>"; }).join("") + "</ul>";
     }
     function plain(href, key, pg) { return '<li><a href="' + href + '"' + (page === pg ? ' aria-current="page"' : "") + ">" + esc(t(key)) + "</a></li>"; }
-    var items = plain("index.html", "home", "index") +
-      children(null).map(function (c) {
+    // The logo links home, so the nav starts with the categories.
+    var items = children(null).map(function (c) {
         if (!children(c.slug).length) return "<li>" + navLink(c) + "</li>";
         return '<li class="has-sub"><button type="button" class="sub-toggle' + (trail.indexOf(c.slug) !== -1 ? " active" : "") +
           '" aria-expanded="false" aria-controls="sub-' + c.slug + '">' + esc(cname(c)) +
@@ -220,7 +231,7 @@
       '<div class="container footer-inner">' +
       '<div><a class="brand" href="index.html"><img src="assets/logo.svg" alt="" width="28" height="28"><span class="wordmark">FLOW<span>ATHLETIQ</span></span></a>' +
       "<p>" + esc(t("footerTag")) + "</p></div>" +
-      '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent || c.slug === "cs2"; }).map(function (c) {
+      '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
       '<li><a href="partners.html">' + esc(t("partners")) + '</a></li><li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
       '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" +
@@ -228,7 +239,17 @@
   }
 
   // ---------- pages ----------
+  function renderNotice() {
+    var n = $("notice");
+    if (params.get("notice") !== "removed") { if (n) n.remove(); return; }
+    if (!n) {
+      n = document.createElement("div"); n.id = "notice"; n.className = "container notice"; n.setAttribute("role", "status");
+      $("main").insertBefore(n, $("main").firstChild);
+    }
+    n.innerHTML = "<p>" + esc(t("removedNotice")) + '</p><button type="button" class="notice-close">' + esc(t("dismiss")) + "</button>";
+  }
   function renderIndex() {
+    renderNotice();
     var featured = ARTICLES.find(function (a) { return a.featured; }) || ARTICLES[0];
     var hero = $("hero");
     if (featured) {
@@ -245,8 +266,7 @@
     var opts = [{ slug: "", label: t("all") }];
     CATS.filter(function (c) { return !c.parent; }).forEach(function (c) {
       opts.push({ slug: c.slug, label: cshort(c) });
-      if (c.slug === "fps") children("fps").forEach(function (k) { opts.push({ slug: k.slug, label: cshort(k) }); });
-      if (c.slug === "fps") children("cs2").forEach(function (k) { opts.push({ slug: k.slug, label: cshort(k) }); });
+      children(c.slug).forEach(function (k) { opts.push({ slug: k.slug, label: cshort(k) }); });
     });
     // Hide filters that would show nothing (except "All").
     opts = opts.filter(function (o) { return !o.slug || rest.some(function (a) { return inCat(a, o.slug); }); });
@@ -384,6 +404,11 @@
       return;
     }
     if (!e.target.closest(".has-sub")) closeSubs();
+    if (e.target.closest(".notice-close")) {
+      params.delete("notice"); var q = params.toString();
+      history.replaceState(null, "", location.pathname + (q ? "?" + q : ""));
+      renderNotice(); return;
+    }
     var fb = e.target.closest("#filters button");
     if (fb) { homeFilter = fb.dataset.cat; renderIndex(); fillSlots(); var nb = document.querySelector('#filters button[data-cat="' + homeFilter + '"]'); if (nb) nb.focus(); }
   });

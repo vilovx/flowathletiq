@@ -12,6 +12,8 @@ window.FA_DEFAULT_LANG = "lv";
 
 window.FA_I18N = {
   lv: {
+    removedNotice: "FlowAthletiq tagad raksta tikai par Counter-Strike 2, tāpēc šī sadaļa vairs nav pieejama. Jūs esat sākumlapā.",
+    dismiss: "Aizvērt",
     sources: "Avoti",
     source: "Avots: {name}",
     opensNewTab: "atveras jaunā cilnē",
@@ -25,8 +27,6 @@ window.FA_I18N = {
     partners: "Partneri",
     about: "Par mums",
     all: "Visi",
-    allCat: "Viss par {name}",
-    showSub: "Rādīt sadaļas: {name}",
     exampleBanner: "Piemēra saturs: visi raksti, spēles un partneru baneri šajā priekšskatījumā ir aizvietotāji, nevis īstas ziņas vai zīmoli.",
     topStory: "Galvenā ziņa",
     readStory: "Lasīt rakstu →",
@@ -56,7 +56,7 @@ window.FA_I18N = {
     langNames: { lv: "latviešu", en: "angļu", ru: "krievu" },
     partnerLabel: "Partneris / partnera saite",
     partnerBanner: "Partnera baneris",
-    footerTag: "Counter-Strike un e-sporta ziņas.",
+    footerTag: "CS2 ziņas no Latvijas un pasaules.",
     footerDisclosure: "<strong>Partneru saišu atklāšana:</strong> dažas FlowAthletiq saites ar norādi „Partneris / partnera saite” ir partneru (affiliate) saites. Ja iegādājaties kaut ko caur tām, mēs varam saņemt komisiju, un jums tas neko papildus nemaksā.",
     partnersKicker: "Partneri",
     partnersTitle: "Datoru un spēļu aprīkojuma <span class=\"accent\">partneri</span>",
@@ -68,16 +68,16 @@ window.FA_I18N = {
     newTab: "(atveras jaunā cilnē)",
     noPartners: "Partneru vēl nav.",
     titles: {
-      index: "FlowAthletiq — Counter-Strike un e-sporta ziņas",
+      index: "FlowAthletiq — CS2 ziņas no Latvijas un pasaules",
       article: "Raksts — FlowAthletiq",
       category: "Kategorija — FlowAthletiq",
       partners: "Partneri — FlowAthletiq",
       about: "Par mums — FlowAthletiq"
     },
-    metaDesc: "Counter-Strike 2, Dota 2, League of Legends un MMORPG ziņas, ceļveži un spēļu kalendārs.",
+    metaDesc: "CS2 ziņas no Latvijas un pasaules: Latvijas CS2 scēna, Major turnīri un lielākie notikumi.",
     aboutPage: {
       title: "Par <span class=\"accent\">FlowAthletiq</span>",
-      lead: "FlowAthletiq raksta par e-sportu un spēlēm: ziņas, ceļveži, analīze un spēļu kalendārs par Counter-Strike 2 (tostarp Major turnīriem un Latvijas CS līgu), Dota 2, League of Legends un MMORPG spēlēm.",
+      lead: "FlowAthletiq raksta par Counter-Strike 2: Latvijas CS2 scēnu, Major turnīriem un citiem lielajiem notikumiem, kā arī svarīgākajām CS2 ziņām — vienmēr ar saitēm uz avotiem.",
       cards: [
         ["Ziņas", "Ātras un precīzas ziņas no profesionālās skatuves ar saitēm uz avotiem."],
         ["Ceļveži", "Praktiski padomi visu līmeņu spēlētājiem — no pirmās spēles līdz reitinga cīņām."],
@@ -90,6 +90,8 @@ window.FA_I18N = {
   },
 
   en: {
+    removedNotice: "FlowAthletiq now covers Counter-Strike 2 only, so that section is no longer available. You've been taken to the homepage.",
+    dismiss: "Dismiss",
     sources: "Sources",
     source: "Source: {name}",
     opensNewTab: "opens in a new tab",
@@ -103,8 +105,6 @@ window.FA_I18N = {
     partners: "Partners",
     about: "About",
     all: "All",
-    allCat: "All {name}",
-    showSub: "Show {name} sections",
     exampleBanner: "Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.",
     topStory: "Top story",
     readStory: "Read story →",
@@ -134,7 +134,7 @@ window.FA_I18N = {
     langNames: { lv: "Latvian", en: "English", ru: "Russian" },
     partnerLabel: "Partner / Affiliate link",
     partnerBanner: "Partner banner",
-    footerTag: "Counter-Strike & esports news.",
+    footerTag: "CS2 news from Latvia and around the world.",
     footerDisclosure: "<strong>Affiliate disclosure:</strong> some links on FlowAthletiq, marked \"Partner / Affiliate link\", are affiliate links. We may earn a commission if you buy through them, at no extra cost to you.",
     partnersKicker: "Partners",
     partnersTitle: "PC &amp; gaming gear <span class=\"accent\">partners</span>",
@@ -146,16 +146,16 @@ window.FA_I18N = {
     newTab: "(opens in a new tab)",
     noPartners: "No partners yet.",
     titles: {
-      index: "FlowAthletiq — Counter-Strike & Esports News",
+      index: "FlowAthletiq — CS2 news from Latvia and around the world",
       article: "Article — FlowAthletiq",
       category: "Category — FlowAthletiq",
       partners: "Partners — FlowAthletiq",
       about: "About — FlowAthletiq"
     },
-    metaDesc: "Counter-Strike 2, Dota 2, League of Legends and MMORPG news, guides and match schedules.",
+    metaDesc: "CS2 news from Latvia and around the world: the Latvian CS2 scene, Majors and big events.",
     aboutPage: {
       title: "About <span class=\"accent\">FlowAthletiq</span>",
-      lead: "FlowAthletiq covers esports and gaming: news, guides, analysis and match schedules across Counter-Strike 2 (including the Majors and the Latvian CS League), Dota 2, League of Legends and MMORPGs.",
+      lead: "FlowAthletiq covers Counter-Strike 2: the Latvian CS2 scene, Majors and other big events, and the most important CS2 news, always with links to sources.",
       cards: [
         ["News", "Fast, accurate coverage of the competitive scene, with sources linked."],
         ["Guides", "Practical tips for players at every level, from first match to ranked grind."],
@@ -168,6 +168,8 @@ window.FA_I18N = {
   },
 
   ru: {
+    removedNotice: "Теперь FlowAthletiq пишет только о Counter-Strike 2, поэтому этот раздел больше недоступен. Вы на главной странице.",
+    dismiss: "Закрыть",
     sources: "Источники",
     source: "Источник: {name}",
     opensNewTab: "откроется в новой вкладке",
@@ -181,8 +183,6 @@ window.FA_I18N = {
     partners: "Партнёры",
     about: "О нас",
     all: "Все",
-    allCat: "Всё о {name}",
-    showSub: "Показать разделы: {name}",
     exampleBanner: "Пример контента: все статьи, матчи и партнёрские баннеры в этом предпросмотре — заглушки, а не реальные новости или бренды.",
     topStory: "Главная новость",
     readStory: "Читать статью →",
@@ -212,7 +212,7 @@ window.FA_I18N = {
     langNames: { lv: "латышский", en: "английский", ru: "русский" },
     partnerLabel: "Партнёр / партнёрская ссылка",
     partnerBanner: "Партнёрский баннер",
-    footerTag: "Новости Counter-Strike и киберспорта.",
+    footerTag: "Новости CS2 из Латвии и со всего мира.",
     footerDisclosure: "<strong>Раскрытие информации:</strong> некоторые ссылки на FlowAthletiq с пометкой «Партнёр / партнёрская ссылка» являются партнёрскими. Если вы совершите покупку по ним, мы можем получить комиссию, а цена для вас не изменится.",
     partnersKicker: "Партнёры",
     partnersTitle: "Партнёры: ПК и <span class=\"accent\">игровые девайсы</span>",
@@ -224,16 +224,16 @@ window.FA_I18N = {
     newTab: "(откроется в новой вкладке)",
     noPartners: "Партнёров пока нет.",
     titles: {
-      index: "FlowAthletiq — новости Counter-Strike и киберспорта",
+      index: "FlowAthletiq — новости CS2 из Латвии и со всего мира",
       article: "Статья — FlowAthletiq",
       category: "Категория — FlowAthletiq",
       partners: "Партнёры — FlowAthletiq",
       about: "О нас — FlowAthletiq"
     },
-    metaDesc: "Новости, гайды и расписание матчей по Counter-Strike 2, Dota 2, League of Legends и MMORPG.",
+    metaDesc: "Новости CS2 из Латвии и со всего мира: латвийская сцена CS2, мейджоры и крупные турниры.",
     aboutPage: {
       title: "О <span class=\"accent\">FlowAthletiq</span>",
-      lead: "FlowAthletiq пишет о киберспорте и играх: новости, гайды, аналитика и расписание матчей по Counter-Strike 2 (включая мейджоры и Латвийскую лигу CS), Dota 2, League of Legends и MMORPG.",
+      lead: "FlowAthletiq пишет о Counter-Strike 2: латвийская сцена CS2, мейджоры и другие крупные турниры, а также главные новости CS2 — всегда со ссылками на источники.",
       cards: [
         ["Новости", "Быстрые и точные новости профессиональной сцены со ссылками на источники."],
         ["Гайды", "Практические советы для игроков любого уровня — от первого матча до рейтинговых игр."],

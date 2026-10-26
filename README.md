@@ -29,21 +29,20 @@ screenshots/          Preview screenshots
 
 ## Category structure
 
+FlowAthletiq is CS2-only. Flat nav, in this order:
+
 ```
-FPS
-├── Counter-Strike 2   (main focus)
-│   ├── Majors
-│   └── Latvian CS League
-└── Valorant           (secondary; easy to remove)
-Dota 2
-League of Legends
-MMORPG
-Partners               (separate page, not a news category)
+Latvijas CS2 scēna / Latvian CS2 scene / Латвийская сцена CS2   ?cat=cs2-latvia
+Major turnīri un lielie notikumi / Majors & big events           ?cat=cs2-majors
+CS2 ziņas / CS2 news / Новости CS2                               ?cat=cs2
+Partneri / Partners                                              partners.html
+Par mums / About                                                 about.html
++ LV / EN / RU switch
 ```
 
-A parent category page shows its own articles plus all of its children's articles
-(e.g. `?cat=fps` shows everything from CS2, Majors, Latvian CS League and Valorant).
-The old `?game=` URLs still work.
+Old URLs: `?cat=lv-scene` (and `?game=`) redirect to the Latvian scene. Removed categories
+(`fps`, `valorant`, `dota2`, `lol`, `mmorpg`, `fortnite`) send visitors to the homepage with a short
+notice. Both lists are in `data/articles.js` (`FA_CATEGORY_ALIASES`, `FA_REMOVED_CATEGORIES`).
 
 ## Preview locally
 
@@ -69,7 +68,7 @@ python3 -m http.server 8080
 1. Add or edit articles in `content/news.json` (an array). Fields:
    - `title`, `summary`, `body`: Latvian
    - `titleEn`, `summaryEn`, `bodyEn`: English. `titleRu`, `summaryRu`, `bodyRu`: Russian
-   - `category`: a slug such as `cs2`, `cs2-majors`, `cs2-latvia` (alias `lv-scene` works too)
+   - `category`: `cs2-latvia`, `cs2-majors` or `cs2` (alias `lv-scene` works too)
    - `id`, `date` (YYYY-MM-DD), `tags`, `featured` (true = homepage top story), `author`
    - `sourceName` + `sourceUrl`, and optional `extraSources: [{ "name": "...", "url": "..." }]`.
      These are shown as a "Sources" list under each article.
@@ -84,18 +83,18 @@ python3 -m http.server 8080
 Add an entry to `window.FA_CATEGORIES` in `data/articles.js`:
 
 ```js
-{ slug: "apex", name: "Apex Legends", parent: "fps", color: "#da292a",
-  description: { lv: "Apex Legends ziņas.", en: "Apex Legends news.", ru: "Новости Apex Legends." } }
+{ slug: "cs2-guides", name: { lv: "CS2 ceļveži", en: "CS2 guides", ru: "Гайды CS2" }, color: "#3ddc97",
+  description: { lv: "...", en: "...", ru: "..." } }
 ```
 
-- `slug` is used in the URL (`category.html?cat=apex`) and in articles' `category` field.
+- `slug` is used in the URL (`category.html?cat=cs2-guides`) and in articles' `category` field.
 - Leave out `parent` for a top-level category, set `parent` to make a subcategory
-  (subcategories can be nested, like `cs2` → `cs2-majors`).
+  (a category with children becomes a dropdown in the nav).
 - `name`, `short` (short badge label) and `description` can be strings or `{ lv, en, ru }`.
 - The order of the list is the order in the nav. Nav dropdowns, footer links, homepage
   filters and category pages all update automatically.
 
-**Removing a category** (e.g. Valorant): delete its line in `FA_CATEGORIES`. Any articles or
+**Removing a category**: delete its line in `FA_CATEGORIES` (and add the slug to `FA_REMOVED_CATEGORIES`). Any articles or
 matches still pointing at it are hidden automatically; delete them too to keep the file tidy.
 
 ## Add an article by hand
@@ -130,7 +129,8 @@ matches from that category and its children.
 
 ## Add a partner banner
 
-Put the banner image in `assets/banners/` (or use a full `https://` image URL) and add an entry to
+Put the banner image in `assets/banners/` (or use a full `https://` image URL; use
+`{ lv: "...", en: "...", ru: "..." }` for per-language images, like the placeholders) and add an entry to
 `window.FA_BANNERS`:
 
 ```js

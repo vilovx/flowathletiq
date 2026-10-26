@@ -13,28 +13,22 @@
 /* ---------------------------------------------------------------------------
  * CATEGORIES
  * "slug" is used in URLs (category.html?cat=<slug>) and in articles' "category".
- * "parent" makes it a subcategory. Order here = order in the nav.
- * A parent page also lists all articles of its children (and grandchildren).
+ * Order here = order in the nav. (Optional "parent" makes a subcategory, shown as a dropdown.)
  * ------------------------------------------------------------------------- */
 window.FA_CATEGORIES = [
-  { slug: "fps", name: "FPS", color: "#00f0ff",
-    description: { lv: "Pirmās personas šāvēju spēles, galvenokārt Counter-Strike 2.", en: "First-person shooters, with a focus on Counter-Strike 2.", ru: "Шутеры от первого лица, прежде всего Counter-Strike 2." } },
-  { slug: "cs2", name: "Counter-Strike 2", short: "CS2", parent: "fps", color: "#f5a623",
-    description: { lv: "Counter-Strike 2 ziņas, analīze un ceļveži.", en: "News, analysis and guides for Counter-Strike 2.", ru: "Новости, аналитика и гайды по Counter-Strike 2." } },
-  { slug: "cs2-majors", name: { lv: "Major turnīri", en: "Majors", ru: "Мейджоры" }, short: { lv: "Major", en: "Majors", ru: "Мейджоры" }, parent: "cs2", color: "#ffcc33",
-    description: { lv: "Lielāko CS2 turnīru apskati.", en: "Coverage of the biggest CS2 events.", ru: "Освещение крупнейших турниров по CS2." } },
-  { slug: "cs2-latvia", name: { lv: "Latvijas CS līga", en: "Latvian CS League", ru: "Латвийская лига CS" }, parent: "cs2", color: "#a4343a",
-    description: { lv: "Ziņas par Latvijas Counter-Strike līgu.", en: "Coverage of the Latvian Counter-Strike league scene.", ru: "Новости латвийской лиги Counter-Strike." } },
-  // Valorant: to remove it, delete this line (its articles/matches are then hidden automatically).
-  { slug: "valorant", name: "Valorant", parent: "fps", color: "#ff4655",
-    description: { lv: "Valorant ziņas un ceļveži.", en: "Valorant news and guides.", ru: "Новости и гайды по Valorant." } },
-  { slug: "dota2", name: "Dota 2", color: "#e2473b",
-    description: { lv: "Dota 2 ziņas, atjauninājumi un turnīri.", en: "Dota 2 news, patches and tournaments.", ru: "Новости, патчи и турниры Dota 2." } },
-  { slug: "lol", name: "League of Legends", short: "LoL", color: "#c8aa6e",
-    description: { lv: "League of Legends ziņas, atjauninājumi un e-sports.", en: "League of Legends news, patches and esports.", ru: "Новости, патчи и киберспорт League of Legends." } },
-  { slug: "mmorpg", name: "MMORPG", color: "#3ddc97",
-    description: { lv: "MMORPG ziņas, paplašinājumi un ceļveži.", en: "MMORPG news, expansions and guides.", ru: "Новости, дополнения и гайды по MMORPG." } }
+  { slug: "cs2-latvia", name: { lv: "Latvijas CS2 scēna", en: "Latvian CS2 scene", ru: "Латвийская сцена CS2" },
+    short: { lv: "Latvija", en: "Latvia", ru: "Латвия" }, color: "#a4343a",
+    description: { lv: "Latvijas CS2 turnīri, komandas un spēlētāji mājās un ārzemēs.", en: "Latvian CS2 tournaments, teams and players at home and abroad.", ru: "Латвийские турниры, команды и игроки CS2 — дома и за рубежом." } },
+  { slug: "cs2-majors", name: { lv: "Major turnīri un lielie notikumi", en: "Majors & big events", ru: "Мейджоры и крупные турниры" },
+    short: { lv: "Major", en: "Majors", ru: "Мейджоры" }, color: "#ffcc33",
+    description: { lv: "Major turnīri, lielākie CS2 notikumi un top komandu jaunumi.", en: "Majors, the biggest CS2 events and top-team news.", ru: "Мейджоры, крупнейшие турниры CS2 и новости топ-команд." } },
+  { slug: "cs2", name: { lv: "CS2 ziņas", en: "CS2 news", ru: "Новости CS2" }, short: "CS2", color: "#f5a623",
+    description: { lv: "Atjauninājumi, spēles izmaiņas un citas Counter-Strike 2 ziņas.", en: "Updates, game changes and other Counter-Strike 2 news.", ru: "Обновления, изменения в игре и другие новости Counter-Strike 2." } }
 ];
+
+/* Old category URLs: aliases map to a current slug; removed categories send visitors home with a notice. */
+window.FA_CATEGORY_ALIASES = { "lv-scene": "cs2-latvia", latvia: "cs2-latvia", majors: "cs2-majors" };
+window.FA_REMOVED_CATEGORIES = ["fps", "valorant", "dota2", "lol", "mmorpg", "fortnite"];
 
 var STAFF = { lv: "FlowAthletiq redakcija", en: "FlowAthletiq Staff", ru: "Редакция FlowAthletiq" };
 
@@ -73,10 +67,7 @@ window.FA_MATCHES = [
   { example: true, category: "cs2-latvia", event: EV_LV, teamA: "LV Team A", teamB: "LV Team B", date: "2026-10-28T17:00:00Z" },
   { example: true, category: "cs2-majors", event: EV_MAJOR, teamA: "Team Charlie", teamB: "Team Delta", date: "2026-10-28T19:00:00Z" },
   { example: true, category: "cs2-latvia", event: EV_LV, teamA: "LV Team C", teamB: "LV Team D", date: "2026-10-29T17:00:00Z" },
-  { example: true, category: "cs2", event: { lv: "Piemēra tiešsaistes kauss", en: "Sample Online Cup", ru: "Пример онлайн-кубка" }, teamA: "Team Echo", teamB: "Team Foxtrot", date: "2026-10-30T18:00:00Z" },
-  { example: true, category: "valorant", event: { lv: "Piemēra kauss — A grupa", en: "Example Cup — Group A", ru: "Пример кубка — группа A" }, teamA: "Team Golf", teamB: "Team Hotel", date: "2026-10-31T18:00:00Z" },
-  { example: true, category: "dota2", event: { lv: "Piemēra ielūguma turnīrs", en: "Placeholder Invitational", ru: "Пригласительный турнир (пример)" }, teamA: "Team India", teamB: "Team Juliet", date: "2026-11-01T14:00:00Z" },
-  { example: true, category: "lol", event: { lv: "Demo sērija — fināls", en: "Demo Series — Final", ru: "Демо-серия — финал" }, teamA: "Team Kilo", teamB: "Team Lima", date: "2026-11-02T19:00:00Z" }
+  { example: true, category: "cs2", event: { lv: "Piemēra tiešsaistes kauss", en: "Sample Online Cup", ru: "Пример онлайн-кубка" }, teamA: "Team Echo", teamB: "Team Foxtrot", date: "2026-10-30T18:00:00Z" }
 ];
 
 /* ---------------------------------------------------------------------------
@@ -90,7 +81,7 @@ window.FA_MATCHES = [
 window.FA_BANNERS = [
   {
     id: "placeholder-leaderboard",
-    image: "assets/banners/placeholder-728x90.svg",
+    image: { lv: "assets/banners/placeholder-728x90-lv.svg", en: "assets/banners/placeholder-728x90-en.svg", ru: "assets/banners/placeholder-728x90-ru.svg" },
     alt: { lv: "Partnera banera aizvietotājs, 728 × 90", en: "Placeholder partner banner, 728 by 90", ru: "Баннер-заглушка партнёра, 728 × 90" },
     href: "https://example.com/?ref=flowathletiq",
     label: { lv: "Piemēra partneris: datoru komponentes (aizvietotājs)", en: "Example partner: PC hardware (placeholder)", ru: "Пример партнёра: комплектующие для ПК (заглушка)" },
@@ -99,7 +90,7 @@ window.FA_BANNERS = [
   },
   {
     id: "placeholder-rectangle",
-    image: "assets/banners/placeholder-300x250.svg",
+    image: { lv: "assets/banners/placeholder-300x250-lv.svg", en: "assets/banners/placeholder-300x250-en.svg", ru: "assets/banners/placeholder-300x250-ru.svg" },
     alt: { lv: "Partnera banera aizvietotājs, 300 × 250", en: "Placeholder partner banner, 300 by 250", ru: "Баннер-заглушка партнёра, 300 × 250" },
     href: "https://example.com/?ref=flowathletiq-sidebar",
     label: { lv: "Piemēra partneris: spēļu perifērija (aizvietotājs)", en: "Example partner: gaming peripherals (placeholder)", ru: "Пример партнёра: игровая периферия (заглушка)" },
@@ -108,7 +99,7 @@ window.FA_BANNERS = [
   },
   {
     id: "placeholder-billboard",
-    image: "assets/banners/placeholder-970x250.svg",
+    image: { lv: "assets/banners/placeholder-970x250-lv.svg", en: "assets/banners/placeholder-970x250-en.svg", ru: "assets/banners/placeholder-970x250-ru.svg" },
     alt: { lv: "Partnera banera aizvietotājs, 970 × 250", en: "Placeholder partner banner, 970 by 250", ru: "Баннер-заглушка партнёра, 970 × 250" },
     href: "https://example.com/?ref=flowathletiq-billboard",
     label: { lv: "Piemēra partneris: monitori un krēsli (aizvietotājs)", en: "Example partner: monitors and chairs (placeholder)", ru: "Пример партнёра: мониторы и кресла (заглушка)" },

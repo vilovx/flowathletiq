@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 970 250" width="970" height="250" role="img" aria-label="Баннер-заглушка партнёра 970x250">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0d1030"/><stop offset="1" stop-color="#2a0b40"/></linearGradient>
+    <linearGradient id="n" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#b000ff"/></linearGradient>
+    <pattern id="p" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="16" fill="#ffffff" fill-opacity=".03"/></pattern>
+  </defs>
+  <rect width="970" height="250" fill="url(#bg)"/>
+  <rect width="970" height="250" fill="url(#p)"/>
+  <rect x="2" y="2" width="966" height="246" fill="none" stroke="url(#n)" stroke-width="3" stroke-dasharray="10 6" rx="6"/>
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <text x="485" y="115" font-weight="800" font-size="34" fill="#eef1ff">ЗДЕСЬ МОЖЕТ БЫТЬ БАННЕР ПАРТНЁРА</text>
+    <text x="485" y="160" font-size="20" fill="#00f0ff">970 × 250 · ПК и игровые девайсы (заглушка)</text>
+  </g>
+</svg>
