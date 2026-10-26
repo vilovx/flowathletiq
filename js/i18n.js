@@ -106,7 +106,7 @@ window.FA_I18N = {
       partners: "Partneri — FlowAthletiq",
       about: "Par mums — FlowAthletiq"
     },
-    metaDesc: "CS2 ziņas no Latvijas un pasaules: Latvijas CS2 scēna, Major turnīri un lielākie notikumi.",
+    metaDesc: "CS2 ziņas no Latvijas un pasaules: CS2 Latvijā, Major turnīri un lielākie notikumi.",
     aboutPage: {
       title: "Par <span class=\"accent\">FlowAthletiq</span>",
       lead: "FlowAthletiq raksta par Counter-Strike 2: Latvijas CS2 scēnu, Major turnīriem un citiem lielajiem notikumiem, kā arī svarīgākajām CS2 ziņām — vienmēr ar saitēm uz avotiem.",

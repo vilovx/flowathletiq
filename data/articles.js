@@ -16,13 +16,13 @@
  * Order here = order in the nav. (Optional "parent" makes a subcategory, shown as a dropdown.)
  * ------------------------------------------------------------------------- */
 window.FA_CATEGORIES = [
-  { slug: "cs2-latvia", name: { lv: "Latvijas CS2 scēna", en: "Latvian CS2 scene", ru: "Латвийская сцена CS2" },
+  { slug: "cs2-latvia", name: { lv: "CS2 Latvijā", en: "Latvian CS2 scene", ru: "Латвийская сцена CS2" },
     short: { lv: "Latvija", en: "Latvia", ru: "Латвия" }, color: "#a4343a",
     description: { lv: "Latvijas CS2 turnīri, komandas un spēlētāji mājās un ārzemēs.", en: "Latvian CS2 tournaments, teams and players at home and abroad.", ru: "Латвийские турниры, команды и игроки CS2 — дома и за рубежом." } },
   { slug: "cs2-majors", name: { lv: "Major turnīri un lielie notikumi", en: "Majors & big events", ru: "Мейджоры и крупные турниры" },
     short: { lv: "Major", en: "Majors", ru: "Мейджоры" }, color: "#ffcc33",
     description: { lv: "Major turnīri, lielākie CS2 notikumi un top komandu jaunumi.", en: "Majors, the biggest CS2 events and top-team news.", ru: "Мейджоры, крупнейшие турниры CS2 и новости топ-команд." } },
-  { slug: "cs2", name: { lv: "CS2 ziņas", en: "CS2 news", ru: "Новости CS2" }, short: "CS2", color: "#f5a623",
+  { slug: "cs2", name: { lv: "CS2 jaunumi", en: "CS2 news", ru: "Новости CS2" }, short: "CS2", color: "#f5a623",
     description: { lv: "Atjauninājumi, spēles izmaiņas un citas Counter-Strike 2 ziņas.", en: "Updates, game changes and other Counter-Strike 2 news.", ru: "Обновления, изменения в игре и другие новости Counter-Strike 2." } }
 ];
 
