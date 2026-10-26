@@ -182,29 +182,41 @@
   function currentCat() {
     if (page === "category") return params.get("cat") || params.get("game");
     if (page === "article") { var a = byId[params.get("id")]; return a ? a.category : null; }
+    if (page === "virsliga") return "cs2-latvia";
     return null;
   }
   function renderHeader() {
     var cur = currentCat();
     var trail = cur ? ancestors(cur).map(function (c) { return c.slug; }) : [];
+    // Menu labels can differ from the category page headings (t("nav")[slug]).
+    var NAV = t("nav") || {};
+    function navLabel(c) { return (NAV[c.slug]) || cname(c); }
     function navLink(c) {
       var attrs = c.slug === cur && page === "category" ? ' aria-current="page"' : "";
-      return '<a class="' + (trail.indexOf(c.slug) !== -1 ? "active" : "") + '" href="' + catUrl(c.slug) + '"' + attrs + ">" + esc(cname(c)) + "</a>";
+      return '<a class="' + (trail.indexOf(c.slug) !== -1 ? "active" : "") + '" href="' + catUrl(c.slug) + '"' + attrs + ">" + esc(navLabel(c)) + "</a>";
     }
     function subList(slug, depth) {
       var kids = children(slug); if (!kids.length) return "";
       return '<ul class="' + (depth === 1 ? "submenu" : "submenu-nested") + '"' + (depth === 1 ? ' id="sub-' + slug + '"' : "") + ">" +
-        (depth === 1 ? '<li><a class="sub-all" href="' + catUrl(slug) + '">' + esc(cname(cat(slug))) + "</a></li>" : "") +
+        (depth === 1 ? '<li><a class="sub-all" href="' + catUrl(slug) + '">' + esc(navLabel(cat(slug))) + "</a></li>" : "") +
         kids.map(function (k) { return "<li>" + navLink(k) + subList(k.slug, depth + 1) + "</li>"; }).join("") + "</ul>";
     }
-    function plain(href, key, pg) { return '<li><a href="' + href + '"' + (page === pg || (pg === "server" && page === "server-top") ? ' aria-current="page"' : "") + ">" + esc(t(key)) + "</a></li>"; }
-    // The logo links home, so the nav starts with the categories.
-    var items = children(null).map(function (c) {
-        if (!children(c.slug).length) return "<li>" + navLink(c) + "</li>";
-        return '<li class="has-sub"><button type="button" class="sub-toggle' + (trail.indexOf(c.slug) !== -1 ? " active" : "") +
-          '" aria-expanded="false" aria-controls="sub-' + c.slug + '">' + esc(cname(c)) +
-          ' <span class="caret" aria-hidden="true"></span></button>' + subList(c.slug, 1) + "</li>";
-      }).join("") + plain("server.html", "server", "server") + (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about");
+    function isPage(pg) { return page === pg || (pg === "server" && page === "server-top"); }
+    function plainA(href, label, pg) { return '<a href="' + href + '"' + (isPage(pg) ? ' aria-current="page"' : "") + ">" + esc(label) + "</a>"; }
+    function plain(href, key, pg) { return "<li>" + plainA(href, t(key), pg) + "</li>"; }
+    // Top level: one "CS2" dropdown (all categories + Warmup server) and "About".
+    var CS2_ORDER = ["cs2-majors", "cs2-latvia", "cs2"];
+    var cs2Cats = CATS.filter(function (c) { return !c.parent; }).sort(function (a, b) {
+      var ia = CS2_ORDER.indexOf(a.slug), ib = CS2_ORDER.indexOf(b.slug);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+    var cs2Active = !!cur || isPage("server");
+    var cs2Items = cs2Cats.map(function (c) { return "<li>" + navLink(c) + subList(c.slug, 2) + "</li>"; }).join("") +
+      "<li>" + plainA("server.html", NAV.server || t("server"), "server") + "</li>";
+    var items = '<li class="has-sub"><button type="button" class="sub-toggle' + (cs2Active ? " active" : "") +
+        '" aria-expanded="false" aria-controls="sub-cs2-menu">' + esc(NAV.top || "CS2") +
+        ' <span class="caret" aria-hidden="true"></span></button><ul class="submenu" id="sub-cs2-menu">' + cs2Items + "</ul></li>" +
+      (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about");
     var langs = '<div class="lang-switch" role="group" aria-label="' + esc(t("language")) + '">' +
       LANGS.map(function (l) {
         return '<button type="button" data-lang="' + l.code + '" lang="' + l.code + '" aria-pressed="' + (l.code === LANG) +

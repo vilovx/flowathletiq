@@ -26,6 +26,7 @@ window.FA_I18N = {
     home: "Sākums",
     partners: "Partneri",
     server: "Warmup serveris",
+    nav: { top: "CS2", "cs2-majors": "Globāli", "cs2-latvia": "Latvijā", cs2: "Jaunumi", server: "Warmup serveris" },
     lg: {
       title: "Latvijas CS2 līgas",
       season: "Kleverr E-sporta līga · 7. sezona",
@@ -220,6 +221,7 @@ window.FA_I18N = {
     home: "Home",
     partners: "Partners",
     server: "Warmup server",
+    nav: { top: "CS2", "cs2-majors": "Global", "cs2-latvia": "Latvia", cs2: "News", server: "Warmup server" },
     lg: {
       title: "Latvian CS2 leagues",
       season: "Kleverr Esports League · Season 7",
@@ -414,6 +416,7 @@ window.FA_I18N = {
     home: "Главная",
     partners: "Партнёры",
     server: "Warmup сервер",
+    nav: { top: "CS2", "cs2-majors": "Глобально", "cs2-latvia": "Латвия", cs2: "Новости", server: "Warmup сервер" },
     lg: {
       title: "Латвийские лиги CS2",
       season: "Kleverr E-sporta līga · 7-й сезон",
