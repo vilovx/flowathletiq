@@ -1,30 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="lv">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Partners — FlowAthletiq</title>
-  <meta name="description" content="FlowAthletiq partners: PC and gaming gear.">
+  <title>FlowAthletiq</title>
+  <meta name="description" content="Counter-Strike 2, Dota 2, League of Legends un MMORPG ziņas.">
   <meta name="theme-color" content="#07080f">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body data-page="partners">
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Pāriet uz saturu</a>
   <header class="site-header" id="site-header"></header>
-  <div class="example-banner" role="note">Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.</div>
+  <div class="example-banner" id="example-banner" role="note" hidden></div>
   <main id="main" tabindex="-1">
     <section class="container partners">
-      <span class="kicker">Partners</span>
-      <h1>PC &amp; gaming gear <span class="accent">partners</span></h1>
-      <div class="disclosure" role="note">
-        <strong>Affiliate disclosure:</strong> banners and links on this page are affiliate links. If you buy through them, FlowAthletiq may earn a commission at no extra cost to you. It does not change our coverage.
-      </div>
+      <span class="kicker" data-i18n="partnersKicker"></span>
+      <h1 data-i18n-html="partnersTitle"></h1>
+      <div class="disclosure" role="note" data-i18n-html="partnersDisclosure"></div>
       <div class="partner-list" id="partner-list"></div>
     </section>
   </main>
   <footer class="site-footer" id="site-footer"></footer>
+  <script src="js/i18n.js"></script>
   <script src="data/articles.js"></script>
+  <script src="data/imported.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

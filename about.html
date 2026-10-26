@@ -1,34 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="lv">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About — FlowAthletiq</title>
-  <meta name="description" content="About FlowAthletiq.">
+  <title>FlowAthletiq</title>
+  <meta name="description" content="Counter-Strike 2, Dota 2, League of Legends un MMORPG ziņas.">
   <meta name="theme-color" content="#07080f">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body data-page="about">
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Pāriet uz saturu</a>
   <header class="site-header" id="site-header"></header>
-  <div class="example-banner" role="note">Example content: all articles, matches and partner banners on this preview are placeholders, not real news or brands.</div>
+  <div class="example-banner" id="example-banner" role="note" hidden></div>
   <main id="main" tabindex="-1">
-    <section class="container about">
-      <h1>About <span class="accent">FlowAthletiq</span></h1>
-      <p class="lead">FlowAthletiq covers esports and gaming: news, guides, analysis, and match schedules across Counter-Strike 2 (including the Majors and the Latvian CS League), Dota 2, League of Legends, and MMORPGs.</p>
-      <div class="about-grid">
-        <div class="card-plain"><h2>News</h2><p>Fast, accurate coverage of the competitive scene, with sources linked.</p></div>
-        <div class="card-plain"><h2>Guides</h2><p>Practical tips for players at every level, from first match to ranked grind.</p></div>
-        <div class="card-plain"><h2>Schedules</h2><p>Upcoming matches and tournaments in one place, so you never miss a game.</p></div>
-      </div>
-      <h2>Contact</h2>
-      <p>Placeholder: add a contact email here, for example <code>hello@flowathletiq.com</code>.</p>
-      <p class="note">This site is a first preview. All articles and matches shown are example content.</p>
-    </section>
+    <section class="container about" id="about"></section>
   </main>
   <footer class="site-footer" id="site-footer"></footer>
+  <script src="js/i18n.js"></script>
   <script src="data/articles.js"></script>
+  <script src="data/imported.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
