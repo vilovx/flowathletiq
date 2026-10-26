@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T14:30:57Z",
+ "updated": "2026-10-26T15:42:04Z",
  "tournaments": {
   "2v2-cup-1": {
    "championshipId": "6ec9f571-8137-485b-8ae6-40661daee26a",
@@ -7,10 +7,49 @@
    "faceitUrl": "https://www.faceit.com/en/championship/6ec9f571-8137-485b-8ae6-40661daee26a/FlowAthletiq%202v2%20Cup%201",
    "faceitStatus": "upcoming",
    "slots": 16,
-   "currentSubscriptions": 0,
+   "currentSubscriptions": 2,
    "full": false,
-   "teams": [],
-   "fetchedAt": "2026-10-26T14:30:57Z"
+   "teams": [
+    {
+     "teamId": "557f5c51-efea-4c0f-9083-ce9be178de89",
+     "name": "OVERDOSEGAMING",
+     "avatar": null,
+     "faceitUrl": "https://www.faceit.com/en/teams/557f5c51-efea-4c0f-9083-ce9be178de89",
+     "status": "Registered",
+     "players": [
+      {
+       "nickname": "begoodmood",
+       "country": null,
+       "skillLevel": 10,
+       "faceitUrl": "https://www.faceit.com/en/players/begoodmood"
+      },
+      {
+       "nickname": "audipeekr",
+       "country": null,
+       "skillLevel": 10,
+       "faceitUrl": "https://www.faceit.com/en/players/audipeekr"
+      }
+     ],
+     "substitutes": []
+    },
+    {
+     "teamId": "391c226e-a18c-4e3e-bb80-ccd62d643cb2",
+     "name": "team_DaDFelis",
+     "avatar": null,
+     "faceitUrl": "https://www.faceit.com/en/teams/391c226e-a18c-4e3e-bb80-ccd62d643cb2",
+     "status": "Registered",
+     "players": [
+      {
+       "nickname": "DaDFelis",
+       "country": null,
+       "skillLevel": 6,
+       "faceitUrl": "https://www.faceit.com/en/players/DaDFelis"
+      }
+     ],
+     "substitutes": []
+    }
+   ],
+   "fetchedAt": "2026-10-26T15:42:04Z"
   }
  }
 }
