@@ -1,0 +1,16 @@
+{
+ "updated": "2026-10-26T14:30:57Z",
+ "tournaments": {
+  "2v2-cup-1": {
+   "championshipId": "6ec9f571-8137-485b-8ae6-40661daee26a",
+   "name": "FlowAthletiq 2v2 Cup 1",
+   "faceitUrl": "https://www.faceit.com/en/championship/6ec9f571-8137-485b-8ae6-40661daee26a/FlowAthletiq%202v2%20Cup%201",
+   "faceitStatus": "upcoming",
+   "slots": 16,
+   "currentSubscriptions": 0,
+   "full": false,
+   "teams": [],
+   "fetchedAt": "2026-10-26T14:30:57Z"
+  }
+ }
+}
