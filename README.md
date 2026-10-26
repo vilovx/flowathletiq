@@ -178,4 +178,4 @@ Then add `flowathletiq.com` as a custom domain in the host's dashboard and updat
 
 ## Cache busting
 CSS/JS includes in every *.html and the cover image URLs in css/styles.css carry `?v=YYYYMMDDx`. After changing CSS/JS/covers, bump it everywhere, e.g.:
-`sed -i "s/?v=20261026e/?v=NEW/g" *.html css/styles.css`
+`sed -i "s/?v=20261026f/?v=NEW/g" *.html css/styles.css`
