@@ -33,7 +33,7 @@ FlowAthletiq is CS2-only. Flat nav, in this order:
 
 ```
 CS2 Latvijā / Latvian CS2 scene / Латвийская сцена CS2   ?cat=cs2-latvia
-Major turnīri un lielie notikumi / Majors & big events           ?cat=cs2-majors
+CS2 Global / CS2 Global                                  ?cat=cs2-majors
 CS2 jaunumi / CS2 news / Новости CS2                               ?cat=cs2
 Partneri / Partners                                              partners.html
 Par mums / About                                                 about.html
