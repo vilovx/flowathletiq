@@ -216,6 +216,7 @@
     var items = '<li class="has-sub"><button type="button" class="sub-toggle' + (cs2Active ? " active" : "") +
         '" aria-expanded="false" aria-controls="sub-cs2-menu">' + esc(NAV.top || "CS2") +
         ' <span class="caret" aria-hidden="true"></span></button><ul class="submenu" id="sub-cs2-menu">' + cs2Items + "</ul></li>" +
+      plain("tournaments.html", "tournaments", "tournaments") +
       (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about");
     var langs = '<div class="lang-switch" role="group" aria-label="' + esc(t("language")) + '">' +
       LANGS.map(function (l) {
@@ -238,7 +239,7 @@
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
-      '<li><a href="server.html">' + esc(t("server")) + '</a></li>' + (SHOW_PARTNERS ? '<li><a href="partners.html">' + esc(t("partners")) + '</a></li>' : "") + '<li><a href="about.html">' + esc(t("about")) + "</a></li>" +
+      '<li><a href="server.html">' + esc(t("server")) + '</a></li><li><a href="tournaments.html">' + esc(t("tournaments")) + '</a></li>' + (SHOW_PARTNERS ? '<li><a href="partners.html">' + esc(t("partners")) + '</a></li>' : "") + '<li><a href="about.html">' + esc(t("about")) + "</a></li>" +
         '<li><a class="footer-discord" href="' + DISCORD_URL + '" target="_blank" rel="noopener"><img src="assets/brand/discord/Discord-Symbol-White.svg" alt="" width="18" height="14">Discord<span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></li></ul>" +
       (SHOW_PARTNERS ? '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" : "") +
       '<p class="copy">© ' + new Date().getFullYear() + " FlowAthletiq · flowathletiq.com</p></div>";
@@ -370,6 +371,63 @@
   }
 
 
+  // ---------- tournaments (data/tournaments.js) ----------
+  var TOURS = (window.FA_TOURNAMENTS || []).slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function upcomingTours() { var d = todayStr(); return TOURS.filter(function (x) { return x.status !== "finished" && x.date >= d; }); }
+  function tourStatus(x) {
+    var T = t("tour"), st = x.status === "finished" || x.date < todayStr() ? "finished" : x.status === "open" ? "open" : "soon";
+    var label = st === "open" ? T.statusOpen : st === "finished" ? T.statusFinished : T.statusSoon;
+    return '<span class="tour-status is-' + st + '">' + esc(label) + "</span>";
+  }
+  function tourTime(x) { var T = t("tour"); return x.time ? esc(x.time) + ' <span class="tour-tz">(' + esc(T.tz) + ")</span>" : esc(T.tba); }
+  function tourCard(x) {
+    var T = t("tour"), past = x.status === "finished" || x.date < todayStr();
+    function row(k, v) { return "<div><dt>" + esc(k) + "</dt><dd>" + v + "</dd></div>"; }
+    var series = x.series === "BO3" ? T.seriesBo3 : x.series;
+    var fmt = esc(x.format) + (x.bracket === "single" ? " · " + esc(T.bracketSingle) : "");
+    return '<article class="tour-card" id="' + esc(x.id) + '">' +
+      '<div class="tour-head">' + tourStatus(x) + "<h2>" + esc(L(x.name)) + "</h2>" +
+      '<p class="tour-when"><time datetime="' + esc(x.date) + '">' + fmtDate(x.date) + "</time> · " + esc(T.time) + ": " + tourTime(x) + "</p></div>" +
+      '<dl class="tour-facts">' +
+        row(T.format, fmt) +
+        row(T.series, esc(series)) +
+        row(T.maps, (x.maps || []).map(function (m) { return '<span class="tour-map">' + esc(m) + "</span>"; }).join(" ")) +
+        row(T.teams, esc(t("tour").teamsN.replace("{n}", x.teams))) +
+        row(T.platform, esc(x.platform)) +
+        row(T.region, esc(x.region)) +
+        (x.prize ? row(T.prize, esc(L(x.prize))) : "") +
+      "</dl>" +
+      '<p class="tour-elig">' + esc(T.eligibility) + "</p>" +
+      (!past && x.registerUrl ? '<div class="tour-actions"><a class="btn tour-register" href="' + esc(x.registerUrl) + '" target="_blank" rel="noopener">' +
+        esc(T.register) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></div>" : "") +
+      "</article>";
+  }
+  function renderTournaments() {
+    var T = t("tour"), up = upcomingTours(), past = TOURS.filter(function (x) { return up.indexOf(x) === -1; }).reverse();
+    $("tournaments-root").innerHTML =
+      '<nav class="crumbs" aria-label="' + esc(t("breadcrumb")) + '"><a href="index.html">' + esc(t("home")) + "</a></nav>" +
+      '<span class="kicker">' + esc(T.kicker) + "</span><h1>" + esc(T.title) + '</h1><p class="lead">' + esc(T.lead) + "</p>" +
+      '<section aria-labelledby="tour-up-h"><h2 id="tour-up-h" class="sr-only">' + esc(T.upcoming) + "</h2>" +
+      (up.length ? up.map(tourCard).join("") : '<p class="empty">' + esc(T.none) + "</p>") + "</section>" +
+      '<div class="tour-discord"><img src="assets/brand/discord/Discord-Symbol-White.svg" alt="" width="32" height="24"><p>' + esc(T.discord) + "</p>" +
+      '<a class="btn-ghost" href="' + DISCORD_URL + '" target="_blank" rel="noopener">' + esc(T.discordCta) + ' <span aria-hidden="true">↗</span><span class="sr-only"> (' + esc(t("discordNew")) + ")</span></a></div>" +
+      (past.length ? '<section aria-labelledby="tour-past-h"><h2 id="tour-past-h">' + esc(T.past) + "</h2>" + past.map(tourCard).join("") + "</section>" : "") +
+      '<p class="dc-tm">' + esc(T.faceitNote) + "</p>";
+  }
+  function renderTourTeaser() {
+    var box = $("tour-teaser"); if (!box) return;
+    var x = upcomingTours()[0];
+    if (!x) { box.hidden = true; return; }
+    var T = t("tour");
+    box.hidden = false;
+    box.innerHTML = '<span class="kicker">' + esc(T.teaserKicker) + "</span>" +
+      '<h2 id="tour-teaser-h">' + esc(L(x.name)) + "</h2>" +
+      '<p class="tour-teaser-when"><time datetime="' + esc(x.date) + '">' + fmtDate(x.date) + "</time> · " + esc(T.time) + ": " + tourTime(x) + "</p>" +
+      '<p class="tour-teaser-facts">' + esc(x.format) + " · " + esc(x.series) + " · " + esc(T.teamsN.replace("{n}", x.teams)) + " · " + esc(x.platform) + "</p>" +
+      '<a class="btn" href="tournaments.html#' + esc(x.id) + '">' + esc(x.status === "open" ? T.statusOpen : T.teaserMore) + " →</a>";
+  }
+
   function render() {
     document.documentElement.lang = LANG;
     var titles = t("titles");
@@ -388,6 +446,8 @@
     if (page === "article") renderArticle();
     if (page === "partners") renderPartners();
     if (page === "about") renderAbout();
+    if (page === "tournaments") renderTournaments();
+    if (page === "index") renderTourTeaser();
     if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
       show: page === "category" && params.get("cat") === "cs2-latvia" });
     if (window.FA_renderVirsliga) window.FA_renderVirsliga({ t: t, lang: LANG, locale: locale(), esc: esc,

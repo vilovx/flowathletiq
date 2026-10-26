@@ -506,3 +506,42 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 @media (prefers-reduced-motion: reduce) { .dc-banner, .dc-img, .dc-pill { transition: none; } }
 .footer-discord { display: inline-flex; align-items: center; gap: .4rem; }
 .footer-discord img { width: 18px; height: auto; }
+
+/* Tournaments */
+.tour-page { max-width: 900px; margin: 2.5rem auto; }
+.tour-page h1 { margin: .3rem 0 .4rem; }
+.tour-page .lead { margin-top: 0; max-width: 65ch; }
+.tour-card { margin: 1.75rem 0; background: var(--card); border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px); overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,.35); scroll-margin-top: 100px; }
+.tour-head { padding: 1.4rem 1.5rem 1.2rem; background: radial-gradient(circle at 90% 0%, rgba(176,0,255,.35), transparent 55%), linear-gradient(135deg, #0d1030, #1a0b2e); border-bottom: 1px solid var(--line); }
+.tour-when time { color: var(--text); }
+.tour-head h2 { margin: .55rem 0 .25rem; font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 600; }
+.tour-when { margin: 0; color: var(--muted); font-weight: 600; }
+.tour-tz { font-weight: 400; font-size: .85em; }
+.tour-status { display: inline-block; padding: .2rem .7rem; border-radius: 999px; font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; border: 1px solid currentColor; }
+.tour-status.is-open { color: #22e06b; }
+.tour-status.is-soon { color: var(--neon); }
+.tour-status.is-finished { color: var(--muted); }
+.tour-facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 0; background: var(--line); }
+.tour-facts > div { background: var(--card); padding: .85rem 1.5rem; }
+.tour-facts dt { font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); font-weight: 700; }
+.tour-facts dd { margin: .15rem 0 0; font-weight: 700; }
+.tour-map { display: inline-block; padding: .05rem .5rem; margin: .1rem .15rem .1rem 0; border-radius: 6px; background: var(--bg-2); border: 1px solid var(--line); font-size: .9rem; }
+.tour-elig { margin: 0; padding: 1rem 1.5rem 0; color: var(--muted); }
+.tour-actions { padding: 1rem 1.5rem 1.5rem; }
+.tour-card > .tour-elig:last-child { padding-bottom: 1.5rem; }
+.tour-register { margin-top: 0; font-size: 1.05rem; padding: .85rem 1.6rem; text-decoration: none; }
+.tour-register:hover, .tour-register:focus-visible { box-shadow: 0 0 24px rgba(0,240,255,.7); }
+.tour-discord { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; padding: 1rem 1.25rem; border-radius: var(--radius); background: rgba(88,101,242,.14); border: 1px solid rgba(88,101,242,.45); }
+.tour-discord p { margin: 0; flex: 1 1 260px; }
+.tour-discord .btn-ghost { text-decoration: none; display: inline-flex; align-items: center; gap: .35rem; }
+.tour-page .dc-tm { margin-top: 1.5rem; font-size: .8rem; color: var(--muted); }
+.tour-teaser { background: radial-gradient(circle at 100% 0%, rgba(176,0,255,.3), transparent 60%), var(--card); }
+.tour-teaser h2 { margin: .35rem 0 .3rem; font-size: 1.35rem; }
+.tour-teaser p { margin: 0 0 .2rem; font-size: .9rem; color: var(--muted); }
+.tour-teaser-when { color: var(--text) !important; font-weight: 600; }
+.tour-teaser .btn { margin-top: .75rem; text-decoration: none; font-size: .9rem; padding: .55rem 1rem; }
+@media (max-width: 760px) {
+  .tour-head, .tour-facts > div, .tour-elig, .tour-actions { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .tour-register { display: block; text-align: center; }
+  .tour-facts { grid-template-columns: repeat(2, 1fr); }
+}
