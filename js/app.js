@@ -211,7 +211,7 @@
         return '<li class="has-sub"><button type="button" class="sub-toggle' + (trail.indexOf(c.slug) !== -1 ? " active" : "") +
           '" aria-expanded="false" aria-controls="sub-' + c.slug + '">' + esc(cname(c)) +
           ' <span class="caret" aria-hidden="true"></span></button>' + subList(c.slug, 1) + "</li>";
-      }).join("") + plain("partners.html", "partners", "partners") + plain("about.html", "about", "about");
+      }).join("") + plain("server.html", "server", "server") + plain("partners.html", "partners", "partners") + plain("about.html", "about", "about");
     var langs = '<div class="lang-switch" role="group" aria-label="' + esc(t("language")) + '">' +
       LANGS.map(function (l) {
         return '<button type="button" data-lang="' + l.code + '" lang="' + l.code + '" aria-pressed="' + (l.code === LANG) +
@@ -233,7 +233,7 @@
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
-      '<li><a href="partners.html">' + esc(t("partners")) + '</a></li><li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
+      '<li><a href="server.html">' + esc(t("server")) + '</a></li><li><a href="partners.html">' + esc(t("partners")) + '</a></li><li><a href="about.html">' + esc(t("about")) + "</a></li></ul>" +
       '<p class="footer-disclosure">' + t("footerDisclosure") + "</p>" +
       '<p class="copy">© ' + new Date().getFullYear() + " FlowAthletiq · flowathletiq.com</p></div>";
   }
@@ -376,6 +376,7 @@
     if (page === "article") renderArticle();
     if (page === "partners") renderPartners();
     if (page === "about") renderAbout();
+    if (page === "server" && window.FA_renderServer) window.FA_renderServer({ t: t, lang: LANG, locale: locale(), esc: esc });
     fillSlots();
   }
 

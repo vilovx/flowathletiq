@@ -1,0 +1,45 @@
+name: CS2 server status
+
+# Polls flowathletiq.dat.gg:25082 over A2S and publishes JSON to the `server-data` branch.
+# The branch is force-pushed as a single commit each run, so main's history and Pages builds stay clean.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: server-status
+  cancel-in-progress: false
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --disable-pip-version-check -q "python-a2s>=1.3"
+      - name: Restore previous history
+        run: |
+          mkdir -p out
+          if git fetch -q --depth=1 origin server-data 2>/dev/null; then
+            git show FETCH_HEAD:server-history.json > out/server-history.json || rm -f out/server-history.json
+          fi
+      - name: Query server
+        run: python scripts/server_status.py out
+      - name: Publish to server-data branch
+        run: |
+          cd out
+          git init -q -b server-data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server-status.json server-history.json
+          git commit -qm "server status $(date -u +%FT%TZ) [skip ci]"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" server-data
