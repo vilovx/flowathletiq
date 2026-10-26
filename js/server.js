@@ -115,13 +115,11 @@
     var card =
       '<article class="srv-card' + (online ? "" : " is-offline") + '">' +
       '<div class="srv-top"><div><h2 class="srv-name">' + esc((st && st.name) || "FlowAthletiq") + '</h2>' +
-      '<p class="srv-addr"><span class="srv-dot" aria-hidden="true"></span><code>' + HOST + '</code> <span class="srv-state">' + esc(online ? s("online") : s("offline")) + "</span></p></div>" +
+      '<p class="srv-addr"><span class="srv-dot" aria-hidden="true"></span><span class="srv-state">' + esc(online ? s("online") : s("offline")) + "</span></p></div>" +
       '<div class="srv-map"><span>' + esc(s("map")) + "</span><strong>" + esc(online && st.map ? st.map : "—") + "</strong></div></div>" +
       (state.failed ? '<p class="srv-note">' + esc(s("unavailable")) + "</p>" : !online ? '<p class="srv-note">' + esc(s("offlineMsg")) + "</p>" : "") +
       '<div class="srv-players"><div class="srv-count"><span>' + esc(s("players")) + "</span><strong>" + (humans + bots) + "/" + max + "</strong></div>" + bar +
       '<p class="srv-legend"><span class="lg-h"></span>' + esc(s("humans")) + " " + humans + ' <span class="lg-b"></span>' + esc(s("bots")) + " " + bots + "</p></div>" +
-      (PASSWORD ? '<div class="srv-pass"><span>' + esc(s("password")) + '</span><code>' + esc(PASSWORD) + '</code>' +
-        '<button type="button" class="btn-ghost btn-sm" data-copy="' + esc(PASSWORD) + '">' + esc(s("copyPassword")) + "</button></div>" : "") +
       '<div class="srv-actions">' +
       '<button type="button" class="btn-ghost" data-copy="' + esc(CONNECT_CMD) + '">' + esc(s("copyConnect")) + "</button>" +
       '<button type="button" class="btn-ghost" data-copy="' + HOST + '">' + esc(s("copyIp")) + "</button>" +
