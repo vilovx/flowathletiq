@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26T15:42:04Z",
+ "updated": "2026-10-26T16:09:07Z",
  "tournaments": {
   "2v2-cup-1": {
    "championshipId": "6ec9f571-8137-485b-8ae6-40661daee26a",
@@ -13,7 +13,7 @@
     {
      "teamId": "557f5c51-efea-4c0f-9083-ce9be178de89",
      "name": "OVERDOSEGAMING",
-     "avatar": null,
+     "avatar": "https://distribution.faceit-cdn.net/images/e4bd126c-da31-46fc-87e3-a49ca7b1e452.jpeg",
      "faceitUrl": "https://www.faceit.com/en/teams/557f5c51-efea-4c0f-9083-ce9be178de89",
      "status": "Registered",
      "players": [
@@ -33,10 +33,10 @@
      "substitutes": []
     },
     {
-     "teamId": "391c226e-a18c-4e3e-bb80-ccd62d643cb2",
-     "name": "team_DaDFelis",
-     "avatar": null,
-     "faceitUrl": "https://www.faceit.com/en/teams/391c226e-a18c-4e3e-bb80-ccd62d643cb2",
+     "teamId": "c9b97cbe-e347-404a-b2c6-0d98045061d8",
+     "name": "Horizon",
+     "avatar": "https://distribution.faceit-cdn.net/images/33f0d491-7d56-4909-a8f8-e0a5c7134538.jpeg",
+     "faceitUrl": "https://www.faceit.com/en/teams/c9b97cbe-e347-404a-b2c6-0d98045061d8",
      "status": "Registered",
      "players": [
       {
@@ -44,12 +44,18 @@
        "country": null,
        "skillLevel": 6,
        "faceitUrl": "https://www.faceit.com/en/players/DaDFelis"
+      },
+      {
+       "nickname": "Tmoil",
+       "country": null,
+       "skillLevel": null,
+       "faceitUrl": "https://www.faceit.com/en/players/Tmoil"
       }
      ],
      "substitutes": []
     }
    ],
-   "fetchedAt": "2026-10-26T15:42:04Z"
+   "fetchedAt": "2026-10-26T16:09:07Z"
   }
  }
 }
