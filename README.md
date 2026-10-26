@@ -156,12 +156,11 @@ Put the banner image in `assets/banners/` (or use a full `https://` image URL; u
 
 ## Before pushing
 
-The local git repo uses a placeholder author email (`285768046+vilovx@users.noreply.github.com`).
-Set your real identity first:
+Commit with the GitHub noreply identity so no personal email ends up in the history:
 
 ```bash
-git config user.name "Your Name"
-git config user.email "you@example.com"   # or your GitHub noreply address
+git config user.name "vilovx"
+git config user.email "285768046+vilovx@users.noreply.github.com"
 ```
 
 ## Deploy
