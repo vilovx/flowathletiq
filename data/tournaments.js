@@ -26,9 +26,9 @@ window.FA_TOURNAMENTS = [
     region: "EU",
     // prize: shown as a full-width "Balvas" row; first sentence is highlighted
     prize: {
-      lv: "Pie balvu fonda pašlaik strādājam. Šis ir pirmais FlowAthletiq kopienas turnīrs — iesildīšanās mūsu komandai un iespēja redzēt, cik liela ir interese.",
-      en: "We're currently working on a prize pool. This is the first FlowAthletiq community tournament — a warm-up for our team and a chance to see how much interest there is.",
-      ru: "Над призовым фондом сейчас работаем. Это первый комьюнити-турнир FlowAthletiq — разминка для нашей команды и возможность понять, насколько велик интерес."
+      lv: "Pie balvu fonda pašlaik strādājam. Šis ir pirmais FlowAthletiq kopienas turnīrs — iesildīšanās organizatoriem un iespēja redzēt, cik liela ir interese.",
+      en: "We're currently working on a prize pool. This is the first FlowAthletiq community tournament — a warm-up for the organizers and a chance to see how much interest there is.",
+      ru: "Над призовым фондом сейчас работаем. Это первый комьюнити-турнир FlowAthletiq — разминка для организаторов и возможность понять, насколько велик интерес."
     }
   }
 ];
