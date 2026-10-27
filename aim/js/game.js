@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=14';
-import { RoastSystem } from './roast.js?v=14';
-import { createChicken, Puffs } from './chicken.js?v=14';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=14';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=14';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=14';
-import { t, onLang, applyDom } from './i18n.js?v=14';
-import { Sfx } from './audio.js?v=14';
-import { buildGunModel } from './gunmodels.js?v=14';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc } from './leaderboard.js?v=14';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=14';
+import { buildWorld } from './world.js?v=15';
+import { RoastSystem } from './roast.js?v=15';
+import { createChicken, Puffs } from './chicken.js?v=15';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=15';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=15';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=15';
+import { t, onLang, applyDom } from './i18n.js?v=15';
+import { Sfx } from './audio.js?v=15';
+import { buildGunModel } from './gunmodels.js?v=15';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=15';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=15';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -478,13 +478,20 @@ function renderMenu() {
 // ---------------- Online leaderboard ----------------
 let lbPeriod = 'all', lastRows = null, lbErr = false;
 const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
+// small rank emblem of the run that made the board (same artwork as the in-game ranks); rank name as tooltip
+function lbRankImg(i) {
+  if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
+  const n = esc(RANKS[i].name);
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=15" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+}
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
   if (!rows) return `<li class="msg">${t('lbLoading')}</li>`;
   if (!rows.length) return `<li class="msg">${t('lbEmpty')}</li>`;
   const me = myNick();
-  return rows.slice(0, 8).map((r) => `<li class="${r.nick.toLowerCase() === me ? 'me' : ''}"><span class="p">${r.pos}.</span>${flagHtml(r.country)}<span class="n">${esc(r.nick)}</span>` +
-    `<span class="l">${t('lbLvl')} ${r.level}</span><span class="s">${r.score}</span><span class="h">${r.hs_pct}%</span></li>`).join('');
+  return rows.slice(0, 8).map((r) => `<li class="${r.nick.toLowerCase() === me ? 'me' : ''}"><span class="p">${r.pos}.</span>${flagHtml(r.country)}${lbRankImg(r.rank_idx)}<span class="n">${esc(r.nick)}</span>` +
+    `<span class="w w-${esc(r.weapon || '')}" title="${t('lbWpn')}: ${esc(wpnName(r.weapon))}">${esc(wpnShort(r.weapon))}</span>` +
+    `<span class="l" title="${t('lbLvl')} ${r.level}">L${r.level}</span><span class="s">${r.score}</span><span class="h">${r.hs_pct}%</span></li>`).join('');
 }
 function renderLb() { $('lb').innerHTML = lbRowsHtml(lastRows); }
 let boardRows = null;
@@ -538,7 +545,7 @@ $('o-submit').addEventListener('submit', async (e) => {
   try {
     const r = await submitScore({ ...lastRun, nick, country });
     if (!r || !r.ok) return fail((r && r.error) || 'bad');
-    lastRun.sent = true; m.textContent = t('subOk', { n: r.position }); m.className = 'sb-msg ok'; $('o-send').textContent = '✓';
+    lastRun.sent = true; m.textContent = t('subOk', { n: r.position, w: wpnName(lastRun.weapon) }); m.className = 'sb-msg ok'; $('o-send').textContent = '✓';
     loadLb(true);
   } catch { fail('net'); }
 });

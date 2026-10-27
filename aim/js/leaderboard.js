@@ -1,6 +1,6 @@
 // Online leaderboard (Supabase PostgREST RPC via fetch). The publishable key is public by design;
 // the database only allows reading scores and inserting through the checked submit_score() function.
-import { LANG } from './i18n.js?v=14';
+import { LANG } from './i18n.js?v=15';
 const URL_ = 'https://ffnuweijixvrvjdvjhhu.supabase.co/rest/v1/rpc/';
 const KEY = 'sb_publishable_TbkcthcbEITdVoaNZzmbRg_JlYxO4Nt';
 
@@ -63,4 +63,8 @@ export function flagHtml(cc) {
   if (emojiFlags()) return `<span class="flag" title="${cc}">${String.fromCodePoint(...[...cc].map((ch) => 0x1F1E6 + ch.charCodeAt(0) - 65))}</span>`;
   return `<span class="flag code" title="${cc}">${cc}</span>`;
 }
+// weapon a run was played with: compact label for the boards + full name for tooltips/messages
+const WPN = { ak47: ['AK', 'AK-47'], m4a4: ['M4A4', 'M4A4'], m4a1s: ['M4A1-S', 'M4A1-S'] };
+export const wpnShort = (id) => (WPN[id] || ['', ''])[0];
+export const wpnName = (id) => (WPN[id] || ['', ''])[1];
 export const esc = (s) => String(s).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));

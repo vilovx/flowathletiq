@@ -185,14 +185,17 @@ h2{font-size:22px}
 .lb-art>img{width:100%;height:auto;display:block}
 .lb-white{position:absolute;left:40%;top:13%;width:56%;height:56%;line-height:1.1;color:#14204a;font-family:'Caveat','Segoe Print','Comic Sans MS',cursive;font-weight:700;display:flex;flex-direction:column}
 .lb-head{font-size:clamp(13px,5.2cqw,26px);line-height:1;color:#c4161c;text-align:center;letter-spacing:.04em;margin-bottom:.15em}
-.lb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;font-size:clamp(10px,3.45cqw,17px);line-height:1.12;flex:1}
-.lb li{display:grid;grid-template-columns:1.6em 1.5em 1fr auto auto auto;align-items:center;gap:.35em;padding:.02em .2em;border-bottom:1px dashed rgba(20,32,74,.14)}
+.lb{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0;font-size:clamp(9px,3.05cqw,16px);line-height:1.08;flex:1}
+.lb li{display:grid;grid-template-columns:1.5em 1.4em 1.3em minmax(0,1fr) auto auto auto auto;align-items:center;gap:.28em;white-space:nowrap;padding:.02em .2em;border-bottom:1px dashed rgba(20,32,74,.14)}
 .lb li:last-child{border-bottom:0}
 .lb li.me{background:rgba(0,170,255,.16);border-radius:4px}
 .lb li.msg{display:block;text-align:center;padding:1.6em .4em;font-size:1.25em;color:#334;border:0}
 .lb .p{text-align:right;color:#14204a}
 .lb li:nth-child(1) .p{color:#c4161c}.lb li:nth-child(2) .p{color:#1d58c9}.lb li:nth-child(3) .p{color:#1a7f3b}
 .lb .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .ri{width:1.3em;height:1.3em;object-fit:contain;display:block}.lb .ri.top{filter:drop-shadow(0 0 2px rgba(255,190,60,.8))}
+.lb .w{font:800 .58em/1 Inter,system-ui,sans-serif;letter-spacing:.02em;color:#7a2a12;border:1.5px solid rgba(122,42,18,.55);border-radius:3px;padding:.18em .3em;white-space:nowrap}
+.lb .w:empty{display:none}.lb .w-m4a4{color:#1d4f9a;border-color:rgba(29,79,154,.55)}.lb .w-m4a1s{color:#2f5d3a;border-color:rgba(47,93,58,.55)}
 .lb .l{color:#1d58c9}.lb .s{font-variant-numeric:tabular-nums}.lb .h{color:#1a7f3b;min-width:2.3em;text-align:right}
 .flag{font-size:1.05em;line-height:1;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
 .flag.code{font-family:'Inter',sans-serif;font-size:.62em;font-weight:800;border:1.5px solid currentColor;border-radius:3px;padding:1px 2px;color:#14204a;text-align:center}
