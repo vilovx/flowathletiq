@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>FlowAthletiq Aim Trainer</title>
 <meta name="description" content="FlowAthletiq Aim Trainer: trenē savu aim pārlūkā ar CS2 sensitivity un savu crosshair.">
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 <div id="app">
@@ -49,8 +49,15 @@
       <div class="card menu-side">
         <h2 data-i18n="pbTitle"></h2>
         <div id="pb"></div>
-        <h2 data-i18n="ranksTitle"></h2>
-        <ol id="ranks" class="ranks"></ol>
+        <div class="side-tabs" role="tablist">
+          <button type="button" class="stab on" data-tab="lb" role="tab" aria-selected="true" data-i18n="lbTitle"></button>
+          <button type="button" class="stab" data-tab="ranks" role="tab" aria-selected="false" data-i18n="ranksTitle"></button>
+        </div>
+        <div id="tab-lb" class="tabp">
+          <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=12" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8</div><ol id="lb" class="lb"></ol></div></div>
+        </div>
+        <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
       </div>
     </div>
   </section>
@@ -139,10 +146,19 @@
         <div><span data-i18n="accuracy"></span><b id="o-acc"></b></div>
       </div>
       <div class="pbline" id="o-pb"></div>
+      <form class="submit-box hidden" id="o-submit" autocomplete="off">
+        <div class="sb-title" data-i18n="subTitle"></div>
+        <div class="sb-row">
+          <label><span data-i18n="subNick"></span><input type="text" id="o-nick" maxlength="16" minlength="2" required spellcheck="false"></label>
+          <label><span data-i18n="subCountry"></span><select id="o-country"></select></label>
+          <button type="submit" class="btn" id="o-send" data-i18n="subBtn"></button>
+        </div>
+        <div class="sb-msg" id="o-msg" aria-live="polite"></div>
+      </form>
       <div class="btn-row"><button class="btn big" id="o-again" data-i18n="again">Spēlēt vēlreiz</button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button></div>
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=11"></script>
+<script type="module" src="js/main.js?v=12"></script>
 </body>
 </html>

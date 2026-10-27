@@ -1,13 +1,14 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=11';
-import { createChicken, Puffs } from './chicken.js?v=11';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=11';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=11';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=11';
-import { t, onLang, applyDom } from './i18n.js?v=11';
-import { Sfx } from './audio.js?v=11';
-import { buildGunModel } from './gunmodels.js?v=11';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=11';
+import { buildWorld } from './world.js?v=12';
+import { createChicken, Puffs } from './chicken.js?v=12';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=12';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=12';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=12';
+import { t, onLang, applyDom } from './i18n.js?v=12';
+import { Sfx } from './audio.js?v=12';
+import { buildGunModel } from './gunmodels.js?v=12';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc } from './leaderboard.js?v=12';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=12';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -22,7 +23,7 @@ let W = WEAPONS.ak47; // current weapon (set from settings below)
 const EYE = 64;
 
 // ---------------- Settings ----------------
-const LS = { settings: 'fa_aim_settings', xhair: 'fa_aim_xhair', best: 'fa_aim_best', rank: 'fa_aim_rank' };
+const LS = { settings: 'fa_aim_settings', xhair: 'fa_aim_xhair', best: 'fa_aim_best', rank: 'fa_aim_rank', nick: 'fa_aim_nick', country: 'fa_aim_country' };
 const load = (k, d) => { try { return { ...d, ...(JSON.parse(localStorage.getItem(k)) || {}) }; } catch { return { ...d }; } };
 const settings = load(LS.settings, { sens: 1.25, dpi: 800, sound: true, fps: false, weapon: 'ak47' });
 W = WEAPONS[settings.weapon] || WEAPONS.ak47;
@@ -450,7 +451,7 @@ function show(id) {
 }
 function goMenu() {
   state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0;
-  renderMenu(); show('menu');
+  renderMenu(); show('menu'); loadLb();
 }
 const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
 function renderMenu() {
@@ -463,6 +464,74 @@ function renderMenu() {
   $('ranks').innerHTML = RANKS.map((r, i) => `<li class="${i === ri ? 'me' : ''}${i === TOP ? ' top' : ''}">${rankIcon(i)}<div><div class="rn">${r.name}</div><div class="rl">${i === TOP ? t('topReq', { n: r.minLevel, hs: TOP_HS }) : t('fromLevel', { n: r.minLevel })}</div></div></li>`).join('');
   $('menu-sens').textContent = sensText();
 }
+
+// ---------------- Online leaderboard ----------------
+let lbPeriod = 'all', lastRows = null, lbErr = false;
+const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
+function lbRowsHtml(rows) {
+  if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
+  if (!rows) return `<li class="msg">${t('lbLoading')}</li>`;
+  if (!rows.length) return `<li class="msg">${t('lbEmpty')}</li>`;
+  const me = myNick();
+  return rows.slice(0, 8).map((r) => `<li class="${r.nick.toLowerCase() === me ? 'me' : ''}"><span class="p">${r.pos}.</span>${flagHtml(r.country)}<span class="n">${esc(r.nick)}</span>` +
+    `<span class="l">${t('lbLvl')} ${r.level}</span><span class="s">${r.score}</span><span class="h">${r.hs_pct}%</span></li>`).join('');
+}
+function renderLb() { $('lb').innerHTML = lbRowsHtml(lastRows); }
+let boardRows = null;
+async function loadLb(force = false) {
+  const period = lbPeriod;
+  if (force) lastRows = null;
+  renderLb();
+  try {
+    const [rows, board] = await Promise.all([fetchTop(period, 20, force ? 0 : 30000), period === 'all' ? null : fetchTop('all', 20, force ? 0 : 30000)]);
+    boardRows = period === 'all' ? rows : board; world.setBoard(boardRows, t('boardEmpty'));
+    if (period !== lbPeriod) return;
+    lbErr = false; lastRows = rows; renderLb();
+  } catch (e) { if (period === lbPeriod) { lbErr = true; lastRows = null; renderLb(); } }
+}
+document.querySelectorAll('.stab').forEach((b) => (b.onclick = () => {
+  document.querySelectorAll('.stab').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
+  $('tab-lb').classList.toggle('hidden', b.dataset.tab !== 'lb'); $('tab-ranks').classList.toggle('hidden', b.dataset.tab !== 'ranks');
+}));
+document.querySelectorAll('.lbp').forEach((b) => (b.onclick = () => {
+  lbPeriod = b.dataset.p; document.querySelectorAll('.lbp').forEach((x) => x.classList.toggle('on', x === b)); loadLb();
+}));
+function fillCountries() {
+  const { pinned, rest } = countryList(), sel = $('o-country');
+  const cur = sel.value || localStorage.getItem(LS.country) || guessCountry();
+  const opt = (c) => `<option value="${c.code}">${esc(c.name)}</option>`;
+  sel.innerHTML = pinned.map(opt).join('') + '<option disabled>──────────</option>' + rest.map(opt).join('');
+  sel.value = cur; if (!sel.value) sel.value = 'LV';
+}
+let lastRun = null;
+function setupSubmit() {
+  const box = $('o-submit');
+  const can = G && G.mode === 'chickens' && G.kills > 0;
+  box.classList.toggle('hidden', !can);
+  if (!can) { lastRun = null; return; }
+  lastRun = { level: G.level, score: G.score, kills: G.kills, hs: Math.round(G.hsKills / G.kills * 100), weapon: W.id, sent: false };
+  $('o-nick').value = localStorage.getItem(LS.nick) || '';
+  $('o-country').value = '';
+  fillCountries();
+  $('o-send').disabled = false; $('o-send').textContent = t('subBtn');
+  const m = $('o-msg'); m.textContent = ''; m.className = 'sb-msg';
+}
+$('o-submit').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!lastRun || lastRun.sent) return;
+  const nick = $('o-nick').value.replace(/[\u0000-\u001f\u007f]/g, '').trim().replace(/\s+/g, ' '), country = $('o-country').value, m = $('o-msg');
+  const fail = (k) => { m.textContent = t('subErr.' + k); m.className = 'sb-msg err'; $('o-send').disabled = false; $('o-send').textContent = t('subBtn'); };
+  if (nick.length < 2 || nick.length > 16) return fail('nick');
+  if (!/^[A-Z]{2}$/.test(country)) return fail('country');
+  localStorage.setItem(LS.nick, nick); localStorage.setItem(LS.country, country);
+  $('o-send').disabled = true; $('o-send').textContent = t('subSending');
+  try {
+    const r = await submitScore({ ...lastRun, nick, country });
+    if (!r || !r.ok) return fail((r && r.error) || 'bad');
+    lastRun.sent = true; m.textContent = t('subOk', { n: r.position }); m.className = 'sb-msg ok'; $('o-send').textContent = '✓';
+    loadLb(true);
+  } catch { fail('net'); }
+});
 
 // ---------------- Pointer lock / input ----------------
 async function lock() {
@@ -656,6 +725,7 @@ function showOver(reason) {
   $('o-hs').textContent = G.kills ? Math.round(G.hsKills / G.kills * 100) + '%' : '0%';
   $('o-acc').textContent = G.shots ? Math.round(G.hits / G.shots * 100) + '%' : '0%';
   $('o-pb').textContent = isPB ? t('newPB') : t('yourPB', { level: best.level, score: best.score });
+  setupSubmit();
   show('over');
 }
 
@@ -696,6 +766,8 @@ fillColors();
 onLang(() => {
   fillColors(); document.title = t('title');
   if (state === 'menu') renderMenu();
+  renderLb(); world.setBoard(boardRows, t('boardEmpty'));
+  if (state === 'over' && lastRun) fillCountries();
   if (!$('settings').classList.contains('hidden')) syncSettings();
   if (G && G.mode === 'spray') { sprayWall.redraw(); if (sprayWall.result) drawSprayCard(); }
   updateHud();

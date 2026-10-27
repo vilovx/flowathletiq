@@ -208,12 +208,12 @@ export function buildWorld(scene) {
 
   // --- FlowAthletiq logo mural on the wall behind the spawn (visible when turning 180°), with a blinking red wolf eye
   const mural = (() => {
-    const g = new THREE.Group(); g.position.set(0, 132, 700); g.rotation.y = Math.PI; scene.add(g); // local +z faces the player
+    const g = new THREE.Group(); g.position.set(-150, 132, 700); g.rotation.y = Math.PI; scene.add(g); // local +z faces the player; shifted so the leaderboard fits on its left
     const LW = 480, LH = Math.round(LW * 561 / 1113);
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=11');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=12');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -245,6 +245,54 @@ export function buildWorld(scene) {
         glow.scale.setScalar(0.85 + 0.15 * k);
       },
     };
+  })();
+
+  // --- Leaderboard board (vilov's chicken + whiteboard artwork) left of the logo as seen from spawn after turning 180°.
+  // Results are written in marker style inside the artwork's whiteboard (x 443-1110, y 100-640 of 1168x784).
+  const board = (() => {
+    // transparent cutout (1128x733), mounted flat on the wall like a poster/standee with a soft shadow; whiteboard area x 432-1100, y 80-621
+    const IW = 1128, IH = 733, PAD = 28, BW = 340, S = BW / IW;
+    const CW = IW + PAD * 2, CH = IH + PAD * 2;
+    const g = new THREE.Group(); g.position.set(345, 128, 700); g.rotation.y = Math.PI; scene.add(g);
+    const c = document.createElement('canvas'); c.width = CW; c.height = CH; const x = c.getContext('2d');
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(CW * S, CH * S), new THREE.MeshBasicMaterial({ map: tex, color: 0xe6e6e6, transparent: true, alphaTest: 0.02, depthWrite: false, toneMapped: false }));
+    plane.position.set(0, 0, 0.8); plane.renderOrder = 1; g.add(plane);
+    const img = new Image(); let ready = false, rows = null, empty = '';
+    const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive";
+    const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
+    function draw() {
+      if (!ready) return;
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, CW, CH);
+      // soft drop shadow on the wall (silhouette of the cutout, blurred, offset down-right)
+      x.save(); x.globalAlpha = 0.45; x.filter = 'blur(10px) brightness(0)'; x.drawImage(img, PAD + 8, PAD + 12, IW, IH); x.restore();
+      x.drawImage(img, PAD, PAD, IW, IH);
+      x.setTransform(1, 0, 0, 1, PAD - 11, PAD - 20); // text layout below uses the original whiteboard coordinates (x 443-1110, y 100-640)
+      x.textBaseline = 'alphabetic';
+      x.fillStyle = '#c4161c'; x.font = `700 64px ${MK}`; x.textAlign = 'center'; x.fillText('TOP 8', 776, 168);
+      x.fillStyle = '#1d58c9'; x.font = `700 30px ${MK}`; x.textAlign = 'right'; x.fillText('FlowAthletiq', 1092, 168);
+      x.strokeStyle = 'rgba(196,22,28,.75)'; x.lineWidth = 4; x.beginPath(); x.moveTo(680, 182); x.quadraticCurveTo(776, 176, 872, 184); x.stroke();
+      if (!rows || !rows.length) {
+        x.fillStyle = '#334'; x.font = `700 40px ${MK}`; x.textAlign = 'center'; x.fillText(rows ? empty : '…', 776, 340);
+      } else {
+        rows.slice(0, 8).forEach((r, i) => {
+          const y = 238 + i * 41;
+          x.font = `700 38px ${MK}`;
+          x.fillStyle = ['#c4161c', '#1d58c9', '#1a7f3b'][i] || '#14204a'; x.textAlign = 'right'; x.fillText(`${r.pos}.`, 508, y);
+          x.strokeStyle = '#14204a'; x.lineWidth = 2.5; x.strokeRect(518, y - 25, 44, 28);
+          x.fillStyle = '#14204a'; x.font = '800 18px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(String(r.country || '').toUpperCase(), 540, y - 4);
+          x.font = `700 38px ${MK}`; x.textAlign = 'left'; x.fillStyle = '#14204a'; x.fillText(fit(r.nick, 255), 576, y);
+          x.fillStyle = '#1d58c9'; x.fillText('L' + r.level, 846, y);
+          x.fillStyle = '#14204a'; x.textAlign = 'right'; x.fillText(String(r.score), 1012, y);
+          x.fillStyle = '#1a7f3b'; x.font = `700 30px ${MK}`; x.fillText(r.hs_pct + '%', 1094, y);
+        });
+      }
+      x.fillStyle = 'rgba(20,32,74,.55)'; x.font = `700 26px ${MK}`; x.textAlign = 'right'; x.fillText('flowathletiq.com/aim', 1094, 622);
+      tex.needsUpdate = true;
+    }
+    img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
+    img.src = 'img/leaderboard-board.webp?v=12';
+    return { plane, set(r, e) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; draw(); } };
   })();
 
   // Lights
@@ -290,5 +338,5 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, update: (t) => mural.update(t) };
+  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, update: (t) => mural.update(t), setBoard: (rows, empty) => board.set(rows, empty) };
 }
