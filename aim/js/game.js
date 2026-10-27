@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=26';
-import { RoastSystem } from './roast.js?v=26';
-import { createChicken, Puffs } from './chicken.js?v=26';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=26';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=26';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=26';
-import { t, onLang, applyDom } from './i18n.js?v=26';
-import { Sfx } from './audio.js?v=26';
-import { buildGunModel } from './gunmodels.js?v=26';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=26';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=26';
+import { buildWorld } from './world.js?v=27';
+import { RoastSystem } from './roast.js?v=27';
+import { createChicken, Puffs } from './chicken.js?v=27';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=27';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=27';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=27';
+import { t, onLang, applyDom } from './i18n.js?v=27';
+import { Sfx } from './audio.js?v=27';
+import { buildGunModel } from './gunmodels.js?v=27';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=27';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=27';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=26';
+import { forced, forceOff } from './rot.js?v=27';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -496,7 +496,7 @@ function showBanner(t, sub) {
   const b = $('banner'); b.innerHTML = `${t}<small>${sub || ''}</small>`; b.classList.remove('hidden');
   clearTimeout(bannerTimer); bannerTimer = setTimeout(() => b.classList.add('hidden'), 1900);
 }
-const screens = ['menu', 'settings', 'editor', 'pause', 'over'];
+const screens = ['menu', 'settings', 'editor', 'pause', 'over', 'practice'];
 let modalReturn = 'menu';
 function show(id) {
   for (const s of screens) $(s).classList.toggle('hidden', s !== id);
@@ -505,6 +505,7 @@ function show(id) {
 }
 function goMenu() {
   $('countdown').className = 'countdown hidden';
+  practice = false; $('h-prac').classList.add('hidden');
   state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear();
   renderMenu(); show('menu'); loadLb();
 }
@@ -528,7 +529,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=26" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=27" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -571,7 +572,7 @@ function fillCountries() {
 let lastRun = null;
 function setupSubmit() {
   const box = $('o-submit');
-  const can = G && G.mode === 'chickens' && G.kills > 0;
+  const can = G && G.mode === 'chickens' && G.kills > 0 && !practice;
   box.classList.toggle('hidden', !can);
   if (!can) { lastRun = null; return; }
   lastRun = { level: G.level, score: G.score, kills: G.kills, hs: Math.round(G.hsKills / G.kills * 100), weapon: W.id, device: DEVICE, sent: false };
@@ -640,7 +641,10 @@ function goFull() { // phones: fullscreen + landscape where the browser allows i
   try { const d = document.documentElement, p = !document.fullscreenElement && d.requestFullscreen && d.requestFullscreen({ navigationUI: 'hide' });
     Promise.resolve(p).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape')).catch(() => {}); } catch {}
 }
-function startGame(level = 1, countdown = true) {
+let practice = false; // unranked practice run: no score submission, no PB/rank saving
+const PRAC_MAX = 15;
+function startGame(level = 1, countdown = true, prac = false) {
+  practice = prac; $('h-prac').classList.toggle('hidden', !prac);
   sfx.unlock(); goFull();
   yaw = 0; pitch = 3;
   setMode('chickens');
@@ -793,11 +797,11 @@ function endRun(reason) {
 function showOver(reason) {
   state = 'over';
   const best = load(LS.best, { level: 0, score: 0, hs: 0 });
-  const isPB = G.level > best.level || (G.level === best.level && G.score > best.score);
+  const isPB = !practice && (G.level > best.level || (G.level === best.level && G.score > best.score));
   if (isPB) localStorage.setItem(LS.best, JSON.stringify({ level: G.level, score: G.score, hs: G.kills ? Math.round(G.hsKills / G.kills * 100) : 0 }));
   const hsPct = G.kills ? Math.round(G.hsKills / G.kills * 100) : 0;
   const ri = rankFor(G.level, hsPct);
-  if (ri > bestRank()) localStorage.setItem(LS.rank, JSON.stringify(ri));
+  if (!practice && ri > bestRank()) localStorage.setItem(LS.rank, JSON.stringify(ri));
   $('o-reason').textContent = t(reason);
   $('o-rankicon').innerHTML = rankIcon(ri, true);
   $('o-rank').textContent = RANKS[ri].name;
@@ -809,21 +813,30 @@ function showOver(reason) {
   $('o-score').textContent = G.score; $('o-kills').textContent = G.kills;
   $('o-hs').textContent = G.kills ? Math.round(G.hsKills / G.kills * 100) + '%' : '0%';
   $('o-acc').textContent = G.shots ? Math.round(G.hits / G.shots * 100) + '%' : '0%';
-  $('o-pb').textContent = isPB ? t('newPB') : t('yourPB', { level: best.level, score: best.score });
+  $('o-pb').textContent = practice ? t('pracBadge') : isPB ? t('newPB') : t('yourPB', { level: best.level, score: best.score });
+  $('o-again').textContent = practice ? t('pracRetry', { n: practice }) : t('again');
+  $('o-prac').textContent = practice ? t('pracOther') : t('pracBtn');
+  $('o-ranked').classList.toggle('hidden', !practice);
   setupSubmit();
   show('over');
 }
 
 // ---------------- Menu buttons ----------------
 $('btn-start').onclick = () => startGame(1);
-$('btn-spray').onclick = () => { goFull(); startSpray(); };
 $('btn-xhair').onclick = () => openModal('editor', 'menu');
 $('btn-settings').onclick = () => openModal('settings', 'menu');
 $('p-resume').onclick = () => { lock(); };
 $('p-xhair').onclick = () => openModal('editor', 'pause');
 $('p-settings').onclick = () => openModal('settings', 'pause');
 $('p-quit').onclick = goMenu;
-$('o-again').onclick = () => startGame(1);
+$('o-again').onclick = () => (practice ? startGame(practice, true, practice) : startGame(1));
+$('o-ranked').onclick = () => startGame(1);
+let pracFrom = 'over';
+const openPicker = (from) => { pracFrom = from; $('lvl-grid').innerHTML = Array.from({ length: PRAC_MAX }, (_, i) => `<button type="button" class="btn ghost" data-l="${i + 1}">${i + 1}</button>`).join('');
+  $('lvl-grid').querySelectorAll('[data-l]').forEach((b) => (b.onclick = () => startGame(+b.dataset.l, true, +b.dataset.l))); show('practice'); };
+$('o-prac').onclick = () => openPicker('over');
+$('btn-prac').onclick = () => openPicker('menu');
+$('lvl-back').onclick = () => show(pracFrom);
 $('o-menu').onclick = goMenu;
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { show(modalReturn); if (modalReturn === 'menu') renderMenu(); }));
 function openModal(id, from) { modalReturn = from; if (id === 'editor') syncEditor(); if (id === 'settings') syncSettings(); show(id); }
@@ -973,7 +986,7 @@ if (DEBUG) {
   window.__aim = {
     THREE, camera, chickens, world, get roasts() { return roasts; },
     get G() { return G; }, get state() { return state; },
-    startGame(level = 1, cd = false) { startGame(level, cd); },
+    startGame(level = 1, cd = false, prac = false) { startGame(level, cd, prac); }, get practice() { return practice; },
     freeze(v = true) { timeScale = v ? 0 : 1; },
     view(y, p) { yaw = y; pitch = p; },
     step(sec, n = 10) { for (let i = 0; i < n; i++) step(sec / n); },
@@ -994,7 +1007,7 @@ if (DEBUG) {
         fire(); step(W.cycle); }
       yaw = y0; pitch = p0; G.lastShot = -9; step(0.5); step(0.5);
     },
-    startSpray() { startSpray(); },
+    startSpray() { startSpray(); }, end(r) { endRun(r); },
     hideGun(v = true) { gun.root.visible = !v; },
     vm(o) { Object.assign(VM, o); vmScene.remove(gun.root); gun = buildGun(W); vmScene.add(gun.root); },
     showcase(id, on = true) { // side-view render of a weapon model for previews

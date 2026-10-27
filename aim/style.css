@@ -310,3 +310,9 @@ html.mobile #settings input[type=range]{min-height:30px}
 @keyframes cdTick{0%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}18%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:.85;transform:translate(-50%,-50%) scale(.9)}}
 @keyframes cdGo{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
 @media (prefers-reduced-motion:reduce){.countdown.tick,.countdown.go{animation:none}}
+
+/* practice (unranked) mode */
+.hud-prac{position:absolute;left:50%;top:var(--prac-top,92px);transform:translateX(-50%);background:#ffb020;color:#111;font-family:var(--display);font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:3px 12px;border-radius:8px;white-space:nowrap;z-index:3}
+html.mobile .hud-prac{--prac-top:auto;top:auto;bottom:8px}
+.lvl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.lvl-grid button{min-height:48px;font-size:18px}

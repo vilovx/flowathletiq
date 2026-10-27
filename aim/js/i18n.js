@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=26';
+import { MORE } from './i18n-more.js?v=27';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -177,6 +177,16 @@ const NR = { lv: 'Telefonā bez atsitiena', en: 'No recoil on phone', ru: 'На 
 for (const l in NR) TOUCH[l].noRecoil = NR[l];
 const HOME = { lv: 'FlowAthletiq sākumlapa', en: 'FlowAthletiq home page', ru: 'Главная страница FlowAthletiq', es: 'Página de inicio de FlowAthletiq', pt: 'Página inicial do FlowAthletiq', ja: 'FlowAthletiq ホームページ', zh: 'FlowAthletiq 首页' };
 for (const l in HOME) TOUCH[l].homeLink = HOME[l];
+const PRAC = { // [button, badge, picker title, note, retry, other level, ranked again, back]
+  lv: ['Treniņš (bez ranga)', 'TRENIŅŠ – netiek ieskaitīts', 'Treniņš: izvēlies līmeni', 'Rezultāts netiek iesniegts tabulā un neskaitās rekordā vai rangā.', 'Atkārtot {n}. līmeni', 'Cits līmenis', 'Spēlēt ar rangu', 'Atpakaļ'],
+  en: ['Practice (unranked)', 'PRACTICE – not counted', 'Practice: choose a level', 'Scores are not submitted to the leaderboard and do not count for your record or rank.', 'Retry level {n}', 'Other level', 'Play ranked', 'Back'],
+  ru: ['Тренировка (без ранга)', 'ТРЕНИРОВКА – не засчитывается', 'Тренировка: выбери уровень', 'Результат не отправляется в таблицу и не идёт в рекорд или ранг.', 'Повторить уровень {n}', 'Другой уровень', 'Играть на ранг', 'Назад'],
+  es: ['Práctica (sin rango)', 'PRÁCTICA – no cuenta', 'Práctica: elige un nivel', 'La puntuación no se envía a la clasificación y no cuenta para tu récord ni tu rango.', 'Repetir nivel {n}', 'Otro nivel', 'Jugar con rango', 'Atrás'],
+  pt: ['Treino (sem rank)', 'TREINO – não conta', 'Treino: escolha um nível', 'A pontuação não é enviada ao ranking e não conta para seu recorde nem rank.', 'Repetir nível {n}', 'Outro nível', 'Jogar ranqueado', 'Voltar'],
+  ja: ['練習（ランクなし）', '練習 – 記録されません', '練習：レベルを選択', 'スコアはランキングに送信されず、自己ベストやランクにも反映されません。', 'レベル{n}をもう一度', '別のレベル', 'ランク戦をプレイ', '戻る'],
+  zh: ['练习（不计排名）', '练习 – 不计成绩', '练习：选择关卡', '成绩不会提交到排行榜，也不计入个人纪录或段位。', '重玩第 {n} 关', '其他关卡', '排位模式', '返回'],
+};
+for (const l in PRAC) { const a = PRAC[l]; Object.assign(TOUCH[l], { pracBtn: a[0], pracBadge: a[1], pracPick: a[2], pracNote: a[3], pracRetry: a[4], pracOther: a[5], pracRanked: a[6], pracBack: a[7] }); }
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],
