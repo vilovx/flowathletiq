@@ -1,6 +1,6 @@
 // Online leaderboard (Supabase PostgREST RPC via fetch). The publishable key is public by design;
 // the database only allows reading scores and inserting through the checked submit_score() function.
-import { LANG, detectCountry } from './i18n.js?v=19';
+import { LANG, detectCountry } from './i18n.js?v=20';
 const URL_ = 'https://ffnuweijixvrvjdvjhhu.supabase.co/rest/v1/rpc/';
 const KEY = 'sb_publishable_TbkcthcbEITdVoaNZzmbRg_JlYxO4Nt';
 
@@ -15,17 +15,17 @@ async function rpc(name, body, timeout = 8000) {
 }
 
 const cache = {};
-export async function fetchTop(period = 'all', limit = 20, maxAge = 30000) {
-  const k = period + limit, c = cache[k];
+export async function fetchTop(period = 'all', limit = 20, maxAge = 30000, device = 'pc') {
+  const k = period + limit + device, c = cache[k];
   if (c && Date.now() - c.t < maxAge) return c.rows;
-  const rows = await rpc('get_leaderboard', { p_period: period, p_limit: limit });
+  const rows = await rpc('get_leaderboard', { p_period: period, p_limit: limit, p_device: device === 'mobile' ? 'mobile' : 'pc' });
   cache[k] = { t: Date.now(), rows }; return rows;
 }
 export function invalidate() { for (const k in cache) delete cache[k]; }
 
 export async function submitScore(s) {
   const r = await rpc('submit_score', { p_nick: s.nick, p_country: s.country, p_level: s.level, p_score: s.score,
-    p_kills: s.kills, p_hs_pct: s.hs, p_weapon: s.weapon, p_lang: null }); // only what the board shows is sent
+    p_kills: s.kills, p_hs_pct: s.hs, p_weapon: s.weapon, p_lang: null, p_device: s.device === 'mobile' ? 'mobile' : 'pc' }); // only what the board shows is sent
   invalidate(); return r;
 }
 

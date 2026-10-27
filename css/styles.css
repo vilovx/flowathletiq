@@ -619,7 +619,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .promo-disc { margin: .5rem 0 0; font-size: .72rem; color: var(--muted); opacity: .85; }
 .privacy-note { margin: 1.5rem 0 0; font-size: .8rem; color: var(--muted); }
 
-/* ---------- Aim Trainer: header button + homepage promo (desktop-only game) ---------- */
+/* ---------- Aim Trainer: header button + homepage promo (PC + phones) ---------- */
 .aim-ico { display: inline-block; vertical-align: -3px; flex: none; }
 .nav .nav-aim-btn { display: inline-flex; align-items: center; gap: .4rem; color: #000; background: linear-gradient(90deg, var(--neon), var(--neon-2)); box-shadow: 0 0 14px rgba(0,240,255,.35); margin-left: .25rem; }
 .nav .nav-aim-btn .aim-ico { animation: aim-spin 6s linear infinite; }
@@ -638,9 +638,8 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .nav .nav-aim-btn { margin: .35rem 0 0; justify-content: flex-start; }
   .nav-aim-note { display: inline; margin-left: auto; font-size: .72rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: .75; }
 }
-/* phones/tablets without a mouse: the game cannot be played there */
+/* phones/tablets: the game has touch controls; show a short how-to under the Play button */
 @media (hover: none) and (pointer: coarse) {
-  .aim-promo .aim-promo-btn { display: none; }
   .aim-promo-mobile { display: block; margin-top: .6rem !important; padding: .5rem .7rem; border-radius: 10px; background: rgba(0,240,255,.08); border: 1px dashed rgba(0,240,255,.4); color: var(--text) !important; font-weight: 600; }
 }
 @media (prefers-reduced-motion: reduce) { .nav .nav-aim-btn .aim-ico { animation: none; } }

@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=19';
+import { MORE } from './i18n-more.js?v=20';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -131,6 +131,24 @@ const S = {
   },
 };
 Object.assign(S, MORE);
+// touch mode (phones / tablets)
+const TOUCH = {
+  lv: { rotate: 'Pagriez telefonu horizontāli, lai spēlētu', 'set.tsens': 'Touch jutība', 'set.gyro': 'Žiroskopa tēmēšana', gyroDenied: 'Žiroskopa atļauja netika dota.', gyroNone: 'Šī ierīce nesniedz žiroskopa datus.', lbMobile: 'Mobilais',
+    'tip.touch': '<b>Velc pa ekrānu:</b> tēmē &nbsp; <b>Turi ◎:</b> šauj (full-auto ar spray) &nbsp; <b>1/2/3:</b> ierocis &nbsp; <b>❚❚:</b> pauze' },
+  en: { rotate: 'Turn your phone sideways (landscape) to play', 'set.tsens': 'Touch sensitivity', 'set.gyro': 'Gyro aim', gyroDenied: 'Motion permission was not granted.', gyroNone: 'This device does not provide gyro data.', lbMobile: 'Mobile',
+    'tip.touch': '<b>Drag the screen:</b> aim &nbsp; <b>Hold ◎:</b> fire (full-auto with spray) &nbsp; <b>1/2/3:</b> weapon &nbsp; <b>❚❚:</b> pause' },
+  ru: { rotate: 'Поверни телефон горизонтально, чтобы играть', 'set.tsens': 'Чувствительность касания', 'set.gyro': 'Прицел гироскопом', gyroDenied: 'Доступ к датчикам движения не выдан.', gyroNone: 'Это устройство не даёт данных гироскопа.', lbMobile: 'Мобильные',
+    'tip.touch': '<b>Веди по экрану:</b> прицел &nbsp; <b>Держи ◎:</b> огонь (автомат со спреем) &nbsp; <b>1/2/3:</b> оружие &nbsp; <b>❚❚:</b> пауза' },
+  es: { rotate: 'Gira el móvil en horizontal para jugar', 'set.tsens': 'Sensibilidad táctil', 'set.gyro': 'Apuntar con giroscopio', gyroDenied: 'No se concedió el permiso de movimiento.', gyroNone: 'Este dispositivo no ofrece datos de giroscopio.', lbMobile: 'Móvil',
+    'tip.touch': '<b>Arrastra la pantalla:</b> apuntar &nbsp; <b>Mantén ◎:</b> disparar (automático con spray) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
+  pt: { rotate: 'Vire o celular na horizontal para jogar', 'set.tsens': 'Sensibilidade do toque', 'set.gyro': 'Mira com giroscópio', gyroDenied: 'A permissão de movimento não foi concedida.', gyroNone: 'Este aparelho não fornece dados de giroscópio.', lbMobile: 'Celular',
+    'tip.touch': '<b>Arraste a tela:</b> mirar &nbsp; <b>Segure ◎:</b> atirar (automático com spray) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
+  ja: { rotate: 'スマホを横向きにしてプレイしてください', 'set.tsens': 'タッチ感度', 'set.gyro': 'ジャイロエイム', gyroDenied: 'モーションへのアクセスが許可されませんでした。', gyroNone: 'この端末はジャイロのデータを提供しません。', lbMobile: 'モバイル',
+    'tip.touch': '<b>画面をドラッグ：</b>エイム &nbsp; <b>◎を長押し：</b>射撃（フルオート・スプレー） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>一時停止' },
+  zh: { rotate: '请把手机横过来游玩', 'set.tsens': '触控灵敏度', 'set.gyro': '陀螺仪瞄准', gyroDenied: '未获得运动传感器权限。', gyroNone: '此设备不提供陀螺仪数据。', lbMobile: '手机',
+    'tip.touch': '<b>拖动屏幕：</b>瞄准 &nbsp; <b>按住 ◎：</b>射击（全自动压枪） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>暂停' },
+};
+for (const l in TOUCH) Object.assign(S[l], TOUCH[l]);
 const valid = (c) => !!S[c];
 // --- visitor country without any IP service: time zone first, then the browser locale's region subtag
 const RU_TZ = ['Europe/Moscow', 'Europe/Kaliningrad', 'Europe/Samara', 'Europe/Volgograd', 'Europe/Saratov', 'Europe/Ulyanovsk', 'Europe/Astrakhan', 'Europe/Kirov',

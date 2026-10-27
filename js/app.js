@@ -186,12 +186,12 @@
     if (page === "virsliga") return "cs2-latvia";
     return null;
   }
-  // ---------- Aim Trainer (browser game at /aim/, desktop only) ----------
+  // ---------- Aim Trainer (browser game at /aim/; mouse on PC, touch controls on phones/tablets) ----------
   var AIM_ICON = '<svg class="aim-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>';
   function aimUrl() { return "aim/?lang=" + encodeURIComponent(LANG); }
   function aimNavItem() {
     var A = t("aim") || {};
-    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '">' + AIM_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.desktopOnly) + "</span></a></li>";
+    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '">' + AIM_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.phoneNote) + "</span></a></li>";
   }
   function renderAimPromo() {
     var box = $("aim-promo"); if (!box) return;

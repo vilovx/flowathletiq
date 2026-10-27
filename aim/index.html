@@ -2,7 +2,7 @@
 <html lang="lv">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <title>Aim Trainer pārlūkā — bezmaksas CS2 aim treniņš | FlowAthletiq</title>
 <meta name="description" content="Bezmaksas CS2 aim trainer pārlūkā: šauj vistām Kuldīgas vecpilsētā ar AK-47, M4A4 un M4A1-S spray paterniem, savu CS2 sensitivity un crosshair. Iekļūsti TOP 8!">
@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=19">
+<link rel="stylesheet" href="style.css?v=20">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=19" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=20" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,7 +59,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <span class="logo-mark"><img src="img/logo-v2.webp?v=19" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+        <span class="logo-mark"><img src="img/logo-v2.webp?v=20" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -70,9 +70,10 @@
         </div>
         <div class="weapons" id="weapons"></div>
         <ul class="tips">
-          <li data-i18n-html="tip.fire"></li>
-          <li data-i18n-html="tip.keys"></li>
-          <li data-i18n="tip.dmg"></li>
+          <li class="pc-only" data-i18n-html="tip.fire"></li>
+          <li class="pc-only" data-i18n-html="tip.keys"></li>
+          <li class="m-only" data-i18n-html="tip.touch"></li>
+          <li class="pc-only" data-i18n="tip.dmg"></li>
         </ul>
         <div class="sensline" id="menu-sens"></div>
       </div>
@@ -84,8 +85,9 @@
           <button type="button" class="stab" data-tab="ranks" role="tab" aria-selected="false" data-i18n="ranksTitle"></button>
         </div>
         <div id="tab-lb" class="tabp">
-          <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=19" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8</div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
+            <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=20" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -97,14 +99,17 @@
   <section id="settings" class="screen hidden">
     <div class="card modal">
       <h2 data-i18n="settings"></h2>
-      <label class="row"><span data-i18n="set.sens"></span> <input type="number" id="s-sens" step="0.01" min="0.01" max="20"></label>
-      <label class="row"><span data-i18n="set.dpi"></span> <input type="number" id="s-dpi" step="50" min="100" max="32000"></label>
-      <div class="row info"><span>cm/360°</span><b id="s-cm"></b></div>
-      <p class="muted small" data-i18n="set.note">Pagrieziens = peles kustība × sens × 0.022° (tāpat kā CS2). FOV 106.26° horizontāli 16:9 ekrānā (CS2 noklusējums). Ievadi to pašu sens, ko lieto spēlē, un sajūta sakritīs.</p>
+      <label class="row m-only"><span data-i18n="set.tsens"></span> <input type="range" id="s-tsens" min="0.2" max="3" step="0.05"><output id="s-tsens-v"></output></label>
+      <label class="row m-only"><span data-i18n="set.gyro"></span> <input type="checkbox" id="s-gyro"></label>
+      <p class="muted small m-only" id="s-gyro-msg" aria-live="polite"></p>
+      <label class="row pc-only"><span data-i18n="set.sens"></span> <input type="number" id="s-sens" step="0.01" min="0.01" max="20"></label>
+      <label class="row pc-only"><span data-i18n="set.dpi"></span> <input type="number" id="s-dpi" step="50" min="100" max="32000"></label>
+      <div class="row info pc-only"><span>cm/360°</span><b id="s-cm"></b></div>
+      <p class="muted small pc-only" data-i18n="set.note">Pagrieziens = peles kustība × sens × 0.022° (tāpat kā CS2). FOV 106.26° horizontāli 16:9 ekrānā (CS2 noklusējums). Ievadi to pašu sens, ko lieto spēlē, un sajūta sakritīs.</p>
       <label class="row"><span data-i18n="set.sound"></span> <input type="checkbox" id="s-sound"></label>
       <label class="row"><span data-i18n="set.fps"></span> <input type="checkbox" id="s-fps"></label>
       <div class="row"><span data-i18n="set.lang"></span><div class="lang-sw"></div></div>
-      <div class="row info"><span data-i18n="set.raw"></span><b id="s-raw">—</b></div>
+      <div class="row info pc-only"><span data-i18n="set.raw"></span><b id="s-raw">—</b></div>
       <div class="btn-row"><button class="btn" data-close data-i18n="done">Gatavs</button></div>
     </div>
   </section>
@@ -154,6 +159,16 @@
     <div id="clicklock" class="clicklock hidden" data-i18n="clickLock">Klikšķini, lai turpinātu</div>
   </div>
 
+  <!-- Touch controls (phones / tablets only) -->
+  <div id="touch" class="hidden">
+    <div id="t-look" aria-hidden="true"></div>
+    <button type="button" id="t-pause" aria-label="Pause"><i></i><i></i></button>
+    <div class="t-wpn"><button type="button" data-w="0">1<small>AK-47</small></button><button type="button" data-w="1">2<small>M4A4</small></button><button type="button" data-w="2">3<small>M4A1-S</small></button></div>
+    <button type="button" id="t-fire" aria-label="Fire"><svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M24 3v12M24 33v12M3 24h12M33 24h12" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/></svg></button>
+  </div>
+  <!-- Portrait warning (phones) -->
+  <div id="rotate"><div><div class="rot-ico" aria-hidden="true">📱</div><p data-i18n="rotate"></p></div></div>
+
   <!-- Pause -->
   <section id="pause" class="screen hidden">
     <div class="card modal center">
@@ -191,6 +206,6 @@
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=19"></script>
+<script type="module" src="js/main.js?v=20"></script>
 </body>
 </html>

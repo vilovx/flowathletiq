@@ -1,10 +1,8 @@
-// Entry: translations first; no game on touch-only devices (no fine pointer) - show a notice instead.
-import { applyDom } from './i18n.js?v=19';
-applyDom();
+// Entry: translations first. Touch-only devices (no fine pointer) get the touch mode (drag to aim, FIRE button, landscape).
+import { applyDom } from './i18n.js?v=20';
 const Q = new URLSearchParams(location.search);
 const fine = matchMedia('(any-pointer: fine)').matches;
-if (Q.get('mobile') === '1' || (!fine && Q.get('mobile') !== '0')) {
-  document.getElementById('mobile').classList.remove('hidden');
-} else {
-  import('./game.js?v=19');
-}
+const touch = Q.get('mobile') === '1' || (!fine && Q.get('mobile') !== '0' && (navigator.maxTouchPoints > 0 || 'ontouchstart' in window));
+document.documentElement.classList.toggle('mobile', touch);
+applyDom();
+import('./game.js?v=20');

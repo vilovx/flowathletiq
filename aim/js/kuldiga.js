@@ -195,7 +195,9 @@ export function buildBackdrop(scene, T) {
   for (let i = 0; i < 26; i++) tree(-1500 + i * 120 + (R() - 0.5) * 50, 0, 980 + R() * 600, 1.8 + R() * 1.0);                   // behind the back wall
   for (const sx of [-1, 1]) for (let i = 0; i < 9; i++) tree(sx * (950 + R() * 500), 0, -450 + i * 120 + R() * 60, 1.7 + R() * 0.8); // behind side houses
   for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) tree(sx * (900 + R() * 700), -14, -820 - R() * 120, 1.2 + R() * 0.7); // riverside, near
-  const BL = 3, canopy = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), lam({ flatShading: true }), spots.length * BL);
+  const LITE = document.documentElement.classList.contains('mobile');
+  if (LITE) for (let i = spots.length - 1; i >= 0; i--) if (i % 2) spots.splice(i, 1); // phones: half the trees, 2 blobs each
+  const BL = LITE ? 2 : 3, canopy = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), lam({ flatShading: true }), spots.length * BL);
   const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.7, 1, 6), lam({ color: 0x4c3a2a }), spots.length);
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();
   spots.forEach((t, i) => {

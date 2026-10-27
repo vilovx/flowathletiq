@@ -1,19 +1,21 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=19';
-import { RoastSystem } from './roast.js?v=19';
-import { createChicken, Puffs } from './chicken.js?v=19';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=19';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=19';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=19';
-import { t, onLang, applyDom } from './i18n.js?v=19';
-import { Sfx } from './audio.js?v=19';
-import { buildGunModel } from './gunmodels.js?v=19';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=19';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=19';
+import { buildWorld } from './world.js?v=20';
+import { RoastSystem } from './roast.js?v=20';
+import { createChicken, Puffs } from './chicken.js?v=20';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=20';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=20';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=20';
+import { t, onLang, applyDom } from './i18n.js?v=20';
+import { Sfx } from './audio.js?v=20';
+import { buildGunModel } from './gunmodels.js?v=20';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=20';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=20';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const DEBUG = Q.has('debug');
+const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
+const DEVICE = MOBILE ? 'mobile' : 'pc';
 
 // ---------------- CS2 constants ----------------
 const M_YAW = 0.022, M_PITCH = 0.022;          // degrees per mouse count (CS2 default)
@@ -26,7 +28,8 @@ const EYE = 64;
 // ---------------- Settings ----------------
 const LS = { settings: 'fa_aim_settings', xhair: 'fa_aim_xhair', best: 'fa_aim_best', rank: 'fa_aim_rank', nick: 'fa_aim_nick', country: 'fa_aim_country' };
 const load = (k, d) => { try { return { ...d, ...(JSON.parse(localStorage.getItem(k)) || {}) }; } catch { return { ...d }; } };
-const settings = load(LS.settings, { sens: 1.25, dpi: 800, sound: true, fps: false, weapon: 'ak47' });
+const settings = load(LS.settings, { sens: 1.25, dpi: 800, sound: true, fps: false, weapon: 'ak47', tsens: 1, gyro: false });
+settings.gyro = false; // gyro needs a fresh (iOS) permission each visit, so it always starts off
 W = WEAPONS[settings.weapon] || WEAPONS.ak47;
 let xhair = load(LS.xhair, DEFAULT_XHAIR);
 let xhairRaw = null;
@@ -40,13 +43,13 @@ function applyDecoded(d) {
     centerDotEnabled: d.centerDotEnabled, tStyleEnabled: d.tStyleEnabled, style: d.style };
 }
 const cm360 = () => (360 / (settings.sens * M_YAW)) / settings.dpi * 2.54;
-const sensText = () => `Sens ${settings.sens} · ${settings.dpi} DPI · ${cm360().toFixed(1)} cm/360°`;
+const sensText = () => MOBILE ? `Touch ${settings.tsens.toFixed(2)}${settings.gyro ? ' · Gyro' : ''}` : `Sens ${settings.sens} · ${settings.dpi} DPI · ${cm360().toFixed(1)} cm/360°`;
 
 // ---------------- Renderer / scene ----------------
 const canvas = $('gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !MOBILE, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOBILE ? 1.25 : 2)); // phones: lower pixel ratio, no MSAA, no shadows
+renderer.shadowMap.enabled = !MOBILE; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.autoClear = false;
 const scene = new THREE.Scene();
@@ -92,6 +95,11 @@ function resize() {
   vmCam.aspect = w / h; vmCam.updateProjectionMatrix();
   const dpr = devicePixelRatio || 1;
   xc.width = Math.round(w * dpr); xc.height = Math.round(h * dpr);
+  if (MOBILE) { // scale menus/HUD to small landscape screens
+    const r = document.documentElement.style;
+    r.setProperty('--uiz', Math.max(0.5, Math.min(1, h / 560, w / 1120)).toFixed(3));
+    r.setProperty('--hudz', Math.max(0.6, Math.min(1, h / 640)).toFixed(3));
+  }
 }
 addEventListener('resize', resize); resize();
 function drawOverlay(dt) {
@@ -370,8 +378,11 @@ function reload() {
 
 // ---------------- Main loop ----------------
 let last = performance.now(), fpsAcc = 0, fpsN = 0;
+let lastDraw = 0;
 function tick(now) {
   requestAnimationFrame(tick);
+  if (MOBILE && now - lastDraw < 1000 / 61) return; // phones: cap at 60 fps (120 Hz screens would double the GPU work)
+  lastDraw = now;
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
   fpsAcc += dt; fpsN++; if (fpsAcc > 0.5) { $('h-fps').textContent = settings.fps ? `${Math.round(fpsN / fpsAcc)} FPS` : ''; fpsAcc = 0; fpsN = 0; }
   const sdt = dt * timeScale;
@@ -457,6 +468,7 @@ const screens = ['menu', 'settings', 'editor', 'pause', 'over'];
 let modalReturn = 'menu';
 function show(id) {
   for (const s of screens) $(s).classList.toggle('hidden', s !== id);
+  if (MOBILE) { $('touch').classList.toggle('hidden', !(state === 'play' && !id)); if (G && (state !== 'play' || id)) G.trigger = false; }
   $('hud').classList.toggle('hidden', !(state === 'play' || state === 'pause' || state === 'over-anim'));
 }
 function goMenu() {
@@ -476,13 +488,14 @@ function renderMenu() {
 }
 
 // ---------------- Online leaderboard ----------------
-let lbPeriod = 'all', lastRows = null, lbErr = false;
+let lbPeriod = 'all', lbDevice = DEVICE, lastRows = null, lbErr = false;
+const devTag = (d) => (d === 'mobile' ? 'MOBILE' : 'PC');
 const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 // small rank emblem of the run that made the board (same artwork as the in-game ranks); rank name as tooltip
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=19" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=20" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -493,23 +506,25 @@ function lbRowsHtml(rows) {
     `<span class="w w-${esc(r.weapon || '')}" title="${t('lbWpn')}: ${esc(wpnName(r.weapon))}">${esc(wpnShort(r.weapon))}</span>` +
     `<span class="l" title="${t('lbLvl')} ${r.level}">L${r.level}</span><span class="s">${r.score}</span><span class="h">${r.hs_pct}%</span></li>`).join('');
 }
-function renderLb() { $('lb').innerHTML = lbRowsHtml(lastRows); }
+function renderLb() { $('lb').innerHTML = lbRowsHtml(lastRows); $('lb-tag').textContent = devTag(lbDevice); }
 let boardRows = null;
 async function loadLb(force = false) {
-  const period = lbPeriod;
+  const period = lbPeriod, dev = lbDevice, same = period === 'all' && dev === DEVICE, age = force ? 0 : 30000;
   if (force) lastRows = null;
   renderLb();
-  try {
-    const [rows, board] = await Promise.all([fetchTop(period, 20, force ? 0 : 30000), period === 'all' ? null : fetchTop('all', 20, force ? 0 : 30000)]);
-    boardRows = period === 'all' ? rows : board; world.setBoard(boardRows, t('boardEmpty'));
-    if (period !== lbPeriod) return;
+  try { // the map whiteboard always shows this device's all-time board; the menu list follows the period + PC/Mobile toggles
+    const [rows, board] = await Promise.all([fetchTop(period, 20, age, dev), same ? null : fetchTop('all', 20, age, DEVICE)]);
+    boardRows = same ? rows : board; world.setBoard(boardRows, t('boardEmpty'), devTag(DEVICE));
+    if (period !== lbPeriod || dev !== lbDevice) return;
     lbErr = false; lastRows = rows; renderLb();
-  } catch (e) { if (period === lbPeriod) { lbErr = true; lastRows = null; renderLb(); } }
+  } catch (e) { if (period === lbPeriod && dev === lbDevice) { lbErr = true; lastRows = null; renderLb(); } }
 }
 document.querySelectorAll('.stab').forEach((b) => (b.onclick = () => {
   document.querySelectorAll('.stab').forEach((x) => { x.classList.toggle('on', x === b); x.setAttribute('aria-selected', x === b); });
   $('tab-lb').classList.toggle('hidden', b.dataset.tab !== 'lb'); $('tab-ranks').classList.toggle('hidden', b.dataset.tab !== 'ranks');
 }));
+document.querySelectorAll('.lbd').forEach((b) => { b.classList.toggle('on', b.dataset.d === lbDevice); b.onclick = () => {
+  lbDevice = b.dataset.d; document.querySelectorAll('.lbd').forEach((x) => x.classList.toggle('on', x === b)); loadLb(); }; });
 document.querySelectorAll('.lbp').forEach((b) => (b.onclick = () => {
   lbPeriod = b.dataset.p; document.querySelectorAll('.lbp').forEach((x) => x.classList.toggle('on', x === b)); loadLb();
 }));
@@ -526,7 +541,7 @@ function setupSubmit() {
   const can = G && G.mode === 'chickens' && G.kills > 0;
   box.classList.toggle('hidden', !can);
   if (!can) { lastRun = null; return; }
-  lastRun = { level: G.level, score: G.score, kills: G.kills, hs: Math.round(G.hsKills / G.kills * 100), weapon: W.id, sent: false };
+  lastRun = { level: G.level, score: G.score, kills: G.kills, hs: Math.round(G.hsKills / G.kills * 100), weapon: W.id, device: DEVICE, sent: false };
   $('o-nick').value = localStorage.getItem(LS.nick) || '';
   $('o-country').value = '';
   fillCountries();
@@ -552,6 +567,7 @@ $('o-submit').addEventListener('submit', async (e) => {
 
 // ---------------- Pointer lock / input ----------------
 async function lock() {
+  if (MOBILE) { if (state === 'pause') { state = 'play'; show(null); } return; } // touch mode: no pointer lock
   if (DEBUG && Q.has('nolock')) return;
   try {
     const p = canvas.requestPointerLock({ unadjustedMovement: true });
@@ -586,8 +602,13 @@ addEventListener('keydown', (e) => {
 });
 $('clicklock').addEventListener('click', lock);
 
+function goFull() { // phones: fullscreen + landscape where the browser allows it (Android); iOS Safari just ignores it
+  if (!MOBILE || DEBUG) return;
+  try { const d = document.documentElement, p = !document.fullscreenElement && d.requestFullscreen && d.requestFullscreen({ navigationUI: 'hide' });
+    Promise.resolve(p).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape')).catch(() => {}); } catch {}
+}
 function startGame(level = 1) {
-  sfx.unlock();
+  sfx.unlock(); goFull();
   yaw = 0; pitch = 3;
   setMode('chickens');
   state = 'play'; newRun(level); show(null); lock();
@@ -748,7 +769,7 @@ function showOver(reason) {
 
 // ---------------- Menu buttons ----------------
 $('btn-start').onclick = () => startGame(1);
-$('btn-spray').onclick = () => startSpray();
+$('btn-spray').onclick = () => { goFull(); startSpray(); };
 $('btn-xhair').onclick = () => openModal('editor', 'menu');
 $('btn-settings').onclick = () => openModal('settings', 'menu');
 $('p-resume').onclick = () => { lock(); };
@@ -764,6 +785,7 @@ function openModal(id, from) { modalReturn = from; if (id === 'editor') syncEdit
 function syncSettings() {
   $('s-sens').value = settings.sens; $('s-dpi').value = settings.dpi; $('s-sound').checked = settings.sound; $('s-fps').checked = settings.fps;
   $('s-cm').textContent = cm360().toFixed(2);
+  $('s-tsens').value = settings.tsens; $('s-tsens-v').textContent = settings.tsens.toFixed(2); $('s-gyro').checked = settings.gyro;
   if (rawInput === null) $('s-raw').textContent = t('rawLater');
 }
 for (const id of ['s-sens', 's-dpi', 's-sound', 's-fps']) $(id).addEventListener('input', () => {
@@ -774,6 +796,49 @@ for (const id of ['s-sens', 's-dpi', 's-sound', 's-fps']) $(id).addEventListener
   saveSettings(); $('s-cm').textContent = cm360().toFixed(2); updateHud();
 });
 
+$('s-tsens').addEventListener('input', () => { const v = parseFloat($('s-tsens').value); if (v > 0) settings.tsens = v; $('s-tsens-v').textContent = settings.tsens.toFixed(2); saveSettings(); updateHud(); });
+$('s-gyro').addEventListener('change', async () => {
+  const on = $('s-gyro').checked; $('s-gyro-msg').textContent = '';
+  if (on && typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') { // iOS asks only now, on the toggle
+    let ok = false; try { ok = (await DeviceMotionEvent.requestPermission()) === 'granted'; } catch {}
+    if (!ok) { $('s-gyro').checked = false; settings.gyro = false; $('s-gyro-msg').textContent = t('gyroDenied'); return; }
+  }
+  if (on && typeof DeviceMotionEvent === 'undefined') { $('s-gyro').checked = false; $('s-gyro-msg').textContent = t('gyroNone'); return; }
+  settings.gyro = on; updateHud();
+});
+
+// ---------------- Touch controls (phones / tablets) ----------------
+if (MOBILE) {
+  const look = new Map(); // pointerId -> last x/y (several fingers can aim; the FIRE finger can aim too)
+  const touchK = () => settings.tsens * 100 / Math.max(320, innerWidth); // ° per CSS px: at 1.00 a full-width swipe turns ~100°
+  const aim = (e) => {
+    const p = look.get(e.pointerId); if (!p) return;
+    const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (state !== 'play') return;
+    const k = touchK(); yaw -= dx * k; pitch = Math.max(-89, Math.min(89, pitch - dy * k));
+  };
+  const down = (e) => { e.preventDefault(); sfx.unlock(); look.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { e.currentTarget.setPointerCapture(e.pointerId); } catch {} };
+  const up = (e) => { look.delete(e.pointerId); };
+  const area = $('t-look'), fireB = $('t-fire');
+  area.addEventListener('pointerdown', down); area.addEventListener('pointermove', aim);
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) area.addEventListener(ev, up);
+  fireB.addEventListener('pointerdown', (e) => { down(e); fireB.classList.add('on'); if (state === 'play' && G) G.trigger = true; });
+  fireB.addEventListener('pointermove', aim);
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) fireB.addEventListener(ev, (e) => { up(e); fireB.classList.remove('on'); if (G) G.trigger = false; });
+  document.querySelectorAll('#touch [data-w]').forEach((b) => b.addEventListener('pointerdown', (e) => { e.preventDefault(); switchWeapon(WEAPON_ORDER[+b.dataset.w]); }));
+  $('t-pause').addEventListener('pointerdown', (e) => { e.preventDefault(); if (state === 'play') { state = 'pause'; show('pause'); } });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') { state = 'pause'; show('pause'); } });
+  addEventListener('contextmenu', (e) => e.preventDefault());
+  // optional gyro aim (off by default): integrates the rotation rate, mapped to the current landscape orientation
+  addEventListener('devicemotion', (e) => {
+    if (!settings.gyro || state !== 'play' || !e.rotationRate) return;
+    const r = e.rotationRate, dt = Math.min(0.05, (e.interval > 1 ? e.interval / 1000 : e.interval) || 0.016);
+    const ang = (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 90, s = ang === 270 || ang === -90 ? -1 : 1;
+    const g = 0.9 * settings.tsens;
+    yaw += s * (r.beta || 0) * dt * g; pitch = Math.max(-89, Math.min(89, pitch - s * (r.gamma || 0) * dt * g));
+  });
+}
+
 // Crosshair editor
 const prev = $('xh-prev'), pctx = prev.getContext('2d');
 const XF = ['length', 'thickness', 'gap', 'outline', 'red', 'green', 'blue', 'alpha'];
@@ -783,7 +848,7 @@ fillColors();
 onLang(() => {
   fillColors(); document.title = t('title');
   if (state === 'menu') renderMenu();
-  renderLb(); world.setBoard(boardRows, t('boardEmpty'));
+  renderLb(); world.setBoard(boardRows, t('boardEmpty'), devTag(DEVICE));
   if (state === 'over' && lastRun) fillCountries();
   if (!$('settings').classList.contains('hidden')) syncSettings();
   if (G && G.mode === 'spray') { sprayWall.redraw(); if (sprayWall.result) drawSprayCard(); }
@@ -844,7 +909,7 @@ if (DEBUG) {
       camera.rotation.set(pitch * Math.PI / 180, yaw * Math.PI / 180, 0); camera.updateMatrixWorld();
     },
     shoot(exact = true) { G.burst = 0; G.nextShot = 0; if (exact) { punch.reset(); recoilIndex = 0; accPenalty = 0; } camera.updateMatrixWorld(); for (const c of chickens) c.root.updateMatrixWorld(true); fire(shotDirection(exact)); },
-    weapon(id) { switchWeapon(id); }, get W() { return W; }, punch, idealSpray,
+    weapon(id) { switchWeapon(id); }, get yaw() { return yaw; }, get pitch() { return pitch; }, MOBILE, get W() { return W; }, punch, idealSpray,
     sprayAuto(comp = 1, n) { // simulate holding fire; comp = fraction of ideal compensation applied by the 'player'
       const ideal = idealSpray(W); const y0 = yaw, p0 = pitch; n = n || W.mag; G.trigger = false; sprayWall.clearNext = true;
       for (let i = 0; i < n; i++) { yaw = y0 + ideal[i].x * comp * 1; pitch = p0 - ideal[i].y * comp; camera.rotation.set(pitch * Math.PI / 180, yaw * Math.PI / 180, 0); camera.updateMatrixWorld();
