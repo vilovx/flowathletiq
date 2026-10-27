@@ -32,7 +32,7 @@ const S = {
     wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
     'sp.wall': 'SPRAY TRENIŅŠ', 'sp.hint': 'Turi šaušanu un velc peli pa ciāna līniju', 'sp.result': 'Rezultāts', 'sp.bullets': 'Lodes', 'sp.best': 'Labākais',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC izvēlne', 'sp.raw': '● recoil bez kontroles', 'sp.ideal': '— ideālais peles ceļš', 'sp.yours': '● tavas lodes', 'sp.grid': 'režģis 2°',
-    ranks: ['Vilcēns', 'Jaunais vilks', 'Mednieks', 'Bara sargs', 'Alfa', 'Vilks, kas gaudo mēness gaismā'],
+    ranks: ['Vilcēns', 'Jaunais vilks', 'Mednieks', 'Bara sargs', 'Alfa', 'Mēness Vilks'],
   },
   en: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Play on a computer with a mouse',
@@ -65,7 +65,7 @@ const S = {
     wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
     'sp.wall': 'SPRAY TRAINING', 'sp.hint': 'Hold fire and drag your mouse along the cyan line', 'sp.result': 'Score', 'sp.bullets': 'Bullets', 'sp.best': 'Best',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC menu', 'sp.raw': '● recoil without control', 'sp.ideal': '— ideal mouse path', 'sp.yours': '● your bullets', 'sp.grid': 'grid 2°',
-    ranks: ['Wolf Pup', 'Young Wolf', 'Hunter', 'Pack Guard', 'Alpha', 'Wolf Howling at the Moon'],
+    ranks: ['Wolf Pup', 'Young Wolf', 'Hunter', 'Pack Guard', 'Alpha', 'Moon Wolf'],
   },
   ru: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Играй на компьютере с мышью',
@@ -98,7 +98,7 @@ const S = {
     wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
     'sp.wall': 'ТРЕНИРОВКА СПРЕЯ', 'sp.hint': 'Зажми огонь и веди мышь по голубой линии', 'sp.result': 'Результат', 'sp.bullets': 'Пули', 'sp.best': 'Лучший',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC меню', 'sp.raw': '● отдача без контроля', 'sp.ideal': '— идеальный путь мыши', 'sp.yours': '● твои пули', 'sp.grid': 'сетка 2°',
-    ranks: ['Волчонок', 'Молодой волк', 'Охотник', 'Страж стаи', 'Альфа', 'Волк, воющий на луну'],
+    ranks: ['Волчонок', 'Молодой волк', 'Охотник', 'Страж стаи', 'Альфа', 'Лунный волк'],
   },
 };
 const valid = (c) => !!S[c];
