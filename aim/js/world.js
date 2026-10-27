@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=24';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=25';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -82,7 +82,8 @@ function boxGeo(w, h, d, tile = 128) {
   return g;
 }
 
-const LITE = document.documentElement.classList.contains('mobile'); // touch mode: cheaper scene (no shadows, fewer trees)
+const ROOT = document.documentElement, LITE = ROOT.classList.contains('q-low'); // touch mode, Low quality: no shadows, fewer trees
+const NOSHADOW = ROOT.classList.contains('mobile') && !ROOT.classList.contains('q-high'); // phones: shadows only on High
 export function buildWorld(scene) {
   const T = makeTextures();
   const K = kuldigaTextures();
@@ -127,6 +128,7 @@ export function buildWorld(scene) {
     return add(geo, roofMat, x, y, z);
   };
   const windowAt = (x, y, z, facing, shutterMat = M.shutter, w = 36, h = 56) => {
+    if (ROOT.classList.contains('mobile')) { const h2 = Math.round(h * 1.38); y += (h2 - h) / 2; h = h2; w = Math.round(w * 1.3); } // touch mode: taller/wider openings (same sill) for the bigger chickens
     // facing: 'z' => wall normal +z; 'x' => +x; '-x' => -x
     const g = new THREE.Group(); scene.add(g); g.position.set(x, y, z);
     if (facing === 'x') g.rotation.y = Math.PI / 2; if (facing === '-x') g.rotation.y = -Math.PI / 2;
@@ -258,7 +260,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=24');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=25');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -306,7 +308,7 @@ export function buildWorld(scene) {
     const img = new Image(); let ready = false, rows = null, empty = '', tag = '';
     const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', 'Klee One', 'HGMaruGothicMPRO', 'Hiragino Maru Gothic ProN', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Hiragino Sans', 'Yu Gothic UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', cursive";  // CJK nicks: Caveat has no kana/hanzi
     // small rank emblems (same artwork as the game's ranks) drawn next to each nick
-    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=24`; return im; });
+    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=25`; return im; });
     const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
     function draw() {
       if (!ready) return;
@@ -343,7 +345,7 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=24';
+    img.src = 'img/leaderboard-board.webp?v=25';
     return { plane, set(r, e, tg) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; if (tg !== undefined) tag = tg; draw(); } };
   })();
 
@@ -351,7 +353,7 @@ export function buildWorld(scene) {
   scene.add(new THREE.HemisphereLight(0xdcecff, 0x7a7a62, 1.25));
   const sun = new THREE.DirectionalLight(0xfff4e0, 2.15);
   sun.position.set(-700, 1100, 500); sun.target.position.set(0, 0, -200);
-  sun.castShadow = !LITE; sun.shadow.mapSize.set(2048, 2048);
+  sun.castShadow = !NOSHADOW; const SM = ROOT.classList.contains('mobile') ? 1024 : 2048; sun.shadow.mapSize.set(SM, SM);
   Object.assign(sun.shadow.camera, { left: -1100, right: 1100, top: 1100, bottom: -1100, near: 100, far: 3000 });
   sun.shadow.bias = -0.0005; sun.shadow.normalBias = 1.5;
   scene.add(sun, sun.target);
@@ -394,5 +396,5 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); }, setBoard: (rows, empty, tag) => board.set(rows, empty, tag) };
+  return { sun, worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); }, setBoard: (rows, empty, tag) => board.set(rows, empty, tag) };
 }

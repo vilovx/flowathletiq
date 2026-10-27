@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=24';
+import { MORE } from './i18n-more.js?v=25';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -161,6 +161,18 @@ for (const l in ROT) Object.assign(TOUCH[l], { rotBtn: ROT[l][0], rotNote: ROT[l
 const TM = { lv: ['Telefona režīms (pieskarieni)', 'IESL.', 'IZSL.'], en: ['Touch mode', 'ON', 'OFF'], ru: ['Сенсорный режим', 'ВКЛ', 'ВЫКЛ'], es: ['Modo táctil', 'SÍ', 'NO'],
   pt: ['Modo toque', 'LIGADO', 'DESLIGADO'], ja: ['タッチモード', 'オン', 'オフ'], zh: ['触控模式', '开', '关'] };
 for (const l in TM) Object.assign(TOUCH[l], { touchMode: TM[l][0], on: TM[l][1], off: TM[l][2] });
+const QS = {
+  lv: ['Grafikas kvalitāte', 'Auto', 'Augsta', 'Vidēja', 'Zema', 'Mērķēšanas palīdzība', 'FIRE pogas izmērs', 'Telefonā vistas ir lielākas (vieglāk trāpīt); telefona tabula ir atsevišķa. Auto kvalitāte pati samazinās, ja kadri krīt zem 40 FPS.'],
+  en: ['Graphics quality', 'Auto', 'High', 'Medium', 'Low', 'Aim assist', 'FIRE button size', 'On phones the chickens are bigger (easier to hit); phones have their own leaderboard. Auto quality steps down by itself if the frame rate drops below 40 FPS.'],
+  ru: ['Качество графики', 'Авто', 'Высокое', 'Среднее', 'Низкое', 'Помощь в прицеливании', 'Размер кнопки FIRE', 'На телефоне курицы крупнее (легче попасть); у телефонов своя таблица. Авто-качество снижается само, если FPS падает ниже 40.'],
+  es: ['Calidad gráfica', 'Auto', 'Alta', 'Media', 'Baja', 'Ayuda de apuntado', 'Tamaño del botón FIRE', 'En el móvil las gallinas son más grandes (más fáciles de acertar); los móviles tienen su propia clasificación. La calidad Auto baja sola si los FPS caen por debajo de 40.'],
+  pt: ['Qualidade gráfica', 'Auto', 'Alta', 'Média', 'Baixa', 'Assistência de mira', 'Tamanho do botão FIRE', 'No celular as galinhas são maiores (mais fáceis de acertar); celulares têm ranking próprio. A qualidade Auto baixa sozinha se o FPS cair abaixo de 40.'],
+  ja: ['画質', '自動', '高', '中', '低', 'エイムアシスト', 'FIREボタンの大きさ', 'スマホではニワトリが大きく表示され、当てやすくなります。スマホ用ランキングは別です。自動画質は40FPSを下回ると自動で下がります。'],
+  zh: ['画质', '自动', '高', '中', '低', '辅助瞄准', 'FIRE 按钮大小', '手机上小鸡更大（更容易命中）；手机有独立排行榜。自动画质在帧率低于 40 FPS 时会自动降低。'],
+};
+for (const l in QS) { const a = QS[l]; Object.assign(TOUCH[l], { 'set.quality': a[0], qAuto: a[1], qHigh: a[2], qMed: a[3], qLow: a[4], 'set.fire': a[6], 'set.mnote': a[7] }); }
+const GO = { lv: 'AIZIET!', en: 'GO!', ru: 'ВПЕРЁД!', es: '¡YA!', pt: 'JÁ!', ja: 'スタート！', zh: '开始！' };
+for (const l in GO) TOUCH[l].go = GO[l];
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],

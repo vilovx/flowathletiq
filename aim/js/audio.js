@@ -82,5 +82,7 @@ export class Sfx {
   cluckDie() { this.tone('square', 900, 200, 0.22, 0.06); }
   reload() { if (!this.ok()) return; this.burst(0.05, 3000, 0.15, 4); setTimeout(() => this.burst(0.05, 2400, 0.18, 4), 1200); setTimeout(() => this.burst(0.06, 3500, 0.2, 4), 2100); }
   alarm() { this.tone('sawtooth', 500, 250, 0.5, 0.12); }
+  tick() { this.tone('sine', 880, 880, 0.12, 0.14); }
+  go() { this.tone('square', 660, 1320, 0.38, 0.12); setTimeout(() => this.tone('triangle', 1320, 1760, 0.3, 0.12), 90); }
   level() { this.tone('triangle', 520, 1040, 0.25, 0.15); }
 }

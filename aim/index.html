@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=24">
+<link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=24" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=25" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,7 +59,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <span class="logo-mark"><img src="img/logo-v2.webp?v=24" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+        <span class="logo-mark"><img src="img/logo-v2.webp?v=25" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -88,7 +88,7 @@
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
             <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=24" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=25" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -103,6 +103,9 @@
       <label class="row m-only"><span data-i18n="set.tsens"></span> <input type="range" id="s-tsens" min="0.2" max="3" step="0.05"><output id="s-tsens-v"></output></label>
       <label class="row"><span data-i18n="touchMode"></span> <input type="checkbox" id="s-touch"></label>
       <label class="row m-only fr-only"><span data-i18n="set.forcerot"></span> <input type="checkbox" id="s-forcerot"></label>
+      <label class="row m-only"><span data-i18n="set.quality"></span> <select id="s-quality"><option value="auto" data-i18n="qAuto"></option><option value="high" data-i18n="qHigh"></option><option value="medium" data-i18n="qMed"></option><option value="low" data-i18n="qLow"></option></select></label>
+      <label class="row m-only"><span data-i18n="set.fire"></span> <input type="range" id="s-fire" min="72" max="150" step="2"><output id="s-fire-v"></output></label>
+      <p class="muted small m-only" data-i18n="set.mnote"></p>
       <label class="row m-only"><span data-i18n="set.gyro"></span> <input type="checkbox" id="s-gyro"></label>
       <p class="muted small m-only" id="s-gyro-msg" aria-live="polite"></p>
       <label class="row pc-only"><span data-i18n="set.sens"></span> <input type="number" id="s-sens" step="0.01" min="0.01" max="20"></label>
@@ -159,6 +162,7 @@
     <canvas id="spray-card" class="spray-card" width="300" height="340"></canvas>
     <div id="feed" class="feed"></div>
     <div id="banner" class="banner hidden"></div>
+    <div id="countdown" class="countdown hidden" aria-live="assertive"></div>
     <div id="clicklock" class="clicklock hidden" data-i18n="clickLock">Klikšķini, lai turpinātu</div>
   </div>
 
@@ -214,6 +218,6 @@
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=24"></script>
+<script type="module" src="js/main.js?v=25"></script>
 </body>
 </html>

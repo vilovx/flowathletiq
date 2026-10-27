@@ -291,3 +291,19 @@ html.mobile #over .over-r>.btn-row{position:sticky;bottom:0;margin-top:8px;paddi
 #btn-touch b{display:inline}
 html.mobile #btn-touch b.m-only{display:inline!important}
 #touch-offer{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;font-size:18px;padding:14px 26px}
+/* touch: bigger hit areas, FIRE size from settings */
+#t-fire{width:var(--fire,104px);height:var(--fire,104px)}
+.t-wpn{bottom:calc(var(--fire,104px) + 34px)}
+.t-wpn button{width:72px;height:44px;font-size:17px}
+#t-pause{width:58px;height:52px}
+html.mobile .btn{min-height:44px}
+html.mobile .lbp,html.mobile .lbd{padding:6px 12px}
+html.mobile #settings input[type=checkbox]{width:22px;height:22px}
+html.mobile #settings input[type=range]{min-height:30px}
+/* get-ready countdown 5..1, GO */
+.countdown{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);font-family:var(--display);font-weight:700;font-size:170px;line-height:1;color:#fff;text-shadow:0 0 30px rgba(0,240,255,.65),0 6px 20px rgba(0,0,0,.6);pointer-events:none}
+.countdown.tick{animation:cdTick 1s ease-out both}
+.countdown.go{font-size:120px;color:#00f0ff;text-shadow:0 0 24px rgba(176,0,255,.85),0 0 6px rgba(0,240,255,.8),0 6px 20px rgba(0,0,0,.6);animation:cdGo .9s ease-out both}
+@keyframes cdTick{0%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}18%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:.85;transform:translate(-50%,-50%) scale(.9)}}
+@keyframes cdGo{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+@media (prefers-reduced-motion:reduce){.countdown.tick,.countdown.go{animation:none}}
