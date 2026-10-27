@@ -115,18 +115,18 @@ export function buildBackdrop(scene, T) {
   const grassP = (w, d) => { const g = new THREE.PlaneGeometry(w, d); const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * w / 160, uv.getY(i) * d / 160); return g; };
   const grassMat = lam({ map: T.grass });
   // riverside: cobbled strip ends at z=-760, then a grassy bank sloping down to the water
-  { const g = grassP(8000, 260); g.rotateX(-Math.PI / 2 + Math.atan2(70, 260)); put(g, grassMat, 0, -35, -890); }
+  { const g = grassP(8000, 262); g.rotateX(-Math.PI / 2 + Math.atan2(42, 260)); put(g, grassMat, 0, -21, -890); }
   // water: downstream (near) and upstream (beyond the rumba) levels, slowly flowing toward the viewer
   const waterNear = lam({ map: T.water.clone(), color: 0xc8d8de }); waterNear.map.repeat.set(10, 6);
   const waterFar = lam({ map: T.water.clone(), color: 0xd0dfe4 }); waterFar.map.repeat.set(10, 8);
-  { const g = new THREE.PlaneGeometry(8000, 700); g.rotateX(-Math.PI / 2); put(g, waterNear, 0, -70, -1360); }
-  { const g = new THREE.PlaneGeometry(8000, 1800); g.rotateX(-Math.PI / 2); put(g, waterFar, 0, -45, -2610); }
+  { const g = new THREE.PlaneGeometry(8000, 450); g.rotateX(-Math.PI / 2); put(g, waterNear, 0, -40, -1235); }
+  { const g = new THREE.PlaneGeometry(8000, 2060); g.rotateX(-Math.PI / 2); put(g, waterFar, 0, -12, -2480); }
   // Ventas rumba: wide, low waterfall step across the whole river with foam
   const foamM = new THREE.MeshLambertMaterial({ map: T.foam.clone(), transparent: true, depthWrite: false, color: 0xffffff }); foamM.map.repeat.set(24, 1);
-  const foamM2 = new THREE.MeshLambertMaterial({ map: T.foam.clone(), transparent: true, depthWrite: false, opacity: 0.8 }); foamM2.map.repeat.set(20, 1);
-  { const g = new THREE.PlaneGeometry(3700, 32); put(g, lam({ color: 0x9fb9c2 }), 0, -57.5, -1711).rotation.x = -Math.atan2(18, 25); } // sloped water face of the 25-unit drop
-  { const g = new THREE.PlaneGeometry(3700, 34); const m = put(g, foamM, 0, -57, -1709); m.rotation.x = -0.35; }
-  { const g = new THREE.PlaneGeometry(3700, 120); g.rotateX(-Math.PI / 2); put(g, foamM2, 0, -69, -1650); }
+  const foamM2 = new THREE.MeshLambertMaterial({ map: T.foam.clone(), transparent: true, depthWrite: false, opacity: 0.95 }); foamM2.map.repeat.set(20, 1.5);
+  { const g = new THREE.PlaneGeometry(3700, 34); put(g, lam({ color: 0x9fb9c2 }), 0, -26, -1450).rotation.x = -Math.atan2(18, 25); } // sloped water face of the 25-unit drop
+  { const g = new THREE.PlaneGeometry(3700, 34); const m = put(g, foamM, 0, -25, -1448); m.rotation.x = -0.35; }
+  { const g = new THREE.PlaneGeometry(3700, 180); g.rotateX(-Math.PI / 2); put(g, foamM2, 0, -39, -1362); }
   // high green banks left and right of the river (the bridge ends in them)
   const bank = (sx) => {
     const s = new THREE.Shape(); s.moveTo(0, -80); s.lineTo(2400, -80); s.lineTo(2400, 340); s.lineTo(230, 340); s.lineTo(0, -80);
@@ -141,8 +141,8 @@ export function buildBackdrop(scene, T) {
     put(g, m, 0, 180, -3850); }
 
   // --- Kuldīga red-brick bridge: 7 arches, light stone cutwaters, brick parapet with openings
-  const Z = -2350, L = 3700, X0 = -L / 2, DECK = 330, BASE = -70, N = 7, PIER = 86, ABUT = 120, WIDTH = 300;
-  const span = (L - 2 * ABUT - (N - 1) * PIER) / N, SPRING = 40, RISE = 205;
+  const Z = -1950, L = 3700, X0 = -L / 2, DECK = 360, BASE = -20, N = 7, PIER = 86, ABUT = 120, WIDTH = 300;
+  const span = (L - 2 * ABUT - (N - 1) * PIER) / N, SPRING = 50, RISE = 225;
   const brickM = lam({ map: T.brick.clone(), color: 0xf0d8cc }); brickM.map.repeat.set(1 / 96, 1 / 96);
   const ringM = lam({ map: T.brick.clone(), color: 0xffc7a8 }); ringM.map.repeat.set(1 / 60, 1 / 60);
   const stoneM = lam({ color: 0xc8c0b2, flatShading: true });
@@ -194,7 +194,7 @@ export function buildBackdrop(scene, T) {
   for (const sx of [-1, 1]) for (let i = 0; i < 26; i++) tree(sx * (2000 + R() * 1500), 340, -900 - R() * 1900, 1.4 + R() * 1.1); // side banks
   for (let i = 0; i < 26; i++) tree(-1500 + i * 120 + (R() - 0.5) * 50, 0, 980 + R() * 600, 1.8 + R() * 1.0);                   // behind the back wall
   for (const sx of [-1, 1]) for (let i = 0; i < 9; i++) tree(sx * (950 + R() * 500), 0, -450 + i * 120 + R() * 60, 1.7 + R() * 0.8); // behind side houses
-  for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) tree(sx * (900 + R() * 700), 0, -820 - R() * 120, 1.2 + R() * 0.7); // riverside, near
+  for (const sx of [-1, 1]) for (let i = 0; i < 5; i++) tree(sx * (900 + R() * 700), -14, -820 - R() * 120, 1.2 + R() * 0.7); // riverside, near
   const BL = 3, canopy = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), lam({ flatShading: true }), spots.length * BL);
   const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.5, 0.7, 1, 6), lam({ color: 0x4c3a2a }), spots.length);
   const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3(), col = new THREE.Color();

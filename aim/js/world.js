@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=13';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=14';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -98,7 +98,6 @@ export function buildWorld(scene) {
   };
   const roofMat = mat({ map: T.roof.clone() }); roofMat.map.repeat.set(1 / 64, 1 / 64);
   const stoneX = mat({ map: K.brick.clone(), color: 0xf2e2da }); stoneX.map.repeat.set(1 / 128, 1 / 128);
-  const plasterX = mat({ map: T.plaster.clone(), color: 0xf6dc8c }); plasterX.map.repeat.set(1 / 128, 1 / 128);
 
   scene.background = new THREE.Color(0xa9cdea);
   scene.fog = new THREE.Fog(0xd3e2ee, 2600, 9000);
@@ -152,26 +151,24 @@ export function buildWorld(scene) {
     return g;
   };
 
-  // --- Back apartment building (front face z=-560)
-  box(860, 288, 160, M.plaster, 0, 276, -640);
-  { // ground floor: four open gate passages through the house (you can see the river and the bridge through them)
-    const s = new THREE.Shape(); s.moveTo(-430, 0); s.lineTo(430, 0); s.lineTo(430, 132); s.lineTo(-430, 132); s.lineTo(-430, 0);
-    for (const x of [-150, -50, 50, 150]) { const p = new THREE.Path(); p.moveTo(x - 36, 0); p.lineTo(x + 36, 0); p.lineTo(x + 36, 96); p.absarc(x, 96, 36, 0, Math.PI, false); p.lineTo(x - 36, 0); s.holes.push(p); }
-    const geo = new THREE.ExtrudeGeometry(s, { depth: 160, bevelEnabled: false, curveSegments: 12 }); geo.translate(0, 0, -720);
-    add(geo, plasterX, 0, 0, 0);
-    for (const x of [-150, -50, 50, 150]) { // white arch surrounds
-      const r = new THREE.Shape(); r.moveTo(x - 44, 0); r.lineTo(x - 44, 96); r.absarc(x, 96, 44, Math.PI, 0, true); r.lineTo(x + 44, 0);
-      r.lineTo(x + 36, 0); r.lineTo(x + 36, 96); r.absarc(x, 96, 36, 0, Math.PI, false); r.lineTo(x - 36, 0); r.lineTo(x - 44, 0);
-      const rg = new THREE.ExtrudeGeometry(r, { depth: 3, bevelEnabled: false, curveSegments: 12 }); add(rg, M.frame, 0, 0, -560, { cast: false, shoot: false });
-    }
-  }
-  box(870, 14, 170, M.slab, 0, 140, -640); // cornice lines
-  box(870, 14, 170, M.slab, 0, 262, -640);
-  roof(860, 160, 70, 0, 420, -640);
-  box(880, 10, 180, M.slab, 0, 422, -640, { cast: false });
-  for (const x of [-300, -100, 100, 300]) { balcony(x, 150, -560, 'z'); balcony(x, 272, -560, 'z'); }
-  for (const x of [-200, 0, 200, -390, 390]) { windowAt(x, 200, -558, 'z'); windowAt(x, 325, -558, 'z'); }
-  for (const x of [-265, 390]) windowAt(x, 70, -558, 'z', M.shutter2, 30, 48);
+  // --- Back of the square (front face z=-560): two old-town houses with a wide street between them that opens onto the
+  // Venta riverside, so the brick bridge and the rumba are in view straight ahead. Left: 3-storey yellow house (Vistu krogs),
+  // right: lower 2-storey pastel house. Wings span x 150..440 (mirrored), 120 deep (z -560..-680).
+  const WX = 295, WW = 290, WZ = -620, WD = 120;
+  const plasterR = mat({ map: T.plaster, color: 0xf3c8a2 });
+  box(WW, 420, WD, M.plaster, -WX, 210, WZ);                                // left house, 3 floors
+  box(WW + 10, 14, WD + 10, M.slab, -WX, 140, WZ); box(WW + 10, 14, WD + 10, M.slab, -WX, 262, WZ);
+  roof(WW, WD, 70, -WX, 420, WZ); box(WW + 20, 10, WD + 20, M.slab, -WX, 422, WZ, { cast: false });
+  box(WW, 300, WD, plasterR, WX, 150, WZ);                                  // right house, 2 floors
+  box(WW + 10, 14, WD + 10, M.slab, WX, 140, WZ);
+  roof(WW, WD, 70, WX, 300, WZ); box(WW + 20, 10, WD + 20, M.slab, WX, 302, WZ, { cast: false });
+  for (const y of [150, 272]) balcony(-305, y, -560, 'z', 84);
+  balcony(305, 150, -560, 'z', 84);
+  for (const x of [-395, -205]) { windowAt(x, 200, -558, 'z'); windowAt(x, 325, -558, 'z'); }
+  for (const x of [205, 395]) windowAt(x, 200, -558, 'z', M.shutter2);
+  windowAt(-148, 200, -615, 'x'); windowAt(-148, 325, -615, 'x'); windowAt(148, 200, -615, '-x', M.shutter2); // street-side windows
+  for (const [x, y] of [[-148, 70], [148, 70]]) windowAt(x, y, -640, x < 0 ? 'x' : '-x', M.shutter2, 30, 48);
+  for (const x of [-230, 200, 395]) windowAt(x, 70, -558, 'z', M.shutter2, 30, 48);
   // --- "Vistu krogs" tavern (generic Latvian name, original sign) in the back house's ground floor, door at x=-385 (left of the A-site crates, visible from spawn)
   const tavern = (() => {
     const DX = -385, DW = 44, DH = 86;
@@ -260,7 +257,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=13');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=14');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -338,7 +335,7 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=13';
+    img.src = 'img/leaderboard-board.webp?v=14';
     return { plane, set(r, e) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; draw(); } };
   })();
 
@@ -360,9 +357,13 @@ export function buildWorld(scene) {
   const roofE = (k, x, y, z, fwd) => (SP[k] = { kind: 'roof', face: V(x, y, z), emerge: V(0, 1, 0), fwd, perch: V(x, y, z).addScaledVector(fwd, 16) });
   const roofR = (k, x, y, z) => { roofE(k, x, y, z, NX); SP[k].perch = V(566, 272, z); }; // sit on the roof slope, not the eave
   const PZ = V(0, 0, 1), PX = V(1, 0, 0), NX = V(-1, 0, 0);
-  for (const x of [-200, 0, 200, -390, 390]) { win('w1' + x, x, 172, -556, PZ); win('w2' + x, x, 297, -556, PZ); }
-  for (const x of [-300, -100, 100, 300]) { door('d1' + x, x, 150, -557, PZ, 35); door('d2' + x, x, 272, -557, PZ, 35); }
-  for (const x of [-350, -150, 150, 350]) roofE('r' + x, x, 426, -582, PZ);
+  for (const x of [-395, -205]) { win('w1' + x, x, 172, -556, PZ); win('w2' + x, x, 297, -556, PZ); }
+  for (const x of [205, 395]) win('w1' + x, x, 172, -556, PZ);
+  door('d1-305', -305, 150, -557, PZ, 35); door('d2-305', -305, 272, -557, PZ, 35); door('d1305', 305, 150, -557, PZ, 35);
+  for (const x of [-380, -295, -210]) roofE('r' + x, x, 426, -562, PZ);
+  for (const x of [210, 295, 380]) roofE('r' + x, x, 306, -562, PZ);
+  // street-side windows of the two back houses (corner peeks into the riverside street)
+  win('iL1', -146, 172, -615, PX); win('iL2', -146, 297, -615, PX); win('iR1', 146, 172, -615, NX);
   // side-building windows (flank surprise pool): left apartment (+x facing) and right arcade building (-x facing)
   const side = [];
   for (const z of [-280, -130, 20, 140]) side.push(win('lw' + z, -516, 215, z, PX));
@@ -373,9 +374,9 @@ export function buildWorld(scene) {
   for (const z of [-400, -230, -80]) roofE('lr' + z, -542, 305, z, PX);
   for (const z of [-450, -280, -60]) roofR('rr' + z, 572, 267, z);
   // ordered for gradual unlocking: central/easy first
-  const order = ['w10', 'd1-100', 'd1100', 'w1-200', 'w1200', 'r-150', 'r150', 'w20', 'd1-300', 'd1300', 'ld1-200', 'rr-280',
-    'd2-100', 'd2100', 'w2-200', 'w2200', 'lr-230', 'ld2-360', 'rr-450', 'r-350', 'r350', 'w1-390', 'w1390', 'd2-300', 'd2300',
-    'ld1-60', 'ld2-200', 'ld1-360', 'ld2-60', 'lr-400', 'lr-80', 'rr-60', 'w2-390', 'w2390'];
+  const order = ['w1-205', 'w1205', 'd1-305', 'd1305', 'r-210', 'r210', 'iL1', 'iR1', 'w1-395', 'w1395', 'ld1-200', 'rr-280',
+    'w2-205', 'd2-305', 'lr-230', 'ld2-360', 'rr-450', 'r-295', 'r295', 'iL2', 'w2-395', 'r-380', 'r380',
+    'ld1-60', 'ld2-200', 'ld1-360', 'ld2-60', 'lr-400', 'lr-80', 'rr-60'];
   const spawns = order.map((k) => SP[k]);
   const sideSpawns = side;
   const exits = [
