@@ -1,21 +1,23 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=21';
-import { RoastSystem } from './roast.js?v=21';
-import { createChicken, Puffs } from './chicken.js?v=21';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=21';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=21';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=21';
-import { t, onLang, applyDom } from './i18n.js?v=21';
-import { Sfx } from './audio.js?v=21';
-import { buildGunModel } from './gunmodels.js?v=21';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=21';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=21';
+import { buildWorld } from './world.js?v=22';
+import { RoastSystem } from './roast.js?v=22';
+import { createChicken, Puffs } from './chicken.js?v=22';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=22';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=22';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=22';
+import { t, onLang, applyDom } from './i18n.js?v=22';
+import { Sfx } from './audio.js?v=22';
+import { buildGunModel } from './gunmodels.js?v=22';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=22';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=22';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
+import { forced, forceOff } from './rot.js?v=22';
+const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
 // ---------------- CS2 constants ----------------
@@ -90,7 +92,7 @@ function buildGun(w) {
 const xc = $('xh'), xctx = xc.getContext('2d');
 let hitMarker = { t: 0, kill: false };
 function resize() {
-  const w = innerWidth, h = innerHeight;
+  const w = VW(), h = VH();
   renderer.setSize(w, h, false);
   camera.aspect = w / h; camera.updateProjectionMatrix();
   vmCam.aspect = w / h; vmCam.updateProjectionMatrix();
@@ -363,8 +365,8 @@ function floatDamage(point, d, hs, kill) {
   const el = document.createElement('div');
   el.className = 'dmg' + (hs ? ' hs' : '') + (kill ? ' kill' : '');
   el.textContent = (hs ? '⌖ ' : '') + d;
-  el.style.left = ((_v.x + 1) / 2 * innerWidth + 18) + 'px';
-  el.style.top = ((1 - _v.y) / 2 * innerHeight - 14) + 'px';
+  el.style.left = ((_v.x + 1) / 2 * VW() + 18) + 'px';
+  el.style.top = ((1 - _v.y) / 2 * VH() - 14) + 'px';
   $('fx').appendChild(el); setTimeout(() => el.remove(), 850);
 }
 function feed(html, hs) {
@@ -496,7 +498,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=21" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=22" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -786,6 +788,7 @@ function openModal(id, from) { modalReturn = from; if (id === 'editor') syncEdit
 function syncSettings() {
   $('s-sens').value = settings.sens; $('s-dpi').value = settings.dpi; $('s-sound').checked = settings.sound; $('s-fps').checked = settings.fps;
   $('s-cm').textContent = cm360().toFixed(2);
+  $('s-forcerot').checked = forced();
   $('s-tsens').value = settings.tsens; $('s-tsens-v').textContent = settings.tsens.toFixed(2); $('s-gyro').checked = settings.gyro;
   if (rawInput === null) $('s-raw').textContent = t('rawLater');
 }
@@ -797,6 +800,8 @@ for (const id of ['s-sens', 's-dpi', 's-sound', 's-fps']) $(id).addEventListener
   saveSettings(); $('s-cm').textContent = cm360().toFixed(2); updateHud();
 });
 
+$('s-forcerot').addEventListener('change', () => { if (!$('s-forcerot').checked) forceOff(); });
+$('p-rot').onclick = () => forceOff();
 $('s-tsens').addEventListener('input', () => { const v = parseFloat($('s-tsens').value); if (v > 0) settings.tsens = v; $('s-tsens-v').textContent = settings.tsens.toFixed(2); saveSettings(); updateHud(); });
 $('s-gyro').addEventListener('change', async () => {
   const on = $('s-gyro').checked; $('s-gyro-msg').textContent = '';
@@ -811,10 +816,11 @@ $('s-gyro').addEventListener('change', async () => {
 // ---------------- Touch controls (phones / tablets) ----------------
 if (MOBILE) {
   const look = new Map(); // pointerId -> last x/y (several fingers can aim; the FIRE finger can aim too)
-  const touchK = () => settings.tsens * 100 / Math.max(320, innerWidth); // ° per CSS px: at 1.00 a full-width swipe turns ~100°
+  const touchK = () => settings.tsens * 100 / Math.max(320, VW()); // ° per CSS px: at 1.00 a full-width swipe turns ~100°
   const aim = (e) => {
     const p = look.get(e.pointerId); if (!p) return;
-    const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    let dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (forced()) { const sx = dx; dx = dy; dy = -sx; } // #app is rotated 90° clockwise: screen ↓ = game →, screen → = game ↑
     if (state !== 'play') return;
     const k = touchK(); yaw -= dx * k; pitch = Math.max(-89, Math.min(89, pitch - dy * k));
   };
@@ -834,7 +840,8 @@ if (MOBILE) {
   addEventListener('devicemotion', (e) => {
     if (!settings.gyro || state !== 'play' || !e.rotationRate) return;
     const r = e.rotationRate, dt = Math.min(0.05, (e.interval > 1 ? e.interval / 1000 : e.interval) || 0.016);
-    const ang = (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 90, s = ang === 270 || ang === -90 ? -1 : 1;
+    // forced landscape: the phone is held top-left while the OS still reports portrait
+    const ang = forced() ? 90 : ((screen.orientation && screen.orientation.angle) ?? window.orientation ?? 90), s = ang === 270 || ang === -90 ? -1 : 1;
     const g = 0.9 * settings.tsens;
     yaw += s * (r.beta || 0) * dt * g; pitch = Math.max(-89, Math.min(89, pitch - s * (r.gamma || 0) * dt * g));
   });
@@ -872,7 +879,7 @@ function drawPreview() {
   pctx.fillStyle = '#2b2a2e'; pctx.fillRect(w * 0.7, h * 0.3, w * 0.1, h * 0.18);
   pctx.fillStyle = '#3f2a1a'; pctx.fillRect(0, h * 0.62, w * 0.35, h * 0.38);
   // draw at the same pixel size as in game (scale by real screen height)
-  const screenH = innerHeight * (devicePixelRatio || 1);
+  const screenH = VH() * (devicePixelRatio || 1);
   drawCrosshair(pctx, xhair, w / 2, h / 2, screenH * (prev.width / prev.clientWidth || 1) / (devicePixelRatio || 1));
 }
 for (const f of XF) $('x-' + f).addEventListener('input', (e) => { xhair[f] = parseFloat(e.target.value); if (['red', 'green', 'blue'].includes(f)) xhair.color = 5; saveXhair(); syncEditor(); });

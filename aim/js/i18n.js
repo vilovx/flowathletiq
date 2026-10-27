@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=21';
+import { MORE } from './i18n-more.js?v=22';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -148,6 +148,16 @@ const TOUCH = {
   zh: { rotate: '请把手机横过来游玩', 'set.tsens': '触控灵敏度', 'set.gyro': '陀螺仪瞄准', gyroDenied: '未获得运动传感器权限。', gyroNone: '此设备不提供陀螺仪数据。', lbMobile: '手机',
     'tip.touch': '<b>拖动屏幕：</b>瞄准 &nbsp; <b>按住 ◎：</b>射击（全自动压枪） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>暂停' },
 };
+const ROT = {
+  lv: ['Pagriezt ekrānu', 'Ja telefons negriežas (rotācijas bloķēšana), poga pagriezīs spēli pati — turi telefonu ar augšu pa kreisi.', 'Piespiedu horizontālais skats', 'Izslēgt ekrāna pagriešanu'],
+  en: ['Rotate screen', 'If your phone will not rotate (rotation lock), this button turns the game for you — hold the phone with its top to the left.', 'Forced landscape', 'Turn off screen rotation'],
+  ru: ['Повернуть экран', 'Если телефон не поворачивается (блокировка поворота), кнопка повернёт игру сама — держи телефон верхом влево.', 'Принудительный ландшафт', 'Выключить поворот экрана'],
+  es: ['Girar pantalla', 'Si el móvil no gira (bloqueo de rotación), este botón gira el juego por ti: sujeta el móvil con la parte de arriba a la izquierda.', 'Horizontal forzado', 'Desactivar giro de pantalla'],
+  pt: ['Girar tela', 'Se o celular não gira (bloqueio de rotação), este botão gira o jogo para você — segure o celular com o topo para a esquerda.', 'Paisagem forçada', 'Desativar giro de tela'],
+  ja: ['画面を回転', '画面が回転しない（回転ロック）場合、このボタンでゲームを回転します。スマホの上側を左にして持ってください。', '強制横向き', '画面回転をオフ'],
+  zh: ['旋转屏幕', '如果手机不会自动旋转（已锁定方向），此按钮会帮你旋转游戏——请把手机顶部朝左握持。', '强制横屏', '关闭屏幕旋转'],
+};
+for (const l in ROT) Object.assign(TOUCH[l], { rotBtn: ROT[l][0], rotNote: ROT[l][1], 'set.forcerot': ROT[l][2], rotOff: ROT[l][3] });
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],
