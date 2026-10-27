@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=23';
+import { MORE } from './i18n-more.js?v=24';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -158,6 +158,9 @@ const ROT = {
   zh: ['旋转屏幕', '如果手机不会自动旋转（已锁定方向），此按钮会帮你旋转游戏——请把手机顶部朝左握持。', '强制横屏', '关闭屏幕旋转'],
 };
 for (const l in ROT) Object.assign(TOUCH[l], { rotBtn: ROT[l][0], rotNote: ROT[l][1], 'set.forcerot': ROT[l][2], rotOff: ROT[l][3] });
+const TM = { lv: ['Telefona režīms (pieskarieni)', 'IESL.', 'IZSL.'], en: ['Touch mode', 'ON', 'OFF'], ru: ['Сенсорный режим', 'ВКЛ', 'ВЫКЛ'], es: ['Modo táctil', 'SÍ', 'NO'],
+  pt: ['Modo toque', 'LIGADO', 'DESLIGADO'], ja: ['タッチモード', 'オン', 'オフ'], zh: ['触控模式', '开', '关'] };
+for (const l in TM) Object.assign(TOUCH[l], { touchMode: TM[l][0], on: TM[l][1], off: TM[l][2] });
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],

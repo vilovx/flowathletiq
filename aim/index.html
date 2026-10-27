@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=23">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=23" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=24" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,7 +59,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <span class="logo-mark"><img src="img/logo-v2.webp?v=23" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+        <span class="logo-mark"><img src="img/logo-v2.webp?v=24" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -76,6 +76,7 @@
           <li class="pc-only" data-i18n="tip.dmg"></li>
         </ul>
         <div class="sensline" id="menu-sens"></div>
+        <button type="button" class="btn small ghost touch-tg" id="btn-touch"><span aria-hidden="true">📱</span> <span data-i18n="touchMode"></span>: <b class="m-only" data-i18n="on"></b><b class="pc-only" data-i18n="off"></b></button>
       </div>
       <div class="card menu-side">
         <h2 data-i18n="pbTitle"></h2>
@@ -87,7 +88,7 @@
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
             <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=23" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=24" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -100,6 +101,7 @@
     <div class="card modal">
       <h2 data-i18n="settings"></h2>
       <label class="row m-only"><span data-i18n="set.tsens"></span> <input type="range" id="s-tsens" min="0.2" max="3" step="0.05"><output id="s-tsens-v"></output></label>
+      <label class="row"><span data-i18n="touchMode"></span> <input type="checkbox" id="s-touch"></label>
       <label class="row m-only fr-only"><span data-i18n="set.forcerot"></span> <input type="checkbox" id="s-forcerot"></label>
       <label class="row m-only"><span data-i18n="set.gyro"></span> <input type="checkbox" id="s-gyro"></label>
       <p class="muted small m-only" id="s-gyro-msg" aria-live="polite"></p>
@@ -167,6 +169,7 @@
     <div class="t-wpn"><button type="button" data-w="0">1<small>AK-47</small></button><button type="button" data-w="1">2<small>M4A4</small></button><button type="button" data-w="2">3<small>M4A1-S</small></button></div>
     <button type="button" id="t-fire" aria-label="Fire"><svg viewBox="0 0 48 48" width="46" height="46" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="3.5"/><path d="M24 3v12M24 33v12M3 24h12M33 24h12" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="currentColor"/></svg></button>
   </div>
+  <button type="button" id="touch-offer" class="btn big hidden"><span aria-hidden="true">📱</span> <span data-i18n="touchMode"></span></button>
   <!-- Portrait warning (phones) -->
   <div id="rotate"><div><div class="rot-ico" aria-hidden="true">📱</div><p data-i18n="rotate"></p><button type="button" class="btn big" id="rot-btn" data-i18n="rotBtn">Rotate screen</button><p class="muted small" data-i18n="rotNote"></p></div></div>
 
@@ -211,6 +214,6 @@
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=23"></script>
+<script type="module" src="js/main.js?v=24"></script>
 </body>
 </html>

@@ -1,22 +1,22 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=23';
-import { RoastSystem } from './roast.js?v=23';
-import { createChicken, Puffs } from './chicken.js?v=23';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=23';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=23';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=23';
-import { t, onLang, applyDom } from './i18n.js?v=23';
-import { Sfx } from './audio.js?v=23';
-import { buildGunModel } from './gunmodels.js?v=23';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=23';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=23';
+import { buildWorld } from './world.js?v=24';
+import { RoastSystem } from './roast.js?v=24';
+import { createChicken, Puffs } from './chicken.js?v=24';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=24';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=24';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=24';
+import { t, onLang, applyDom } from './i18n.js?v=24';
+import { Sfx } from './audio.js?v=24';
+import { buildGunModel } from './gunmodels.js?v=24';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=24';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=24';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
-import { forced, forceOff } from './rot.js?v=23';
+import { forced, forceOff } from './rot.js?v=24';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -498,7 +498,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=23" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=24" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -788,7 +788,7 @@ function openModal(id, from) { modalReturn = from; if (id === 'editor') syncEdit
 function syncSettings() {
   $('s-sens').value = settings.sens; $('s-dpi').value = settings.dpi; $('s-sound').checked = settings.sound; $('s-fps').checked = settings.fps;
   $('s-cm').textContent = cm360().toFixed(2);
-  $('s-forcerot').checked = forced();
+  $('s-forcerot').checked = forced(); $('s-touch').checked = MOBILE;
   $('s-tsens').value = settings.tsens; $('s-tsens-v').textContent = settings.tsens.toFixed(2); $('s-gyro').checked = settings.gyro;
   if (rawInput === null) $('s-raw').textContent = t('rawLater');
 }
@@ -812,6 +812,25 @@ $('s-gyro').addEventListener('change', async () => {
   if (on && typeof DeviceMotionEvent === 'undefined') { $('s-gyro').checked = false; $('s-gyro-msg').textContent = t('gyroNone'); return; }
   settings.gyro = on; updateHud();
 });
+
+// ---------------- Touch mode switch (menu + settings), saved; reload so renderer/scene use the right profile ----------------
+function setTouchMode(on) {
+  try { localStorage.setItem('fa_aim_touch', on ? '1' : '0'); } catch {}
+  const u = new URL(location.href); u.searchParams.delete('mobile'); location.replace(u.toString());
+}
+$('btn-touch').onclick = () => setTouchMode(!MOBILE);
+$('s-touch').addEventListener('change', () => setTouchMode($('s-touch').checked));
+if (!MOBILE) { // desktop mode but the first input is a finger (no real mouse moved yet): switch to touch mode, or offer it on big screens
+  let mouseSeen = false;
+  addEventListener('mousemove', (e) => { if (!e.sourceCapabilities || !e.sourceCapabilities.firesTouchEvents) mouseSeen = true; }, { passive: true });
+  addEventListener('touchstart', () => {
+    if (mouseSeen || document.pointerLockElement) return;
+    const short = Math.min(screen.width || 0, screen.height || 0);
+    if (short && short <= 900) setTouchMode(true);
+    else $('touch-offer').classList.remove('hidden');
+  }, { passive: true, once: true });
+  $('touch-offer').onclick = () => setTouchMode(true);
+}
 
 // ---------------- Touch controls (phones / tablets) ----------------
 if (MOBILE) {

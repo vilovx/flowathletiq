@@ -639,9 +639,7 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
   .nav-aim-note { display: inline; margin-left: auto; font-size: .72rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: .75; }
 }
 /* phones/tablets: the game has touch controls; show a short how-to under the Play button */
-@media (hover: none) and (pointer: coarse) {
-  .aim-promo-mobile { display: block; margin-top: .6rem !important; padding: .5rem .7rem; border-radius: 10px; background: rgba(0,240,255,.08); border: 1px dashed rgba(0,240,255,.4); color: var(--text) !important; font-weight: 600; }
-}
+html.fa-touch .aim-promo-mobile { display: block; margin-top: .6rem !important; padding: .5rem .7rem; border-radius: 10px; background: rgba(0,240,255,.08); border: 1px dashed rgba(0,240,255,.4); color: var(--text) !important; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .nav .nav-aim-btn .aim-ico { animation: none; } }
 .aim-promo-art { position: relative; }
 .aim-promo-wb { position: absolute; left: calc(.8rem + (100% - 1.6rem) * .395); width: calc((100% - 1.6rem) * .575); top: calc(.6rem + 12%); height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; color: #14204a; text-align: center; }

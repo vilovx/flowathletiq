@@ -187,6 +187,18 @@
     return null;
   }
   // ---------- Aim Trainer (browser game at /aim/; mouse on PC, touch controls on phones/tablets) ----------
+  // phone/tablet detection: same rule as the game (aim/js/main.js isPhoneLike) -> html.fa-touch shows the phone how-to on the card
+  function isPhoneLike() {
+    var n = navigator, tp = n.maxTouchPoints || 0, ua = n.userAgent || "";
+    function mm(q) { try { return matchMedia(q).matches; } catch (e) { return false; } }
+    if (n.userAgentData && n.userAgentData.mobile) return true;
+    if (/Android|iPhone|iPad|iPod|Mobile|Silk|Opera Mini|IEMobile/i.test(ua)) return true;
+    if (n.platform === "MacIntel" && tp > 1) return true;
+    if (mm("(any-pointer: coarse)") && tp > 0 && !mm("(pointer: fine)")) return true;
+    var short = Math.min(screen.width || 0, screen.height || 0);
+    return tp > 0 && short > 0 && short <= 900 && mm("(pointer: coarse)");
+  }
+  document.documentElement.classList.toggle("fa-touch", isPhoneLike());
   var AIM_ICON = '<svg class="aim-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>';
   function aimUrl() { return "aim/?lang=" + encodeURIComponent(LANG); }
   function aimNavItem() {
