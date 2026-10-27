@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=5';
-import { createChicken, Puffs } from './chicken.js?v=5';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=5';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=5';
-import { RANKS, rankForLevel, rankIcon } from './ranks.js?v=5';
-import { t, onLang, applyDom } from './i18n.js?v=5';
-import { Sfx } from './audio.js?v=5';
-import { buildGunModel } from './gunmodels.js?v=5';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=5';
+import { buildWorld } from './world.js?v=6';
+import { createChicken, Puffs } from './chicken.js?v=6';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=6';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=6';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=6';
+import { t, onLang, applyDom } from './i18n.js?v=6';
+import { Sfx } from './audio.js?v=6';
+import { buildGunModel } from './gunmodels.js?v=6';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=6';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -22,7 +22,7 @@ let W = WEAPONS.ak47; // current weapon (set from settings below)
 const EYE = 64;
 
 // ---------------- Settings ----------------
-const LS = { settings: 'fa_aim_settings', xhair: 'fa_aim_xhair', best: 'fa_aim_best' };
+const LS = { settings: 'fa_aim_settings', xhair: 'fa_aim_xhair', best: 'fa_aim_best', rank: 'fa_aim_rank' };
 const load = (k, d) => { try { return { ...d, ...(JSON.parse(localStorage.getItem(k)) || {}) }; } catch { return { ...d }; } };
 const settings = load(LS.settings, { sens: 1.25, dpi: 800, sound: true, fps: false, weapon: 'ak47' });
 W = WEAPONS[settings.weapon] || WEAPONS.ak47;
@@ -450,14 +450,15 @@ function goMenu() {
   state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0;
   renderMenu(); show('menu');
 }
+const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
 function renderMenu() {
   renderWeaponPick();
   const best = load(LS.best, { level: 0, score: 0, hs: 0 });
-  const ri = best.level ? rankForLevel(best.level) : -1;
+  const ri = best.level ? Math.max(bestRank(), rankFor(best.level, best.hs)) : -1;
   $('pb').innerHTML = best.level
     ? t('pbText', { level: best.level, score: best.score, rank: RANKS[ri].name })
     : t('pbNone');
-  $('ranks').innerHTML = RANKS.map((r, i) => `<li class="${i === ri ? 'me' : ''}">${rankIcon(i)}<div><div class="rn">${r.name}</div><div class="rl">${t('fromLevel', { n: r.minLevel })}</div></div></li>`).join('');
+  $('ranks').innerHTML = RANKS.map((r, i) => `<li class="${i === ri ? 'me' : ''}${i === TOP ? ' top' : ''}">${rankIcon(i)}<div><div class="rn">${r.name}</div><div class="rl">${i === TOP ? t('topReq', { n: r.minLevel, hs: TOP_HS }) : t('fromLevel', { n: r.minLevel })}</div></div></li>`).join('');
   $('menu-sens').textContent = sensText();
 }
 
@@ -638,11 +639,17 @@ function showOver(reason) {
   const best = load(LS.best, { level: 0, score: 0, hs: 0 });
   const isPB = G.level > best.level || (G.level === best.level && G.score > best.score);
   if (isPB) localStorage.setItem(LS.best, JSON.stringify({ level: G.level, score: G.score, hs: G.kills ? Math.round(G.hsKills / G.kills * 100) : 0 }));
-  const ri = rankForLevel(G.level);
+  const hsPct = G.kills ? Math.round(G.hsKills / G.kills * 100) : 0;
+  const ri = rankFor(G.level, hsPct);
+  if (ri > bestRank()) localStorage.setItem(LS.rank, JSON.stringify(ri));
   $('o-reason').textContent = t(reason);
-  $('o-rankicon').innerHTML = rankIcon(ri);
+  $('o-rankicon').innerHTML = rankIcon(ri, true);
   $('o-rank').textContent = RANKS[ri].name;
-  $('o-level').textContent = t('reached', { n: G.level }) + (RANKS[ri + 1] ? t('nextRank', { n: RANKS[ri + 1].minLevel }) : t('topRank'));
+  const capped = ri === TOP - 1 && G.level >= RANKS[TOP].minLevel;
+  $('o-level').textContent = t('reached', { n: G.level }) + (ri === TOP ? t('topRank') : capped ? '' : t('nextRank', { n: RANKS[ri + 1].minLevel }));
+  $('o-hint').textContent = capped ? t('hsNeed', { hs: TOP_HS, rank: RANKS[TOP].name, cur: hsPct }) : '';
+  $('o-hint').classList.toggle('hidden', !capped);
+  document.querySelector('#over .card').classList.toggle('top-rank', ri === TOP);
   $('o-score').textContent = G.score; $('o-kills').textContent = G.kills;
   $('o-hs').textContent = G.kills ? Math.round(G.hsKills / G.kills * 100) + '%' : '0%';
   $('o-acc').textContent = G.shots ? Math.round(G.hits / G.shots * 100) + '%' : '0%';
