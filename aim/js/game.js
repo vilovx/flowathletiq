@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=25';
-import { RoastSystem } from './roast.js?v=25';
-import { createChicken, Puffs } from './chicken.js?v=25';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=25';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=25';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=25';
-import { t, onLang, applyDom } from './i18n.js?v=25';
-import { Sfx } from './audio.js?v=25';
-import { buildGunModel } from './gunmodels.js?v=25';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=25';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=25';
+import { buildWorld } from './world.js?v=26';
+import { RoastSystem } from './roast.js?v=26';
+import { createChicken, Puffs } from './chicken.js?v=26';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=26';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=26';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=26';
+import { t, onLang, applyDom } from './i18n.js?v=26';
+import { Sfx } from './audio.js?v=26';
+import { buildGunModel } from './gunmodels.js?v=26';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=26';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=26';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=25';
+import { forced, forceOff } from './rot.js?v=26';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -289,7 +289,11 @@ function updateRecoil(dt) {
   accPenalty *= k;
   if (G && G.time - G.lastShot > W.cycle * 1.5) recoilIndex *= k;
 }
+// touch mode: no recoil/inaccuracy at all - bullets go exactly to the crosshair (spray mode is desktop-only)
+const noRecoil = () => MOBILE;
+let lastDir = null; // debug only
 function shotDirection(noSpread) {
+  if (noRecoil()) return new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(pitch * Math.PI / 180, yaw * Math.PI / 180, 0, 'YXZ'));
   let dp = punch.y * RECOIL.scale, dy = -punch.x * RECOIL.scale; // degrees
   if (!noSpread) {
     const inacc = W.inacc.stand + accPenalty, r1 = Math.random() * inacc, a1 = Math.random() * Math.PI * 2;
@@ -301,6 +305,7 @@ function shotDirection(noSpread) {
   return new THREE.Vector3(0, 0, -1).applyEuler(e);
 }
 function applyKick() {
+  if (noRecoil()) { punch.reset(); recoilIndex = 0; accPenalty = 0; return; }
   punch.kick(kickTable[Math.min(kickTable.length - 1, Math.floor(recoilIndex))]);
   recoilIndex += 1;
   accPenalty = Math.min(accPenalty + W.inacc.perShot, 0.05);
@@ -309,6 +314,7 @@ function fire(dirOverride) {
   if (G.mode === 'spray') G.ammo--; // chicken mode: infinite ammo
   G.shots++; G.lastShot = G.time;
   const dir = dirOverride || shotDirection();
+  if (DEBUG) lastDir = dir.clone();
   G.burst++; applyKick();
   gun.kick = 1; gun.flash.visible = true; gun.flash.rotation.z = Math.random() * 3; setTimeout(() => (gun.flash.visible = false), 45);
   sfx.shot(W.id);
@@ -522,7 +528,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=25" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=26" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -764,6 +770,7 @@ function sprayHud() {
     <div class="sp-k">${tm('sp.keys')}</div>`;
 }
 function startSpray() {
+  if (MOBILE) return; // spray training is desktop-only
   sfx.unlock(); $('spray-card').classList.remove('has');
   setMode('spray');
   for (const c of chickens) scene.remove(c.root); chickens.length = 0;
@@ -775,7 +782,7 @@ function renderWeaponPick() {
   const el = $('weapons'); if (!el) return;
   el.innerHTML = WEAPON_ORDER.map((id) => { const w = WEAPONS[id];
     const hs = Math.floor(w.damage * w.hsMult * w.armorRatio * 0.5);
-    return `<button class="wpick ${w.id === W.id ? 'on' : ''}" data-w="${id}"><b>${w.key} · ${w.name}</b><span>${t('wCard', { dmg: w.damage, rpm: Math.round(60 / w.cycle), mag: w.mag })}</span><span>${t('wHs', { n: hs })}${hs >= 100 ? t('oneTap') : ''}</span></button>`; }).join('');
+    return `<button class="wpick ${w.id === W.id ? 'on' : ''}" data-w="${id}"><b>${w.key} · ${w.name}</b><span>${t('wCard', { dmg: w.damage, rpm: Math.round(60 / w.cycle), mag: w.mag })}</span><span>${t('wHs', { n: hs })}${hs >= 100 ? t('oneTap') : ''}</span>${MOBILE ? `<span class="nr">${t('noRecoil')}</span>` : ''}</button>`; }).join('');
   el.querySelectorAll('[data-w]').forEach((b) => (b.onclick = () => switchWeapon(b.dataset.w)));
 }
 function endRun(reason) {
@@ -979,7 +986,7 @@ if (DEBUG) {
     },
     shoot(exact = true) { G.burst = 0; G.nextShot = 0; if (exact) { punch.reset(); recoilIndex = 0; accPenalty = 0; } camera.updateMatrixWorld(); for (const c of chickens) c.root.updateMatrixWorld(true); fire(shotDirection(exact)); },
     QUALITY, settings,
-    weapon(id) { switchWeapon(id); }, get yaw() { return yaw; }, get pitch() { return pitch; }, MOBILE, get W() { return W; }, punch, idealSpray,
+    weapon(id) { switchWeapon(id); }, get yaw() { return yaw; }, get pitch() { return pitch; }, MOBILE, get W() { return W; }, get lastDir() { return lastDir; }, punch, idealSpray,
     sprayAuto(comp = 1, n) { // simulate holding fire; comp = fraction of ideal compensation applied by the 'player'
       const ideal = idealSpray(W); const y0 = yaw, p0 = pitch; n = n || W.mag; G.trigger = false; sprayWall.clearNext = true;
       for (let i = 0; i < n; i++) { yaw = y0 + ideal[i].x * comp * 1; pitch = p0 - ideal[i].y * comp; camera.rotation.set(pitch * Math.PI / 180, yaw * Math.PI / 180, 0); camera.updateMatrixWorld();

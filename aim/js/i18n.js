@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=25';
+import { MORE } from './i18n-more.js?v=26';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -134,19 +134,19 @@ Object.assign(S, MORE);
 // touch mode (phones / tablets)
 const TOUCH = {
   lv: { rotate: 'Pagriez telefonu horizontāli, lai spēlētu', 'set.tsens': 'Touch jutība', 'set.gyro': 'Žiroskopa tēmēšana', gyroDenied: 'Žiroskopa atļauja netika dota.', gyroNone: 'Šī ierīce nesniedz žiroskopa datus.', lbMobile: 'Mobilais',
-    'tip.touch': '<b>Velc pa ekrānu:</b> tēmē &nbsp; <b>Turi ◎:</b> šauj (full-auto ar spray) &nbsp; <b>1/2/3:</b> ierocis &nbsp; <b>❚❚:</b> pauze' },
+    'tip.touch': '<b>Velc pa ekrānu:</b> tēmē &nbsp; <b>Turi ◎:</b> šauj (full-auto, telefonā bez atsitiena) &nbsp; <b>1/2/3:</b> ierocis &nbsp; <b>❚❚:</b> pauze' },
   en: { rotate: 'Turn your phone sideways (landscape) to play', 'set.tsens': 'Touch sensitivity', 'set.gyro': 'Gyro aim', gyroDenied: 'Motion permission was not granted.', gyroNone: 'This device does not provide gyro data.', lbMobile: 'Mobile',
-    'tip.touch': '<b>Drag the screen:</b> aim &nbsp; <b>Hold ◎:</b> fire (full-auto with spray) &nbsp; <b>1/2/3:</b> weapon &nbsp; <b>❚❚:</b> pause' },
+    'tip.touch': '<b>Drag the screen:</b> aim &nbsp; <b>Hold ◎:</b> fire (full-auto, no recoil on phone) &nbsp; <b>1/2/3:</b> weapon &nbsp; <b>❚❚:</b> pause' },
   ru: { rotate: 'Поверни телефон горизонтально, чтобы играть', 'set.tsens': 'Чувствительность касания', 'set.gyro': 'Прицел гироскопом', gyroDenied: 'Доступ к датчикам движения не выдан.', gyroNone: 'Это устройство не даёт данных гироскопа.', lbMobile: 'Мобильные',
-    'tip.touch': '<b>Веди по экрану:</b> прицел &nbsp; <b>Держи ◎:</b> огонь (автомат со спреем) &nbsp; <b>1/2/3:</b> оружие &nbsp; <b>❚❚:</b> пауза' },
+    'tip.touch': '<b>Веди по экрану:</b> прицел &nbsp; <b>Держи ◎:</b> огонь (автомат, на телефоне без отдачи) &nbsp; <b>1/2/3:</b> оружие &nbsp; <b>❚❚:</b> пауза' },
   es: { rotate: 'Gira el móvil en horizontal para jugar', 'set.tsens': 'Sensibilidad táctil', 'set.gyro': 'Apuntar con giroscopio', gyroDenied: 'No se concedió el permiso de movimiento.', gyroNone: 'Este dispositivo no ofrece datos de giroscopio.', lbMobile: 'Móvil',
-    'tip.touch': '<b>Arrastra la pantalla:</b> apuntar &nbsp; <b>Mantén ◎:</b> disparar (automático con spray) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
+    'tip.touch': '<b>Arrastra la pantalla:</b> apuntar &nbsp; <b>Mantén ◎:</b> disparar (automático, sin retroceso en el móvil) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
   pt: { rotate: 'Vire o celular na horizontal para jogar', 'set.tsens': 'Sensibilidade do toque', 'set.gyro': 'Mira com giroscópio', gyroDenied: 'A permissão de movimento não foi concedida.', gyroNone: 'Este aparelho não fornece dados de giroscópio.', lbMobile: 'Celular',
-    'tip.touch': '<b>Arraste a tela:</b> mirar &nbsp; <b>Segure ◎:</b> atirar (automático com spray) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
+    'tip.touch': '<b>Arraste a tela:</b> mirar &nbsp; <b>Segure ◎:</b> atirar (automático, sem recuo no celular) &nbsp; <b>1/2/3:</b> arma &nbsp; <b>❚❚:</b> pausa' },
   ja: { rotate: 'スマホを横向きにしてプレイしてください', 'set.tsens': 'タッチ感度', 'set.gyro': 'ジャイロエイム', gyroDenied: 'モーションへのアクセスが許可されませんでした。', gyroNone: 'この端末はジャイロのデータを提供しません。', lbMobile: 'モバイル',
-    'tip.touch': '<b>画面をドラッグ：</b>エイム &nbsp; <b>◎を長押し：</b>射撃（フルオート・スプレー） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>一時停止' },
+    'tip.touch': '<b>画面をドラッグ：</b>エイム &nbsp; <b>◎を長押し：</b>射撃（フルオート・スマホはリコイルなし） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>一時停止' },
   zh: { rotate: '请把手机横过来游玩', 'set.tsens': '触控灵敏度', 'set.gyro': '陀螺仪瞄准', gyroDenied: '未获得运动传感器权限。', gyroNone: '此设备不提供陀螺仪数据。', lbMobile: '手机',
-    'tip.touch': '<b>拖动屏幕：</b>瞄准 &nbsp; <b>按住 ◎：</b>射击（全自动压枪） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>暂停' },
+    'tip.touch': '<b>拖动屏幕：</b>瞄准 &nbsp; <b>按住 ◎：</b>射击（全自动，手机上无后坐力） &nbsp; <b>1/2/3：</b>武器 &nbsp; <b>❚❚：</b>暂停' },
 };
 const ROT = {
   lv: ['Pagriezt ekrānu', 'Ja telefons negriežas (rotācijas bloķēšana), poga pagriezīs spēli pati — turi telefonu ar augšu pa kreisi.', 'Piespiedu horizontālais skats', 'Izslēgt ekrāna pagriešanu'],
@@ -173,6 +173,8 @@ const QS = {
 for (const l in QS) { const a = QS[l]; Object.assign(TOUCH[l], { 'set.quality': a[0], qAuto: a[1], qHigh: a[2], qMed: a[3], qLow: a[4], 'set.fire': a[6], 'set.mnote': a[7] }); }
 const GO = { lv: 'AIZIET!', en: 'GO!', ru: 'ВПЕРЁД!', es: '¡YA!', pt: 'JÁ!', ja: 'スタート！', zh: '开始！' };
 for (const l in GO) TOUCH[l].go = GO[l];
+const NR = { lv: 'Telefonā bez atsitiena', en: 'No recoil on phone', ru: 'На телефоне без отдачи', es: 'Sin retroceso en el móvil', pt: 'Sem recuo no celular', ja: 'スマホはリコイルなし', zh: '手机上无后坐力' };
+for (const l in NR) TOUCH[l].noRecoil = NR[l];
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],
