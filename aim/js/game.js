@@ -1,14 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=12';
-import { createChicken, Puffs } from './chicken.js?v=12';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=12';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=12';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=12';
-import { t, onLang, applyDom } from './i18n.js?v=12';
-import { Sfx } from './audio.js?v=12';
-import { buildGunModel } from './gunmodels.js?v=12';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc } from './leaderboard.js?v=12';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=12';
+import { buildWorld } from './world.js?v=13';
+import { RoastSystem } from './roast.js?v=13';
+import { createChicken, Puffs } from './chicken.js?v=13';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=13';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=13';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=13';
+import { t, onLang, applyDom } from './i18n.js?v=13';
+import { Sfx } from './audio.js?v=13';
+import { buildGunModel } from './gunmodels.js?v=13';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc } from './leaderboard.js?v=13';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=13';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -55,6 +56,7 @@ const PLAYER = new THREE.Vector3(0, EYE, 250);
 camera.position.copy(PLAYER);
 const world = buildWorld(scene);
 const puffs = new Puffs(scene);
+let roasts = null; // created after groundY is defined
 const sfx = new Sfx(() => settings.sound);
 
 // view model (separate scene so it never clips into walls)
@@ -131,6 +133,7 @@ function levelCfg(L) {
 }
 
 function newRun(level = 1) {
+  roasts.clear();
   for (const c of chickens) scene.remove(c.root);
   chickens.length = 0;
   G = { mode: 'chickens', level, score: 0, kills: 0, hsKills: 0, shots: 0, hits: 0, ammo: W.mag, reloadT: 0, nextShot: 0, burst: 0, lastShot: -9,
@@ -227,11 +230,17 @@ function updateChicken(c, dt) {
   } else if (c.state === 'dead') {
     c.model.rotation.z = Math.min(Math.PI / 2, c.t * 9);
     if (c.fallV !== undefined) { c.fallV -= 600 * dt; P.y = Math.max(groundY(P), P.y + c.fallV * dt); if (c.fallH && P.y > groundY(P)) P.addScaledVector(c.fallH, dt); }
-    if (c.t > 1.4) { c.model.scale.multiplyScalar(Math.max(0, 1 - dt * 6)); }
-    if (c.t > 2) { scene.remove(c.root); c.removed = true; }
+    const onGround = P.y <= groundY(P) + 0.5;
+    if (!c.roasted && ((onGround && c.t > 0.45) || c.t > 1.8)) { // fallen chicken -> roast for the chef
+      c.roasted = true; const at = roastSpot(P); puffs.burst(P.clone().setY(groundY(at) + 6), 8, 0xffffff, 70); roasts.add(at);
+      scene.remove(c.root); c.removed = true;
+    }
   }
 }
 const groundY = (P) => (Math.abs(P.x) < 310 && P.z > -440 && P.z < -140 ? world.site.y : 0);
+roasts = new RoastSystem(scene, world.tavern, groundY);
+// keep roasts inside the square (in front of the facades)
+const roastSpot = (P) => new THREE.Vector3(Math.max(-500, Math.min(520, P.x)), 0, Math.max(-540, Math.min(330, P.z)));
 
 function chickenLanded(c) { // a chicken that reaches the ground ends the run
   G.over = true; c.state = 'landed';
@@ -372,6 +381,7 @@ function tick(now) {
   }
   if (state === 'over-anim') for (const c of chickens) if (!c.removed && c.dead) updateChicken(c, sdt);
   puffs.update(sdt);
+  roasts.update(sdt);
   world.update(now / 1000);
   // view punch: the camera follows part of the aim punch (CS view_recoil_tracking 0.45)
   const vt = RECOIL.scale * RECOIL.viewTracking;
@@ -450,7 +460,7 @@ function show(id) {
   $('hud').classList.toggle('hidden', !(state === 'play' || state === 'pause' || state === 'over-anim'));
 }
 function goMenu() {
-  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0;
+  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear();
   renderMenu(); show('menu'); loadLb();
 }
 const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
@@ -812,7 +822,7 @@ requestAnimationFrame(tick);
 // ---------------- Debug API (for screenshots/tests only, ?debug) ----------------
 if (DEBUG) {
   window.__aim = {
-    THREE, camera, chickens, world,
+    THREE, camera, chickens, world, get roasts() { return roasts; },
     get G() { return G; }, get state() { return state; },
     startGame(level = 1) { startGame(level); },
     freeze(v = true) { timeScale = v ? 0 : 1; },

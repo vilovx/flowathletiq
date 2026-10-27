@@ -1,5 +1,7 @@
-// Low-poly Mediterranean plaza with an "A" site. 1 unit = 1 CS unit (inch). All assets procedural/original.
+// Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
+// 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=13';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -82,21 +84,24 @@ function boxGeo(w, h, d, tile = 128) {
 
 export function buildWorld(scene) {
   const T = makeTextures();
+  const K = kuldigaTextures();
   const worldMeshes = [];
   const mat = (opts) => new THREE.MeshLambertMaterial(opts);
   const M = {
-    stone: mat({ map: T.stone }), plaster: mat({ map: T.plaster }), plaster2: mat({ map: T.plaster, color: 0xf3dcc0 }),
-    plaster3: mat({ map: T.plaster, color: 0xf0c9a0 }), ground: mat({ map: T.ground }), wood: mat({ map: T.wood }),
-    dark: mat({ color: 0x1d1712 }), window: mat({ color: 0x2b2a2e }), shutter: mat({ color: 0x3f7a55 }),
-    shutter2: mat({ color: 0x2f6f8a }), rail: mat({ color: 0x2a2623 }), slab: mat({ map: T.stone, color: 0xe8dcc6 }),
+    // Kuldīga palette: yellow plaster, white trims, red brick, painted wooden boards, cobblestones, red clay roofs
+    stone: mat({ map: K.brick }), plaster: mat({ map: T.plaster, color: 0xf6dc8c }), plaster2: mat({ map: K.boards }),
+    plaster3: mat({ map: K.brick, color: 0xf2e2da }), ground: mat({ map: K.cobble }), wood: mat({ map: T.wood }),
+    dark: mat({ color: 0x1d1712 }), window: mat({ color: 0x232c35 }), shutter: mat({ color: 0x6e3b26 }),
+    shutter2: mat({ color: 0x3e5e52 }), rail: mat({ color: 0x24221f }), slab: mat({ map: T.plaster, color: 0xfbf8f0 }),
     pot: mat({ color: 0xb55b33 }), plant: mat({ color: 0x4f8a3a, flatShading: true }), trunk: mat({ color: 0x5a4330 }),
-    cypress: mat({ color: 0x2f5a2c, flatShading: true }),
+    cypress: mat({ color: 0x2e5a30, flatShading: true }), frame: mat({ color: 0xf4f1e8 }), platform: mat({ map: T.stone, color: 0xd6d2ca }),
   };
   const roofMat = mat({ map: T.roof.clone() }); roofMat.map.repeat.set(1 / 64, 1 / 64);
-  const stoneX = mat({ map: T.stone.clone() }); stoneX.map.repeat.set(1 / 128, 1 / 128);
+  const stoneX = mat({ map: K.brick.clone(), color: 0xf2e2da }); stoneX.map.repeat.set(1 / 128, 1 / 128);
+  const plasterX = mat({ map: T.plaster.clone(), color: 0xf6dc8c }); plasterX.map.repeat.set(1 / 128, 1 / 128);
 
-  scene.background = T.sky;
-  scene.fog = new THREE.Fog(0xe9dcc6, 1800, 5000);
+  scene.background = new THREE.Color(0xa9cdea);
+  scene.fog = new THREE.Fog(0xd3e2ee, 2600, 9000);
 
   const add = (geo, m, x, y, z, { shoot = true, cast = true, recv = true, parent = scene } = {}) => {
     const mesh = new THREE.Mesh(geo, m); mesh.position.set(x, y, z);
@@ -107,11 +112,11 @@ export function buildWorld(scene) {
   const box = (w, h, d, m, x, y, z, o) => add(boxGeo(w, h, d), m, x, y, z, o);
 
   // Ground
-  const gGeo = new THREE.PlaneGeometry(4000, 4000); gGeo.rotateX(-Math.PI / 2);
-  const uv = gGeo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 4000 / 160, uv.getY(i) * 4000 / 160);
-  add(gGeo, M.ground, 0, 0, 0, { cast: false });
+  const gGeo = new THREE.PlaneGeometry(4000, 2760); gGeo.rotateX(-Math.PI / 2); // cobbled square, ends at the riverside (z=-760)
+  const uv = gGeo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 4000 / 110, uv.getY(i) * 2760 / 110);
+  add(gGeo, M.ground, 0, 0, 620, { cast: false });
   // A-site raised platform
-  box(620, 8, 300, M.slab, 0, 4, -290, { cast: false });
+  box(620, 8, 300, M.platform, 0, 4, -290, { cast: false });
 
   // Pitched roof (triangular prism) along X or Z
   const roof = (len, width, rise, x, y, z, alongZ = false) => {
@@ -129,6 +134,8 @@ export function buildWorld(scene) {
     add(boxGeo(w / 2 + 2, h + 4, 3), shutterMat, -w / 2 - w / 4 - 2, 0, 2, { parent: g });
     add(boxGeo(w / 2 + 2, h + 4, 3), shutterMat, w / 2 + w / 4 + 2, 0, 2, { parent: g });
     add(boxGeo(w + 10, 5, 7), M.slab, 0, -h / 2 - 3, 3, { parent: g });
+    add(boxGeo(w + 6, 3, 3), M.frame, 0, h / 2 + 1.5, 1.5, { parent: g, cast: false });            // white window frame (outside the opening)
+    for (const sx of [-1, 1]) add(boxGeo(3, h, 3), M.frame, sx * (w / 2 + 1.5), 0, 1.5, { parent: g, cast: false });
     return g;
   };
   const balcony = (x, y, z, facing, w = 96, d = 40) => {
@@ -146,20 +153,60 @@ export function buildWorld(scene) {
   };
 
   // --- Back apartment building (front face z=-560)
-  box(860, 420, 160, M.plaster, 0, 210, -640);
+  box(860, 288, 160, M.plaster, 0, 276, -640);
+  { // ground floor: four open gate passages through the house (you can see the river and the bridge through them)
+    const s = new THREE.Shape(); s.moveTo(-430, 0); s.lineTo(430, 0); s.lineTo(430, 132); s.lineTo(-430, 132); s.lineTo(-430, 0);
+    for (const x of [-150, -50, 50, 150]) { const p = new THREE.Path(); p.moveTo(x - 36, 0); p.lineTo(x + 36, 0); p.lineTo(x + 36, 96); p.absarc(x, 96, 36, 0, Math.PI, false); p.lineTo(x - 36, 0); s.holes.push(p); }
+    const geo = new THREE.ExtrudeGeometry(s, { depth: 160, bevelEnabled: false, curveSegments: 12 }); geo.translate(0, 0, -720);
+    add(geo, plasterX, 0, 0, 0);
+    for (const x of [-150, -50, 50, 150]) { // white arch surrounds
+      const r = new THREE.Shape(); r.moveTo(x - 44, 0); r.lineTo(x - 44, 96); r.absarc(x, 96, 44, Math.PI, 0, true); r.lineTo(x + 44, 0);
+      r.lineTo(x + 36, 0); r.lineTo(x + 36, 96); r.absarc(x, 96, 36, 0, Math.PI, false); r.lineTo(x - 36, 0); r.lineTo(x - 44, 0);
+      const rg = new THREE.ExtrudeGeometry(r, { depth: 3, bevelEnabled: false, curveSegments: 12 }); add(rg, M.frame, 0, 0, -560, { cast: false, shoot: false });
+    }
+  }
   box(870, 14, 170, M.slab, 0, 140, -640); // cornice lines
   box(870, 14, 170, M.slab, 0, 262, -640);
   roof(860, 160, 70, 0, 420, -640);
   box(880, 10, 180, M.slab, 0, 422, -640, { cast: false });
   for (const x of [-300, -100, 100, 300]) { balcony(x, 150, -560, 'z'); balcony(x, 272, -560, 'z'); }
   for (const x of [-200, 0, 200, -390, 390]) { windowAt(x, 200, -558, 'z'); windowAt(x, 325, -558, 'z'); }
-  for (const x of [-340, -260, 390]) windowAt(x, 70, -558, 'z', M.shutter2, 30, 48);
-  // Ground arches (decor, dark recess)
-  for (const x of [-150, -50, 50, 150]) {
-    box(72, 96, 6, M.dark, x, 48, -558, { cast: false });
-    const a = add(new THREE.CylinderGeometry(36, 36, 6, 16, 1, false, 0, Math.PI), M.dark, x, 96, -558, { cast: false });
-    a.rotation.x = Math.PI / 2; a.rotation.y = Math.PI / 2;
-  }
+  for (const x of [-265, 390]) windowAt(x, 70, -558, 'z', M.shutter2, 30, 48);
+  // --- "Vistu krogs" tavern (generic Latvian name, original sign) in the back house's ground floor, door at x=-385 (left of the A-site crates, visible from spawn)
+  const tavern = (() => {
+    const DX = -385, DW = 44, DH = 86;
+    box(DW + 14, DH + 8, 5, M.frame, DX, (DH + 8) / 2, -558, { cast: false });            // door surround
+    box(DW, DH, 4, M.dark, DX, DH / 2, -556.5, { cast: false, shoot: false });          // dark doorway (inside)
+    const hinge = new THREE.Group(); hinge.position.set(DX - DW / 2, 0, -554); scene.add(hinge);
+    const leaf = add(boxGeo(DW, DH, 3, 64), M.wood, DW / 2, DH / 2, 0, { parent: hinge, cast: false, shoot: false });
+    add(new THREE.SphereGeometry(1.6, 8, 6), M.rail, DW - 6, DH / 2, 2.5, { parent: hinge, cast: false, shoot: false });
+    // painted sign board above the door
+    const drawSign = (g, w, h) => {
+      g.fillStyle = '#3b2416'; g.fillRect(0, 0, w, h); g.strokeStyle = '#d9b25c'; g.lineWidth = 8; g.strokeRect(8, 8, w - 16, h - 16);
+      g.fillStyle = '#f3dfa6'; g.font = '700 64px Oswald, Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('VISTU KROGS', w / 2, h / 2 + 4);
+      g.fillStyle = '#d9b25c'; for (const x of [44, w - 44]) { g.beginPath(); g.arc(x, h / 2, 9, 0, 7); g.fill(); }
+    };
+    const signT = tex(512, 128, drawSign, { repeat: false });
+    if (document.fonts) document.fonts.load('700 64px Oswald').then(() => { drawSign(signT.image.getContext('2d'), 512, 128); signT.needsUpdate = true; }).catch(() => {});
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(96, 24), new THREE.MeshLambertMaterial({ map: signT }));
+    sign.position.set(DX + 6, DH + 24, -557); scene.add(sign);
+    // hanging bracket sign with a roast chicken + mug (perpendicular to the facade)
+    const hangT = tex(128, 128, (g, w, h) => {
+      g.fillStyle = '#efe2c0'; g.beginPath(); g.arc(64, 64, 60, 0, 7); g.fill(); g.strokeStyle = '#3b2416'; g.lineWidth = 6; g.stroke();
+      g.fillStyle = '#ffffff'; g.beginPath(); g.ellipse(64, 86, 44, 9, 0, 0, 7); g.fill(); g.strokeStyle = '#b9b2a2'; g.lineWidth = 2; g.stroke(); // plate
+      g.fillStyle = '#a65a22'; g.beginPath(); g.ellipse(58, 68, 30, 18, 0, 0, 7); g.fill();                                       // roast body
+      g.fillStyle = '#c47a3a'; g.beginPath(); g.ellipse(52, 62, 14, 6, -0.2, 0, 7); g.fill();                                     // glaze highlight
+      g.fillStyle = '#7d3f15'; g.beginPath(); g.ellipse(88, 70, 13, 7, -0.5, 0, 7); g.fill();                                     // drumstick
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(100, 63, 4, 0, 7); g.fill(); g.beginPath(); g.arc(103, 67, 4, 0, 7); g.fill();     // bone end
+      g.fillStyle = '#3b2416'; g.font = '700 18px Georgia, serif'; g.textAlign = 'center'; g.fillText('KROGS', 64, 112);
+    }, { repeat: false });
+    const hang = new THREE.Mesh(new THREE.CircleGeometry(16, 20), new THREE.MeshLambertMaterial({ map: hangT, side: THREE.DoubleSide }));
+    hang.position.set(DX + 82, 112, -536); hang.rotation.y = Math.PI / 2 - 0.55; scene.add(hang);
+    add(new THREE.BoxGeometry(2, 2, 26), M.rail, DX + 82, 130, -546, { cast: false, shoot: false });
+    // barrel by the door
+    add(new THREE.CylinderGeometry(12, 12, 32, 12), M.wood, DX + 56, 16, -544, { shoot: false });
+    return { door: new THREE.Vector3(DX, 0, -560), hinge, leaf };
+  })();
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(130, 130), new THREE.MeshLambertMaterial({ map: T.aSign, transparent: true, depthWrite: false }));
   sign.position.set(290, 80, -557.5); scene.add(sign);
   // --- Left building (face x=-520), with balconies facing +x
@@ -194,9 +241,9 @@ export function buildWorld(scene) {
   box(1500, 260, 40, M.stone, 0, 130, 720);
   box(40, 260, 300, M.stone, -540, 130, 520);
   box(40, 260, 300, M.stone, 545, 130, 520);
-  // far alley backdrops (seen through the exits)
-  box(300, 380, 40, M.plaster3, -700, 190, -760);
-  box(40, 300, 400, M.plaster2, -900, 150, -560);
+  // riverside promenade edge + the Venta backdrop (bridge, rumba, banks, trees, sky) - decorative only
+  box(4000, 10, 8, M.platform, 0, 5, -756, { cast: false, shoot: false });
+  const backdrop = buildBackdrop(scene, K);
 
   // Crates on site
   const crate = (s, x, y, z, ry = 0) => { const c = box(s, s, s, M.wood, x, y + s / 2, z); c.rotation.y = ry; return c; };
@@ -213,7 +260,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=12');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=13');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -291,13 +338,13 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=12';
+    img.src = 'img/leaderboard-board.webp?v=13';
     return { plane, set(r, e) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; draw(); } };
   })();
 
   // Lights
-  scene.add(new THREE.HemisphereLight(0xd7ecff, 0x9c7a52, 1.25));
-  const sun = new THREE.DirectionalLight(0xfff0d2, 2.1);
+  scene.add(new THREE.HemisphereLight(0xdcecff, 0x7a7a62, 1.25));
+  const sun = new THREE.DirectionalLight(0xfff4e0, 2.15);
   sun.position.set(-700, 1100, 500); sun.target.position.set(0, 0, -200);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, { left: -1100, right: 1100, top: 1100, bottom: -1100, near: 100, far: 3000 });
@@ -338,5 +385,5 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, update: (t) => mural.update(t), setBoard: (rows, empty) => board.set(rows, empty) };
+  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); }, setBoard: (rows, empty) => board.set(rows, empty) };
 }
