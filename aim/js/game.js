@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=9';
-import { createChicken, Puffs } from './chicken.js?v=9';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=9';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=9';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=9';
-import { t, onLang, applyDom } from './i18n.js?v=9';
-import { Sfx } from './audio.js?v=9';
-import { buildGunModel } from './gunmodels.js?v=9';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=9';
+import { buildWorld } from './world.js?v=10';
+import { createChicken, Puffs } from './chicken.js?v=10';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=10';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=10';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=10';
+import { t, onLang, applyDom } from './i18n.js?v=10';
+import { Sfx } from './audio.js?v=10';
+import { buildGunModel } from './gunmodels.js?v=10';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=10';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -282,7 +282,7 @@ function fire(dirOverride) {
   const dir = dirOverride || shotDirection();
   G.burst++; applyKick();
   gun.kick = 1; gun.flash.visible = true; gun.flash.rotation.z = Math.random() * 3; setTimeout(() => (gun.flash.visible = false), 45);
-  sfx.shot();
+  sfx.shot(W.id);
   ray.set(camera.position, dir); ray.far = W.range;
   if (G.mode === 'spray') { const sh = ray.intersectObject(sprayWall.mesh, false)[0]; if (sh) sprayHit(sh.point); updateHud(); return; }
   const targets = world.worldMeshes.slice();
@@ -371,6 +371,7 @@ function tick(now) {
   }
   if (state === 'over-anim') for (const c of chickens) if (!c.removed && c.dead) updateChicken(c, sdt);
   puffs.update(sdt);
+  world.update(now / 1000);
   // view punch: the camera follows part of the aim punch (CS view_recoil_tracking 0.45)
   const vt = RECOIL.scale * RECOIL.viewTracking;
   camera.rotation.set((pitch + punch.y * vt) * Math.PI / 180, (yaw - punch.x * vt) * Math.PI / 180, 0);

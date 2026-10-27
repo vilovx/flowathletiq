@@ -6,7 +6,7 @@ export class Sfx {
     try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.noise = this.makeNoise(); } catch { this.ctx = null; }
   }
   makeNoise() {
-    const c = this.ctx, b = c.createBuffer(1, c.sampleRate * 0.5, c.sampleRate), d = b.getChannelData(0);
+    const c = this.ctx, b = c.createBuffer(1, c.sampleRate * 1, c.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     return b;
   }
@@ -22,7 +22,54 @@ export class Sfx {
     const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq; f.Q.value = q; s.connect(f);
     this.env(f, t, 0.002, vol, dur); s.start(t); s.stop(t + dur + 0.05);
   }
-  shot() { this.burst(0.14, 2600, 0.5); this.tone('sine', 140, 45, 0.12, 0.45); }
+  // Per-weapon gunshots, synthesized (original, no sampled game audio). One shared noise buffer, a compressor bus
+  // and a voice cap keep it cheap at 600+ RPM.
+  bus() {
+    if (this._bus) return this._bus; const c = this.ctx;
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 8; comp.ratio.value = 6; comp.attack.value = 0.002; comp.release.value = 0.12;
+    const g = c.createGain(); g.gain.value = 0.9; g.connect(comp); comp.connect(c.destination); this.voices = 0;
+    return (this._bus = g);
+  }
+  // filtered noise layer: start offset `at` (s), filter type/freq/Q, attack, decay, peak volume
+  nz(t, type, freq, q, a, dec, vol, rate = 1) {
+    const c = this.ctx, s = c.createBufferSource(); s.buffer = this.noise; s.playbackRate.value = rate;
+    const f = c.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q; s.connect(f);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec);
+    f.connect(g); g.connect(this.bus()); const off = Math.random() * (this.noise.duration - a - dec - 0.1);
+    s.start(t, Math.max(0, off)); s.stop(t + a + dec + 0.03);
+  }
+  osc(t, type, f0, f1, a, dec, vol) {
+    const c = this.ctx, o = c.createOscillator(); o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + a + dec);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec);
+    o.connect(g); g.connect(this.bus()); o.start(t); o.stop(t + a + dec + 0.03);
+  }
+  shot(id = 'ak47') {
+    if (!this.ok()) return; const t = this.ctx.currentTime; this.bus();
+    const v = 0.94 + Math.random() * 0.12;             // small per-shot variation
+    const tail = this.voices < 5;                       // skip long tails when many shots overlap
+    if (tail) { this.voices++; setTimeout(() => this.voices--, 450); }
+    if (id === 'm4a1s') {                               // suppressed: soft low "thup", air puff, bolt click
+      this.nz(t, 'lowpass', 650 * v, 0.9, 0.003, 0.08, 0.3, v);
+      this.nz(t, 'bandpass', 2300 * v, 1.6, 0.002, 0.035, 0.05, v);
+      this.osc(t, 'sine', 105 * v, 42, 0.002, 0.07, 0.24);
+      this.nz(t + 0.028, 'highpass', 4800, 6, 0.001, 0.016, 0.1);   // mechanical action click
+      this.osc(t + 0.03, 'square', 1700 * v, 1500, 0.001, 0.012, 0.025);
+      this.nz(t + 0.06, 'bandpass', 3200, 5, 0.001, 0.014, 0.05);    // bolt returning
+    } else if (id === 'm4a4') {                         // sharper, lighter, snappier crack
+      this.nz(t, 'highpass', 2800 * v, 0.8, 0.001, 0.07, 0.42, v);
+      this.nz(t, 'bandpass', 1300 * v, 0.9, 0.002, 0.11, 0.32, v);
+      this.osc(t, 'sine', 175 * v, 60, 0.002, 0.08, 0.34);
+      this.osc(t, 'triangle', 2100 * v, 1900, 0.001, 0.03, 0.03);
+      if (tail) this.nz(t + 0.02, 'lowpass', 1500, 0.6, 0.02, 0.26, 0.07);
+    } else {                                            // AK-47: heavier, punchy, metallic
+      this.nz(t, 'bandpass', 1700 * v, 0.7, 0.001, 0.15, 0.5, v);
+      this.nz(t, 'lowpass', 520 * v, 0.9, 0.003, 0.22, 0.5, v);
+      this.osc(t, 'sine', 120 * v, 36, 0.002, 0.15, 0.55);
+      this.osc(t, 'square', 860 * v, 700, 0.001, 0.04, 0.035);       // metallic clank
+      this.osc(t, 'triangle', 3100 * v, 2950, 0.001, 0.05, 0.03);
+      if (tail) this.nz(t + 0.03, 'lowpass', 900, 0.6, 0.03, 0.4, 0.1);
+    }
+  }
   dink() { this.tone('triangle', 2400, 1900, 0.18, 0.25); }
   thud() { this.burst(0.05, 900, 0.25); }
   peek(pan = 0) { // soft wooden shutter creak + tiny cluck, panned toward the flank

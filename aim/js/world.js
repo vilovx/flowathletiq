@@ -206,6 +206,51 @@ export function buildWorld(scene) {
   // barrels
   for (const [x, z] of [[-420, 120], [-440, 160], [430, 200]]) add(new THREE.CylinderGeometry(16, 16, 44, 12), M.wood, x, 22, z);
 
+  // --- FlowAthletiq logo mural on the wall behind the spawn (visible when turning 180°), with a blinking red wolf eye
+  const mural = (() => {
+    const g = new THREE.Group(); g.position.set(0, 132, 700); g.rotation.y = Math.PI; scene.add(g); // local +z faces the player
+    const LW = 480, LH = Math.round(LW * 561 / 1113);
+    box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
+    for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
+    for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=10');
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
+    logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
+    const ex = (0.9043 - 0.5) * LW, ey = (0.5 - 0.2184) * LH;
+    // eyelid: dark almond that closes over the eye during a blink
+    const lidTex = canvasTex(64, 32, (c, w, h) => { c.fillStyle = '#07070a'; c.beginPath(); c.ellipse(w / 2, h / 2, w / 2 - 1, h / 2 - 1, 0, 0, 7); c.fill(); });
+    const lid = new THREE.Mesh(new THREE.PlaneGeometry(12.5, 6.5), new THREE.MeshBasicMaterial({ map: lidTex, transparent: true, depthWrite: false, toneMapped: false }));
+    lid.position.set(ex, ey, 4.8); lid.rotation.z = -0.42; lid.scale.y = 0.001; lid.renderOrder = 3; g.add(lid);
+    // red glow (additive) on top of the eye
+    const glowTex = canvasTex(64, 64, (c, w, h) => {
+      const gr = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+      gr.addColorStop(0, 'rgba(255,235,225,1)'); gr.addColorStop(0.12, 'rgba(255,60,40,1)'); gr.addColorStop(0.35, 'rgba(255,0,0,.45)'); gr.addColorStop(1, 'rgba(255,0,0,0)');
+      c.fillStyle = gr; c.fillRect(0, 0, w, h);
+    });
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
+    glow.position.set(ex, ey, 5); glow.renderOrder = 4; g.add(glow);
+    const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let next = 2.5, blinks = 0, t0 = -1;
+    return {
+      lid, glow,
+      update(t) { // t in seconds
+        if (still) { glow.material.opacity = 0.8; lid.scale.y = 0.001; return; }
+        if (t0 < 0 && t >= next) { t0 = t; }
+        let lidK = 0, flash = 0;
+        if (t0 >= 0) {
+          const e = t - t0, D = 0.18;
+          if (e < D) lidK = Math.sin(Math.PI * e / D);                 // close + open
+          else if (e < D + 0.5) flash = 1 - (e - D) / 0.5;              // bright flare after reopening
+          else { t0 = -1; blinks++; next = t + (Math.random() < 0.3 ? 0.12 : 2.5 + Math.random() * 4.5); }
+        }
+        lid.scale.y = Math.max(0.001, lidK);
+        glow.material.opacity = Math.min(1, (0.68 + 0.1 * Math.sin(t * 3.1)) * (1 - lidK) + flash * 0.5);
+        glow.scale.setScalar(1 + flash * 0.35);
+      },
+    };
+  })();
+
   // Lights
   scene.add(new THREE.HemisphereLight(0xd7ecff, 0x9c7a52, 1.25));
   const sun = new THREE.DirectionalLight(0xfff0d2, 2.1);
@@ -249,5 +294,5 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { worldMeshes, spawns, sideSpawns, exits, site, blockers };
+  return { worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, update: (t) => mural.update(t) };
 }
