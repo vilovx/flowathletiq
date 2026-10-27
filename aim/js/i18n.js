@@ -1,7 +1,10 @@
-// UI strings LV / EN / RU. Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
+// UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-export const LANGS = [{ code: 'lv', label: 'LV' }, { code: 'en', label: 'EN' }, { code: 'ru', label: 'RU' }];
+import { MORE } from './i18n-more.js?v=19';
+export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
+  { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
+export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
 const S = {
   lv: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Spēlē uz datora ar peli',
@@ -127,21 +130,39 @@ const S = {
     ranks: ['Волчонок', 'Молодой волк', 'Охотник', 'Страж стаи', 'Альфа', 'Астрал'],
   },
 };
+Object.assign(S, MORE);
 const valid = (c) => !!S[c];
 // --- visitor country without any IP service: time zone first, then the browser locale's region subtag
 const RU_TZ = ['Europe/Moscow', 'Europe/Kaliningrad', 'Europe/Samara', 'Europe/Volgograd', 'Europe/Saratov', 'Europe/Ulyanovsk', 'Europe/Astrakhan', 'Europe/Kirov',
   'Asia/Yekaterinburg', 'Asia/Omsk', 'Asia/Novosibirsk', 'Asia/Barnaul', 'Asia/Tomsk', 'Asia/Novokuznetsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Chita',
   'Asia/Yakutsk', 'Asia/Khandyga', 'Asia/Vladivostok', 'Asia/Ust-Nera', 'Asia/Magadan', 'Asia/Sakhalin', 'Asia/Srednekolymsk', 'Asia/Kamchatka', 'Asia/Anadyr'];
 const KZ_TZ = ['Asia/Almaty', 'Asia/Qostanay', 'Asia/Aqtobe', 'Asia/Aqtau', 'Asia/Atyrau', 'Asia/Oral', 'Asia/Qyzylorda'];
-const TZ_CC = { 'Europe/Riga': 'LV', 'Europe/Minsk': 'BY', 'Asia/Bishkek': 'KG' };
+const TZ_CC = { 'Europe/Riga': 'LV', 'Europe/Minsk': 'BY', 'Asia/Bishkek': 'KG',
+  // Spanish
+  'Europe/Madrid': 'ES', 'Atlantic/Canary': 'ES', 'Africa/Ceuta': 'ES', 'America/Bogota': 'CO', 'America/Santiago': 'CL', 'America/Punta_Arenas': 'CL', 'Pacific/Easter': 'CL',
+  'America/Lima': 'PE', 'America/Caracas': 'VE', 'America/Guayaquil': 'EC', 'Pacific/Galapagos': 'EC', 'America/Guatemala': 'GT', 'America/Havana': 'CU', 'America/La_Paz': 'BO',
+  'America/Santo_Domingo': 'DO', 'America/Tegucigalpa': 'HN', 'America/Asuncion': 'PY', 'America/El_Salvador': 'SV', 'America/Managua': 'NI', 'America/Costa_Rica': 'CR',
+  'America/Panama': 'PA', 'America/Montevideo': 'UY', 'America/Puerto_Rico': 'PR', 'America/Buenos_Aires': 'AR', 'America/Cordoba': 'AR', 'America/Mendoza': 'AR',
+  // Portuguese
+  'Europe/Lisbon': 'PT', 'Atlantic/Madeira': 'PT', 'Atlantic/Azores': 'PT', 'Africa/Luanda': 'AO', 'Africa/Maputo': 'MZ',
+  // Japanese, Chinese
+  'Asia/Tokyo': 'JP', 'Asia/Shanghai': 'CN', 'Asia/Urumqi': 'CN', 'Asia/Chongqing': 'CN', 'Asia/Chungking': 'CN', 'Asia/Harbin': 'CN', 'PRC': 'CN', 'Asia/Taipei': 'TW', 'ROC': 'TW', 'Japan': 'JP' };
 RU_TZ.forEach((z) => (TZ_CC[z] = 'RU')); KZ_TZ.forEach((z) => (TZ_CC[z] = 'KZ'));
+['Mexico_City', 'Cancun', 'Merida', 'Monterrey', 'Matamoros', 'Chihuahua', 'Ciudad_Juarez', 'Ojinaga', 'Mazatlan', 'Bahia_Banderas', 'Hermosillo', 'Tijuana', 'Ensenada']
+  .forEach((z) => (TZ_CC['America/' + z] = 'MX'));
+['Sao_Paulo', 'Noronha', 'Belem', 'Fortaleza', 'Recife', 'Araguaina', 'Maceio', 'Bahia', 'Campo_Grande', 'Cuiaba', 'Santarem', 'Porto_Velho', 'Boa_Vista', 'Manaus', 'Eirunepe', 'Rio_Branco']
+  .forEach((z) => (TZ_CC['America/' + z] = 'BR'));
+const ES_CC = ['ES', 'MX', 'AR', 'CO', 'CL', 'PE', 'VE', 'EC', 'GT', 'CU', 'BO', 'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'PR'];
 export function detectCountry() {
   let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch {}
   if (TZ_CC[tz]) return TZ_CC[tz];
+  if (tz.startsWith('America/Argentina/')) return 'AR';
   for (const l of navigator.languages || [navigator.language || '']) { const m = /^[a-z]{2,3}(?:-[A-Za-z]{4})?[-_]([A-Za-z]{2})\b/.exec(String(l)); if (m) return m[1].toUpperCase(); }
   return '';
 }
-export const countryLang = (cc) => (cc === 'LV' ? 'lv' : ['RU', 'BY', 'KZ', 'KG'].includes(cc) ? 'ru' : 'en');
+// LV → lv; RU BY KZ KG → ru; Spain + Spanish-majority Latin America → es; PT BR AO MZ → pt; JP → ja; CN TW → zh; everything else (incl. IN, SG) → en
+export const countryLang = (cc) => (cc === 'LV' ? 'lv' : ['RU', 'BY', 'KZ', 'KG'].includes(cc) ? 'ru' : ES_CC.includes(cc) ? 'es'
+  : ['PT', 'BR', 'AO', 'MZ'].includes(cc) ? 'pt' : cc === 'JP' ? 'ja' : ['CN', 'TW'].includes(cc) ? 'zh' : 'en');
 function pick() {
   const q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
   if (valid(q)) { try { localStorage.setItem('fa-lang', q); } catch {} return q; }
@@ -150,7 +171,7 @@ function pick() {
 }
 export let LANG = pick();
 export function t(key, vars) {
-  let v = (S[LANG] && S[LANG][key]) ?? S.lv[key] ?? key;
+  let v = (S[LANG] && S[LANG][key]) ?? S.en[key] ?? S.lv[key] ?? key;
   if (vars && typeof v === 'string') v = v.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
   return v;
 }
@@ -172,7 +193,7 @@ function seoHead() {
   set('meta[property="og:title"]', meta('property', 'og:title'), 'content', t('seo.title'));
   set('meta[property="og:description"]', meta('property', 'og:description'), 'content', t('seo.desc'));
   set('meta[property="og:url"]', meta('property', 'og:url'), 'content', BASE + '?lang=' + LANG);
-  set('meta[property="og:locale"]', meta('property', 'og:locale'), 'content', { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU' }[LANG]);
+  set('meta[property="og:locale"]', meta('property', 'og:locale'), 'content', LOCALE[LANG]);
   set('link[rel="canonical"]', () => { const l = document.createElement('link'); l.rel = 'canonical'; return l; }, 'href', BASE + '?lang=' + LANG);
 }
 export function applyDom(root = document) {
@@ -181,7 +202,9 @@ export function applyDom(root = document) {
   root.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = t(el.dataset.i18n)));
   root.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
   root.querySelectorAll('.lang-sw').forEach((el) => {
-    el.innerHTML = LANGS.map((l) => `<button type="button" data-lang="${l.code}" class="${l.code === LANG ? 'on' : ''}" aria-pressed="${l.code === LANG}">${l.label}</button>`).join('');
-    el.querySelectorAll('[data-lang]').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)));
+    // compact dropdown (7 languages): shows the short code, lists native names
+    el.innerHTML = `<label class="lang-dd"><span aria-hidden="true">${LANGS.find((l) => l.code === LANG).label} ▾</span><select aria-label="${t('set.lang')}">${
+      LANGS.map((l) => `<option value="${l.code}"${l.code === LANG ? ' selected' : ''}>${l.label} · ${l.name}</option>`).join('')}</select></label>`;
+    el.querySelector('select').onchange = (e) => setLang(e.target.value);
   });
 }

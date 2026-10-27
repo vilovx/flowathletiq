@@ -2,7 +2,7 @@
 // Builds sitemap.xml (every page in lv/en/ru, with xhtml:link hreflang alternates and x-default -> English).
 // Run after changing articles/categories:  node scripts/build-sitemap.js   (import-news.js runs it automatically).
 const fs = require("fs"), path = require("path"), vm = require("vm");
-const root = path.join(__dirname, ".."), SITE = "https://flowathletiq.com", LANGS = ["lv", "en", "ru"];
+const root = path.join(__dirname, ".."), SITE = "https://flowathletiq.com", LANGS = ["lv", "en", "ru"], AIM_LANGS = ["lv", "en", "ru", "es", "pt", "ja", "zh"]; // the Aim Trainer has 7 languages
 const ctx = { window: {} }; vm.createContext(ctx);
 for (const f of ["data/articles.js", "data/imported.js"]) { const p = path.join(root, f); if (fs.existsSync(p)) vm.runInContext(fs.readFileSync(p, "utf8"), ctx); }
 const W = ctx.window, cats = W.FA_CATEGORIES || [], catSet = new Set(cats.map((c) => c.slug));
@@ -20,11 +20,11 @@ if (W.FA_SHOW_PARTNERS !== false) entries.push(["/partners.html", "", today, "0.
 const url = (p, q, l) => SITE + p + "?" + (q ? q + "&" : "") + "lang=" + l;
 const xml = (s) => s.replace(/&/g, "&amp;");
 let out = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n';
-for (const [p, q, lm, pr] of entries) for (const l of LANGS) {
+for (const [p, q, lm, pr] of entries) { const LL = p === "/aim/" ? AIM_LANGS : LANGS; for (const l of LL) {
   out += "  <url>\n    <loc>" + xml(url(p, q, l)) + "</loc>\n    <lastmod>" + lm + "</lastmod>\n    <priority>" + pr + "</priority>\n";
-  for (const a of LANGS) out += '    <xhtml:link rel="alternate" hreflang="' + a + '" href="' + xml(url(p, q, a)) + '"/>\n';
+  for (const a of LL) out += '    <xhtml:link rel="alternate" hreflang="' + a + '" href="' + xml(url(p, q, a)) + '"/>\n';
   out += '    <xhtml:link rel="alternate" hreflang="x-default" href="' + xml(url(p, q, "en")) + '"/>\n  </url>\n';
-}
+} }
 out += "</urlset>\n";
 fs.writeFileSync(path.join(root, "sitemap.xml"), out);
 console.log("build-sitemap: " + entries.length + " pages x " + LANGS.length + " languages -> sitemap.xml");
