@@ -145,6 +145,7 @@ window.FA_I18N = {
       disclosure: "Partnera saite. 18+."
     },
     tournaments: "Turnīri",
+    aim: { nav: "Aim Trainer", title: "Aim Trainer", kicker: "Jaunums · spēle", text: "Trenē mērķēšanu pārlūkā: šauj vistām no logiem un balkoniem Kuldīgas vecpilsētā, ar AK-47, M4A4 un M4A1-S spray paterniem. Iekļūsti TOP 8!", cta: "Spēlēt", desktopOnly: "Tikai datorā", mobileNote: "Spēlējams tikai datorā ar peli un tastatūru." },
     tour: {
       kicker: "FACEIT turnīri",
       title: "Turnīri",
@@ -391,6 +392,7 @@ window.FA_I18N = {
       disclosure: "Affiliate link. 18+."
     },
     tournaments: "Tournaments",
+    aim: { nav: "Aim Trainer", title: "Aim Trainer", kicker: "New · game", text: "Train your aim in the browser: shoot chickens peeking from windows and balconies in Kuldīga old town, with AK-47, M4A4 and M4A1-S spray patterns. Make the TOP 8!", cta: "Play", desktopOnly: "Desktop only", mobileNote: "Playable on a computer with mouse and keyboard only." },
     tour: {
       kicker: "FACEIT tournaments",
       title: "Tournaments",
@@ -637,6 +639,7 @@ window.FA_I18N = {
       disclosure: "Партнёрская ссылка. 18+."
     },
     tournaments: "Турниры",
+    aim: { nav: "Aim Trainer", title: "Aim Trainer", kicker: "Новинка · игра", text: "Тренируй аим прямо в браузере: стреляй по курицам в окнах и на балконах старого города Кулдиги, со спреем AK-47, M4A4 и M4A1-S. Попади в TOP 8!", cta: "Играть", desktopOnly: "Только на ПК", mobileNote: "Играть можно только на компьютере с мышью и клавиатурой." },
     tour: {
       kicker: "Турниры на FACEIT",
       title: "Турниры",

@@ -618,3 +618,35 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .promo-cta { display: block; text-align: center; margin-top: .75rem; padding: .55rem 1rem; font-size: .88rem; text-decoration: none; }
 .promo-disc { margin: .5rem 0 0; font-size: .72rem; color: var(--muted); opacity: .85; }
 .privacy-note { margin: 1.5rem 0 0; font-size: .8rem; color: var(--muted); }
+
+/* ---------- Aim Trainer: header button + homepage promo (desktop-only game) ---------- */
+.aim-ico { display: inline-block; vertical-align: -3px; flex: none; }
+.nav .nav-aim-btn { display: inline-flex; align-items: center; gap: .4rem; color: #000; background: linear-gradient(90deg, var(--neon), var(--neon-2)); box-shadow: 0 0 14px rgba(0,240,255,.35); margin-left: .25rem; }
+.nav .nav-aim-btn .aim-ico { animation: aim-spin 6s linear infinite; }
+@keyframes aim-spin { to { transform: rotate(360deg); } }
+@media (hover: hover) { .nav .nav-aim-btn:hover { color: #000; background: linear-gradient(90deg, #5ff7ff, #c64dff); box-shadow: 0 0 22px rgba(0,240,255,.65); } }
+.nav-aim-note { display: none; }
+.aim-promo { position: relative; overflow: hidden; background: radial-gradient(circle at 0% 0%, rgba(0,240,255,.22), transparent 55%), radial-gradient(circle at 100% 100%, rgba(176,0,255,.25), transparent 60%), var(--card); border-color: rgba(0,240,255,.35); }
+.aim-promo-art { margin: -1.25rem -1.25rem .75rem; background: linear-gradient(180deg, #1b2a3a, #12152a); padding: .6rem .8rem 0; }
+.aim-promo-art img { width: 100%; height: auto; }
+.aim-promo h2 { display: flex; align-items: center; gap: .45rem; margin: .35rem 0 .3rem; font-size: 1.35rem; }
+.aim-promo h2 .aim-ico { width: 20px; height: 20px; color: var(--neon); }
+.aim-promo p { margin: 0 0 .2rem; font-size: .9rem; color: var(--muted); }
+.aim-promo .btn { margin-top: .75rem; text-decoration: none; font-size: .9rem; padding: .55rem 1rem; }
+.aim-promo-mobile { display: none; }
+@media (max-width: 820px) {
+  .nav .nav-aim-btn { margin: .35rem 0 0; justify-content: flex-start; }
+  .nav-aim-note { display: inline; margin-left: auto; font-size: .72rem; font-weight: 700; text-transform: none; letter-spacing: 0; opacity: .75; }
+}
+/* phones/tablets without a mouse: the game cannot be played there */
+@media (hover: none) and (pointer: coarse) {
+  .aim-promo .aim-promo-btn { display: none; }
+  .aim-promo-mobile { display: block; margin-top: .6rem !important; padding: .5rem .7rem; border-radius: 10px; background: rgba(0,240,255,.08); border: 1px dashed rgba(0,240,255,.4); color: var(--text) !important; font-weight: 600; }
+}
+@media (prefers-reduced-motion: reduce) { .nav .nav-aim-btn .aim-ico { animation: none; } }
+.aim-promo-art { position: relative; }
+.aim-promo-wb { position: absolute; left: calc(.8rem + (100% - 1.6rem) * .395); width: calc((100% - 1.6rem) * .575); top: calc(.6rem + 12%); height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; color: #14204a; text-align: center; }
+.aim-promo-wb b { font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 2.2vw, 1.7rem); color: #c4161c; letter-spacing: .04em; line-height: 1; }
+.aim-promo-wb .aim-ico { width: 2.2rem; height: 2.2rem; color: #1d58c9; animation: aim-spin 8s linear infinite; }
+.aim-promo-wb i { font-style: normal; font-weight: 800; font-size: .62rem; letter-spacing: .03em; color: #14204a; opacity: .8; }
+@media (prefers-reduced-motion: reduce) { .aim-promo-wb .aim-ico { animation: none; } }

@@ -185,6 +185,24 @@
     if (page === "virsliga") return "cs2-latvia";
     return null;
   }
+  // ---------- Aim Trainer (browser game at /aim/, desktop only) ----------
+  var AIM_ICON = '<svg class="aim-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v5M12 17.5v5M1.5 12h5M17.5 12h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>';
+  function aimUrl() { return "aim/?lang=" + encodeURIComponent(LANG); }
+  function aimNavItem() {
+    var A = t("aim") || {};
+    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '">' + AIM_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.desktopOnly) + "</span></a></li>";
+  }
+  function renderAimPromo() {
+    var box = $("aim-promo"); if (!box) return;
+    var A = t("aim") || {};
+    box.hidden = false;
+    box.innerHTML = '<div class="aim-promo-art" aria-hidden="true"><img src="aim/img/leaderboard-board-768.webp" alt="" width="768" height="499" loading="lazy" decoding="async">' +
+      '<div class="aim-promo-wb"><b>TOP 8</b><span>' + AIM_ICON + '</span><i>AK-47 · M4A4 · M4A1-S</i></div></div>' +
+      '<span class="kicker">' + esc(A.kicker) + "</span>" +
+      '<h2 id="aim-promo-h">' + AIM_ICON + esc(A.title) + "</h2><p>" + esc(A.text) + "</p>" +
+      '<a class="btn aim-promo-btn" href="' + aimUrl() + '">' + esc(A.cta) + " →</a>" +
+      '<p class="aim-promo-mobile">' + esc(A.mobileNote) + "</p>";
+  }
   function renderHeader() {
     var cur = currentCat();
     var trail = cur ? ancestors(cur).map(function (c) { return c.slug; }) : [];
@@ -217,7 +235,8 @@
         '" aria-expanded="false" aria-controls="sub-cs2-menu">' + esc(NAV.top || "CS2") +
         ' <span class="caret" aria-hidden="true"></span></button><ul class="submenu" id="sub-cs2-menu">' + cs2Items + "</ul></li>" +
       plain("tournaments.html", "tournaments", "tournaments") +
-      (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about");
+      (SHOW_PARTNERS ? plain("partners.html", "partners", "partners") : "") + plain("about.html", "about", "about") +
+      aimNavItem();
     var langs = '<div class="lang-switch" role="group" aria-label="' + esc(t("language")) + '">' +
       LANGS.map(function (l) {
         return '<button type="button" data-lang="' + l.code + '" lang="' + l.code + '" aria-pressed="' + (l.code === LANG) +
@@ -530,7 +549,7 @@
     if (page === "about") renderAbout();
     if (page === "tournaments") renderTournaments();
     renderPromo();
-    if (page === "index") renderTourTeaser();
+    if (page === "index") { renderTourTeaser(); renderAimPromo(); }
     // Only fetch once a cup is linked to a FACEIT championship (avoids 404 noise before that).
     if ((page === "tournaments" || page === "index") && TOURS.some(function (x) { return x.faceitChampionshipId; })) loadTeams();
     if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
