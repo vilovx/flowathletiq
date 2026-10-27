@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=10';
-import { createChicken, Puffs } from './chicken.js?v=10';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=10';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=10';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=10';
-import { t, onLang, applyDom } from './i18n.js?v=10';
-import { Sfx } from './audio.js?v=10';
-import { buildGunModel } from './gunmodels.js?v=10';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=10';
+import { buildWorld } from './world.js?v=11';
+import { createChicken, Puffs } from './chicken.js?v=11';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=11';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=11';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=11';
+import { t, onLang, applyDom } from './i18n.js?v=11';
+import { Sfx } from './audio.js?v=11';
+import { buildGunModel } from './gunmodels.js?v=11';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=11';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);

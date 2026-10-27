@@ -213,7 +213,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=10');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=11');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -231,22 +231,18 @@ export function buildWorld(scene) {
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
     glow.position.set(ex, ey, 5); glow.renderOrder = 4; g.add(glow);
     const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let next = 2.5, blinks = 0, t0 = -1;
+    lid.scale.y = 1; lid.material.opacity = 0;
+    const sm = (x) => x * x * (3 - 2 * x);
     return {
       lid, glow,
-      update(t) { // t in seconds
-        if (still) { glow.material.opacity = 0.8; lid.scale.y = 0.001; return; }
-        if (t0 < 0 && t >= next) { t0 = t; }
-        let lidK = 0, flash = 0;
-        if (t0 >= 0) {
-          const e = t - t0, D = 0.18;
-          if (e < D) lidK = Math.sin(Math.PI * e / D);                 // close + open
-          else if (e < D + 0.5) flash = 1 - (e - D) / 0.5;              // bright flare after reopening
-          else { t0 = -1; blinks++; next = t + (Math.random() < 0.3 ? 0.12 : 2.5 + Math.random() * 4.5); }
-        }
-        lid.scale.y = Math.max(0.001, lidK);
-        glow.material.opacity = Math.min(1, (0.68 + 0.1 * Math.sin(t * 3.1)) * (1 - lidK) + flash * 0.5);
-        glow.scale.setScalar(1 + flash * 0.35);
+      update(t) { // t in seconds: 9 s cycle, red -> slow fade to dark -> dark -> relight
+        if (still) { glow.material.opacity = 0.8; lid.material.opacity = 0; return; }
+        const p = (t % 9) / 9;
+        let k; // 1 = red, 0 = dark
+        if (p < 0.2) k = 1; else if (p < 0.6) k = 1 - sm((p - 0.2) / 0.4); else if (p < 0.75) k = 0; else if (p < 0.88) k = sm((p - 0.75) / 0.13); else k = 1;
+        glow.material.opacity = 0.85 * k;
+        lid.material.opacity = 1 - k;
+        glow.scale.setScalar(0.85 + 0.15 * k);
       },
     };
   })();
