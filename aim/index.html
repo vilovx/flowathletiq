@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=30">
+<link rel="stylesheet" href="style.css?v=31">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=30" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=31" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,7 +59,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=30" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
+        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=31" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -89,7 +89,7 @@
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
             <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=30" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=31" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -176,7 +176,7 @@
   </div>
   <button type="button" id="touch-offer" class="btn big hidden"><span aria-hidden="true">📱</span> <span data-i18n="touchMode"></span></button>
   <!-- Portrait warning (phones) -->
-  <div id="rotate"><div><div class="rot-ico" aria-hidden="true">📱</div><p data-i18n="rotate"></p><button type="button" class="btn big" id="rot-btn" data-i18n="rotBtn">Rotate screen</button><p class="muted small" data-i18n="rotNote"></p></div></div>
+  <div id="rotate"><div><div class="rot-ico" aria-hidden="true">📱</div><p data-i18n="rotate"></p><button type="button" class="btn big" id="rot-btn" data-i18n="rotBtn">Rotate screen</button><br><button type="button" class="btn ghost" id="rot-share" data-share data-i18n="share"></button><p class="muted small" data-i18n="rotNote"></p></div></div>
 
   <!-- Pause -->
   <section id="pause" class="screen hidden">
@@ -228,6 +228,7 @@
   </section>
 </div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
-<script type="module" src="js/main.js?v=30"></script>
+<div id="share-pop" class="share-pop hidden" role="dialog" aria-modal="true"><div class="card center"><p data-i18n="shareManual"></p><input type="text" id="share-url" readonly value="https://flowathletiq.com/aim/"><div class="btn-row"><button type="button" class="btn" id="share-close" data-i18n="shareClose">OK</button></div></div></div>
+<script type="module" src="js/main.js?v=31"></script>
 </body>
 </html>

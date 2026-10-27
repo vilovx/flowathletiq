@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=30';
+import { MORE } from './i18n-more.js?v=31';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -197,6 +197,12 @@ const SHARE = { // [button, toast, share text]
   zh: ['🔗 分享给朋友', '链接已复制！', '在浏览器里免费玩 CS2 瞄准训练——在库尔迪加打鸡！'],
 };
 for (const l in SHARE) Object.assign(TOUCH[l], { share: SHARE[l][0], copied: SHARE[l][1], shareText: SHARE[l][2] });
+const SHARE2 = { // [manual copy hint, shared ok, close]
+  lv: ['Nokopē saiti un nosūti draugiem:', 'Paldies par dalīšanos!', 'Aizvērt'], en: ['Copy the link and send it to your friends:', 'Thanks for sharing!', 'Close'],
+  ru: ['Скопируй ссылку и отправь друзьям:', 'Спасибо, что поделился!', 'Закрыть'], es: ['Copia el enlace y envíalo a tus amigos:', '¡Gracias por compartir!', 'Cerrar'],
+  pt: ['Copie o link e envie para seus amigos:', 'Obrigado por compartilhar!', 'Fechar'], ja: ['リンクをコピーして友達に送ろう：', 'シェアありがとう！', '閉じる'], zh: ['复制链接发给朋友：', '感谢分享！', '关闭'],
+};
+for (const l in SHARE2) Object.assign(TOUCH[l], { shareManual: SHARE2[l][0], shared: SHARE2[l][1], shareClose: SHARE2[l][2] });
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],

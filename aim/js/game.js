@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=30';
-import { RoastSystem } from './roast.js?v=30';
-import { createChicken, Puffs } from './chicken.js?v=30';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=30';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=30';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=30';
-import { t, onLang, applyDom } from './i18n.js?v=30';
-import { Sfx } from './audio.js?v=30';
-import { buildGunModel } from './gunmodels.js?v=30';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=30';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=30';
+import { buildWorld } from './world.js?v=31';
+import { RoastSystem } from './roast.js?v=31';
+import { createChicken, Puffs } from './chicken.js?v=31';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=31';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=31';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=31';
+import { t, onLang, applyDom } from './i18n.js?v=31';
+import { Sfx } from './audio.js?v=31';
+import { buildGunModel } from './gunmodels.js?v=31';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=31';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=31';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=30';
+import { forced, forceOff } from './rot.js?v=31';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -530,7 +530,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=30" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=31" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -843,14 +843,35 @@ $('o-menu').onclick = goMenu;
 const SHARE_URL = 'https://flowathletiq.com/aim/';
 let toastT = 0;
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.remove('hidden'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.add('hidden'), 2200); }
-async function shareLink() {
-  if (MOBILE && navigator.share) { try { await navigator.share({ title: 'FlowAthletiq Aim Trainer', text: t('shareText'), url: SHARE_URL }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
-  let ok = false;
-  try { await navigator.clipboard.writeText(SHARE_URL); ok = true; } catch {}
-  if (!ok) { const ta = document.createElement('textarea'); ta.value = SHARE_URL; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch {} ta.remove(); }
-  toast(ok ? t('copied') : SHARE_URL);
+function manualCopy() { // last resort: popup with the link selected so the user can copy it by hand
+  const pop = $('share-pop'), inp = $('share-url'); pop.classList.remove('hidden'); inp.value = SHARE_URL;
+  setTimeout(() => { try { inp.focus(); inp.select(); inp.setSelectionRange(0, 999); } catch {} }, 30);
 }
-document.querySelectorAll('[data-share]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); shareLink(); }));
+function execCopy() {
+  const ta = document.createElement('textarea'); ta.value = SHARE_URL; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px';
+  document.body.appendChild(ta); ta.focus(); ta.select(); try { ta.setSelectionRange(0, 999); } catch {}
+  let ok = false; try { ok = document.execCommand('copy'); } catch {} ta.remove(); return ok;
+}
+function copyLink() {
+  const done = (ok) => { if (ok) toast(t('copied')); else { manualCopy(); toast(t('shareManual')); } };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(SHARE_URL).then(() => done(true), () => done(execCopy()));
+  else done(execCopy());
+}
+function shareLink() { // navigator.share is called synchronously inside the user gesture (no await before it)
+  if (navigator.share && (MOBILE || matchMedia('(pointer:coarse)').matches)) {
+    let p; try { p = navigator.share({ title: 'FlowAthletiq Aim Trainer', text: t('shareText'), url: SHARE_URL }); } catch { copyLink(); return; }
+    Promise.resolve(p).then(() => toast(t('shared')), (e) => { if (!(e && e.name === 'AbortError')) copyLink(); });
+    return;
+  }
+  copyLink();
+}
+let shareTouchT = 0;
+document.querySelectorAll('[data-share]').forEach((b) => {
+  b.addEventListener('pointerdown', (e) => e.stopPropagation());
+  b.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); shareTouchT = Date.now(); shareLink(); }); // fires even if a parent eats the click
+  b.addEventListener('click', (e) => { e.stopPropagation(); if (Date.now() - shareTouchT < 800) return; shareLink(); });
+});
+$('share-close').onclick = () => $('share-pop').classList.add('hidden');
 document.querySelectorAll('[data-close]').forEach((b) => (b.onclick = () => { show(modalReturn); if (modalReturn === 'menu') renderMenu(); }));
 function openModal(id, from) { modalReturn = from; if (id === 'editor') syncEditor(); if (id === 'settings') syncSettings(); show(id); }
 
