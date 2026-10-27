@@ -25,6 +25,12 @@ export class Sfx {
   shot() { this.burst(0.14, 2600, 0.5); this.tone('sine', 140, 45, 0.12, 0.45); }
   dink() { this.tone('triangle', 2400, 1900, 0.18, 0.25); }
   thud() { this.burst(0.05, 900, 0.25); }
+  peek(pan = 0) { // soft wooden shutter creak + tiny cluck, panned toward the flank
+    if (!this.ok()) return; const c = this.ctx, t = c.currentTime, p = c.createStereoPanner ? c.createStereoPanner() : null;
+    const o = c.createOscillator(); o.type = 'triangle'; o.frequency.setValueAtTime(320, t); o.frequency.exponentialRampToValueAtTime(210, t + 0.16);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+    o.connect(g); if (p) { p.pan.value = pan; g.connect(p); p.connect(c.destination); } else g.connect(c.destination); o.start(t); o.stop(t + 0.22);
+  }
   cluck() { this.tone('square', 700, 380, 0.07, 0.04); }
   cluckDie() { this.tone('square', 900, 200, 0.22, 0.06); }
   reload() { if (!this.ok()) return; this.burst(0.05, 3000, 0.15, 4); setTimeout(() => this.burst(0.05, 2400, 0.18, 4), 1200); setTimeout(() => this.burst(0.06, 3500, 0.2, 4), 2100); }

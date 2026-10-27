@@ -188,7 +188,7 @@ export function buildWorld(scene) {
     add(geo, stoneX, 544, 0, 0);
   }
   box(20, 170, 900, M.dark, 556, 85, -150, { cast: false, recv: false }); // dark arcade interior
-  for (const z of [-450, -300, -150, 0, 150]) windowAt(552 - 34, 215, z, '-x', M.shutter2, 34, 52);
+  for (const z of [-450, -300, -150, 0, 150]) windowAt(548, 215, z, '-x', M.shutter2, 34, 52);
 
   // Wall behind the player & corner fillers
   box(1500, 260, 40, M.stone, 0, 130, 720);
@@ -215,19 +215,33 @@ export function buildWorld(scene) {
   sun.shadow.bias = -0.0005; sun.shadow.normalBias = 1.5;
   scene.add(sun, sun.target);
 
-  // Spawn points, ordered roughly by difficulty. dir = facing toward the plaza.
-  const SP = [];
-  for (const x of [-300, -100, 100, 300]) SP.push({ p: new THREE.Vector3(x, 150, -540), kind: 'balkons' });
-  for (const x of [-350, 350, -150, 150]) SP.push({ p: new THREE.Vector3(x, 422, -556), kind: 'jumts' });
-  for (const z of [-360, -200, -60]) SP.push({ p: new THREE.Vector3(-500, 130, z), kind: 'balkons' });
-  for (const x of [-300, 300, -100, 100]) SP.push({ p: new THREE.Vector3(x, 272, -540), kind: 'balkons' });
-  for (const z of [-400, -230, -80]) SP.push({ p: new THREE.Vector3(-512, 302, z), kind: 'jumts' });
-  for (const z of [-360, -200, -60]) SP.push({ p: new THREE.Vector3(-500, 220, z), kind: 'balkons' });
-  for (const z of [-450, -280, -60]) SP.push({ p: new THREE.Vector3(522, 264, z), kind: 'jumts' });
-  // reorder for gradual unlocking: easy first
-  const order = [0, 1, 2, 3, 11, 12, 4, 5, 8, 9, 10, 13, 14, 6, 7, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-  const spawns = order.filter((i) => SP[i]).map((i) => SP[i]);
-
+  // Spawn points: chickens emerge from windows / balcony doors / behind roof edges (hidden by the wall until they come out).
+  // face = point on the emerge plane at standing height, emerge = direction it comes out, fwd = facing, perch = where it winds up.
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const SP = {};
+  const win = (k, x, y, z, fwd) => (SP[k] = { kind: 'window', face: V(x, y, z), emerge: fwd.clone(), fwd, perch: V(x, y, z).addScaledVector(fwd, 9) });
+  const door = (k, x, y, z, fwd, rail) => (SP[k] = { kind: 'door', face: V(x, y, z), emerge: fwd.clone(), fwd, perch: V(x, y + 35.5, z).addScaledVector(fwd, rail) });
+  const roofE = (k, x, y, z, fwd) => (SP[k] = { kind: 'roof', face: V(x, y, z), emerge: V(0, 1, 0), fwd, perch: V(x, y, z).addScaledVector(fwd, 16) });
+  const roofR = (k, x, y, z) => { roofE(k, x, y, z, NX); SP[k].perch = V(566, 272, z); }; // sit on the roof slope, not the eave
+  const PZ = V(0, 0, 1), PX = V(1, 0, 0), NX = V(-1, 0, 0);
+  for (const x of [-200, 0, 200, -390, 390]) { win('w1' + x, x, 172, -556, PZ); win('w2' + x, x, 297, -556, PZ); }
+  for (const x of [-300, -100, 100, 300]) { door('d1' + x, x, 150, -557, PZ, 35); door('d2' + x, x, 272, -557, PZ, 35); }
+  for (const x of [-350, -150, 150, 350]) roofE('r' + x, x, 426, -582, PZ);
+  // side-building windows (flank surprise pool): left apartment (+x facing) and right arcade building (-x facing)
+  const side = [];
+  for (const z of [-280, -130, 20, 140]) side.push(win('lw' + z, -516, 215, z, PX));
+  for (const z of [40, 140]) side.push(win('lwl' + z, -516, 135, z, PX));
+  for (const z of [-450, -300, -150, 0, 150]) side.push(win('rw' + z, 546, 189, z, NX));
+  side.forEach((x) => (x.side = true));
+  for (const z of [-360, -200, -60]) { door('ld1' + z, -517, 130, z, PX, 31); door('ld2' + z, -517, 220, z, PX, 31); }
+  for (const z of [-400, -230, -80]) roofE('lr' + z, -542, 305, z, PX);
+  for (const z of [-450, -280, -60]) roofR('rr' + z, 572, 267, z);
+  // ordered for gradual unlocking: central/easy first
+  const order = ['w10', 'd1-100', 'd1100', 'w1-200', 'w1200', 'r-150', 'r150', 'w20', 'd1-300', 'd1300', 'ld1-200', 'rr-280',
+    'd2-100', 'd2100', 'w2-200', 'w2200', 'lr-230', 'ld2-360', 'rr-450', 'r-350', 'r350', 'w1-390', 'w1390', 'd2-300', 'd2300',
+    'ld1-60', 'ld2-200', 'ld1-360', 'ld2-60', 'lr-400', 'lr-80', 'rr-60', 'w2-390', 'w2390'];
+  const spawns = order.map((k) => SP[k]);
+  const sideSpawns = side;
   const exits = [
     { path: [new THREE.Vector3(-470, 0, -505), new THREE.Vector3(-660, 0, -520)], name: 'kreisā aleja' },
     { path: [new THREE.Vector3(480, 0, -150), new THREE.Vector3(552, 0, -150)], name: 'arka' },
@@ -235,5 +249,5 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { worldMeshes, spawns, exits, site, blockers };
+  return { worldMeshes, spawns, sideSpawns, exits, site, blockers };
 }

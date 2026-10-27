@@ -1,12 +1,13 @@
 // CS2-style crosshair (classic static) drawn in 2D.
 // CS scales crosshair values against a 480px-tall virtual screen (YRES), so sizes grow with resolution.
+import { t } from './i18n.js?v=5';
 export const COLOR_PRESETS = [
-  { name: 'Sarkans', rgb: [250, 50, 50] },
-  { name: 'Zaļš', rgb: [50, 250, 50] },
-  { name: 'Dzeltens', rgb: [250, 250, 50] },
-  { name: 'Zils', rgb: [50, 50, 250] },
-  { name: 'Ciāns', rgb: [50, 250, 250] },
-  { name: 'Pielāgots', rgb: null },
+  { get name() { return t('colors')[0]; }, rgb: [250, 50, 50] },
+  { get name() { return t('colors')[1]; }, rgb: [50, 250, 50] },
+  { get name() { return t('colors')[2]; }, rgb: [250, 250, 50] },
+  { get name() { return t('colors')[3]; }, rgb: [50, 50, 250] },
+  { get name() { return t('colors')[4]; }, rgb: [50, 250, 250] },
+  { get name() { return t('colors')[5]; }, rgb: null },
 ];
 
 export const DEFAULT_XHAIR = {
