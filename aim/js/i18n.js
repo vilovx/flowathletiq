@@ -175,6 +175,8 @@ const GO = { lv: 'AIZIET!', en: 'GO!', ru: 'ВПЕРЁД!', es: '¡YA!', pt: 'J�
 for (const l in GO) TOUCH[l].go = GO[l];
 const NR = { lv: 'Telefonā bez atsitiena', en: 'No recoil on phone', ru: 'На телефоне без отдачи', es: 'Sin retroceso en el móvil', pt: 'Sem recuo no celular', ja: 'スマホはリコイルなし', zh: '手机上无后坐力' };
 for (const l in NR) TOUCH[l].noRecoil = NR[l];
+const HOME = { lv: 'FlowAthletiq sākumlapa', en: 'FlowAthletiq home page', ru: 'Главная страница FlowAthletiq', es: 'Página de inicio de FlowAthletiq', pt: 'Página inicial do FlowAthletiq', ja: 'FlowAthletiq ホームページ', zh: 'FlowAthletiq 首页' };
+for (const l in HOME) TOUCH[l].homeLink = HOME[l];
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],
@@ -257,6 +259,7 @@ export function applyDom(root = document) {
   if (root === document) seoHead();
   root.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = t(el.dataset.i18n)));
   root.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
+  root.querySelectorAll('[data-i18n-aria]').forEach((el) => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
   root.querySelectorAll('.lang-sw').forEach((el) => {
     // compact dropdown (7 languages): shows the short code, lists native names
     el.innerHTML = `<label class="lang-dd"><span aria-hidden="true">${LANGS.find((l) => l.code === LANG).label} ▾</span><select aria-label="${t('set.lang')}">${

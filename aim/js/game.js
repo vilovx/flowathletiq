@@ -871,12 +871,13 @@ $('s-touch').addEventListener('change', () => setTouchMode($('s-touch').checked)
 if (!MOBILE) { // desktop mode but the first input is a finger (no real mouse moved yet): switch to touch mode, or offer it on big screens
   let mouseSeen = false;
   addEventListener('mousemove', (e) => { if (!e.sourceCapabilities || !e.sourceCapabilities.firesTouchEvents) mouseSeen = true; }, { passive: true });
-  addEventListener('touchstart', () => {
-    if (mouseSeen || document.pointerLockElement) return;
+  addEventListener('touchstart', function first(e) {
+    if (mouseSeen || document.pointerLockElement || (e.target.closest && e.target.closest('a[href]'))) return;
+    removeEventListener('touchstart', first); // links (menu logo) navigate normally
     const short = Math.min(screen.width || 0, screen.height || 0);
     if (short && short <= 900) setTouchMode(true);
     else $('touch-offer').classList.remove('hidden');
-  }, { passive: true, once: true });
+  }, { passive: true });
   $('touch-offer').onclick = () => setTouchMode(true);
 }
 
