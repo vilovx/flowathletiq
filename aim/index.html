@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="lv">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FlowAthletiq Aim Trainer</title>
+<meta name="description" content="FlowAthletiq Aim Trainer: trenē savu aim pārlūkā ar CS2 sensitivity un savu crosshair.">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="app">
+  <canvas id="gl"></canvas>
+  <canvas id="xh"></canvas>
+  <div id="fx"></div>
+
+  <!-- Mobile / touch notice -->
+  <section id="mobile" class="screen hidden">
+    <div class="card center">
+      <img src="img/logo.webp" alt="FlowAthletiq" class="logo">
+      <h1>Spēlē uz datora ar peli</h1>
+      <p>FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
+      <p class="muted">Atver šo lapu datorā (Chrome vai Edge ieteicams) un pievieno savu CS2 crosshair.</p>
+      <a class="btn" href="../">Atpakaļ uz FlowAthletiq</a>
+    </div>
+  </section>
+
+  <!-- Main menu -->
+  <section id="menu" class="screen hidden">
+    <div class="menu-wrap">
+      <div class="card menu-main">
+        <img src="img/logo.webp" alt="FlowAthletiq" class="logo">
+        <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
+        <p class="lead">Vistas ar ķiverēm un bruņuvestēm lec no balkoniem un jumtiem uz A site. Nošauj katru, pirms tā aizbēg. Viena aizbēgusi vista, un spēle beigusies.</p>
+        <div class="btn-row">
+          <button class="btn big" id="btn-start">Sākt spēli</button>
+          <button class="btn ghost" id="btn-xhair">Crosshair</button>
+          <button class="btn ghost" id="btn-settings">Iestatījumi</button>
+        </div>
+        <ul class="tips">
+          <li><b>Kreisā poga:</b> šaut (turi, lai šautu sērijā)</li>
+          <li><b>R:</b> pārlādēt &nbsp; <b>ESC:</b> pauze</li>
+          <li><b>AK:</b> headshot caur ķiveri ≈ 111 (viens šāviens), ķermenis ar vesti ≈ 27 (4 trāpījumi)</li>
+        </ul>
+        <div class="sensline" id="menu-sens"></div>
+      </div>
+      <div class="card menu-side">
+        <h2>Tavs rekords</h2>
+        <div id="pb"></div>
+        <h2>Rangi</h2>
+        <ol id="ranks" class="ranks"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section id="settings" class="screen hidden">
+    <div class="card modal">
+      <h2>Iestatījumi</h2>
+      <label class="row">CS2 sensitivity <input type="number" id="s-sens" step="0.01" min="0.01" max="20"></label>
+      <label class="row">Peles DPI <input type="number" id="s-dpi" step="50" min="100" max="32000"></label>
+      <div class="row info"><span>cm/360°</span><b id="s-cm"></b></div>
+      <p class="muted small">Pagrieziens = peles kustība × sens × 0.022° (tāpat kā CS2). FOV 106.26° horizontāli 16:9 ekrānā (CS2 noklusējums). Ievadi to pašu sens, ko lieto spēlē, un sajūta sakritīs.</p>
+      <label class="row">Skaņa <input type="checkbox" id="s-sound"></label>
+      <label class="row">Rādīt FPS <input type="checkbox" id="s-fps"></label>
+      <div class="row info"><span>Raw input (bez Windows paātrinājuma)</span><b id="s-raw">—</b></div>
+      <div class="btn-row"><button class="btn" data-close>Gatavs</button></div>
+    </div>
+  </section>
+
+  <!-- Crosshair editor -->
+  <section id="editor" class="screen hidden">
+    <div class="card modal wide">
+      <h2>Crosshair redaktors</h2>
+      <div class="ed">
+        <div class="ed-prev"><canvas id="xh-prev" width="420" height="300"></canvas><div class="muted small">Priekšskatījums (izmērs atbilst tavam ekrānam)</div></div>
+        <div class="ed-ctl">
+          <label class="row">Stils <select id="x-style"><option value="4">Classic static</option></select></label>
+          <label class="row">Izmērs <input type="range" id="x-length" min="0" max="10" step="0.5"><output></output></label>
+          <label class="row">Biezums <input type="range" id="x-thickness" min="0" max="6" step="0.1"><output></output></label>
+          <label class="row">Atstarpe <input type="range" id="x-gap" min="-5" max="5" step="0.5"><output></output></label>
+          <label class="row">Kontūra <input type="checkbox" id="x-outlineEnabled"></label>
+          <label class="row">Kontūras biezums <input type="range" id="x-outline" min="0" max="3" step="0.5"><output></output></label>
+          <label class="row">Krāsa <select id="x-color"></select></label>
+          <label class="row rgb">R <input type="range" id="x-red" min="0" max="255" step="1"><output></output></label>
+          <label class="row rgb">G <input type="range" id="x-green" min="0" max="255" step="1"><output></output></label>
+          <label class="row rgb">B <input type="range" id="x-blue" min="0" max="255" step="1"><output></output></label>
+          <label class="row">Caurspīdīgums <input type="range" id="x-alpha" min="0" max="255" step="1"><output></output></label>
+          <label class="row">Centra punkts <input type="checkbox" id="x-centerDotEnabled"></label>
+          <label class="row">T-stils <input type="checkbox" id="x-tStyleEnabled"></label>
+        </div>
+      </div>
+      <div class="share">
+        <label>CS2 share kods
+          <div class="inline"><input type="text" id="x-code" placeholder="CSGO-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" spellcheck="false"><button class="btn small" id="x-import">Importēt</button><button class="btn small ghost" id="x-copy">Kopēt kodu</button><button class="btn small ghost" id="x-link">Kopēt saiti</button></div>
+        </label>
+        <div class="muted small" id="x-msg">CS2: Iestatījumi → Game → Crosshair → Share or Import. Kodu vari ielīmēt arī atpakaļ spēlē.</div>
+      </div>
+      <div class="btn-row"><button class="btn ghost" id="x-reset">Atjaunot noklusējumu</button><button class="btn" data-close>Gatavs</button></div>
+    </div>
+  </section>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-tl"><div class="hud-title">FlowAthletiq <span class="grad">Aim Trainer</span></div><div class="hud-sens" id="h-sens"></div><div id="h-fps" class="hud-sens"></div></div>
+    <div class="hud-tc"><div class="hud-level">Līmenis <b id="h-level">1</b></div><div class="hud-timer" id="h-timer">0:00</div><div class="hud-left" id="h-left"></div></div>
+    <div class="hud-tr"><div><span>Kills</span><b id="h-kills">0</b></div><div><span>HS %</span><b id="h-hs">0%</b></div><div><span>Punkti</span><b id="h-score">0</b></div></div>
+    <div class="hud-br"><div class="ammo"><b id="h-ammo">30</b><span>/ <i id="h-mag">30</i></span></div><div class="wname">AK</div><div id="h-reload" class="reload hidden">Pārlādē…</div></div>
+    <div id="feed" class="feed"></div>
+    <div id="banner" class="banner hidden"></div>
+    <div id="clicklock" class="clicklock hidden">Klikšķini, lai turpinātu</div>
+  </div>
+
+  <!-- Pause -->
+  <section id="pause" class="screen hidden">
+    <div class="card modal center">
+      <h2>Pauze</h2>
+      <div class="btn-row col"><button class="btn" id="p-resume">Turpināt</button><button class="btn ghost" id="p-xhair">Crosshair</button><button class="btn ghost" id="p-settings">Iestatījumi</button><button class="btn ghost" id="p-quit">Uz izvēlni</button></div>
+    </div>
+  </section>
+
+  <!-- Game over -->
+  <section id="over" class="screen hidden">
+    <div class="card modal center over">
+      <div class="over-reason" id="o-reason"></div>
+      <div class="rank-big" id="o-rankicon"></div>
+      <div class="rank-name" id="o-rank"></div>
+      <div class="muted" id="o-level"></div>
+      <div class="stats">
+        <div><span>Punkti</span><b id="o-score"></b></div>
+        <div><span>Kills</span><b id="o-kills"></b></div>
+        <div><span>HS %</span><b id="o-hs"></b></div>
+        <div><span>Precizitāte</span><b id="o-acc"></b></div>
+      </div>
+      <div class="pbline" id="o-pb"></div>
+      <div class="btn-row"><button class="btn big" id="o-again">Spēlēt vēlreiz</button><button class="btn ghost" id="o-menu">Uz izvēlni</button></div>
+    </div>
+  </section>
+</div>
+<script type="module" src="js/main.js?v=1"></script>
+</body>
+</html>
