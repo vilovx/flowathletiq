@@ -1,13 +1,13 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=8';
-import { createChicken, Puffs } from './chicken.js?v=8';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=8';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=8';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=8';
-import { t, onLang, applyDom } from './i18n.js?v=8';
-import { Sfx } from './audio.js?v=8';
-import { buildGunModel } from './gunmodels.js?v=8';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=8';
+import { buildWorld } from './world.js?v=9';
+import { createChicken, Puffs } from './chicken.js?v=9';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=9';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=9';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=9';
+import { t, onLang, applyDom } from './i18n.js?v=9';
+import { Sfx } from './audio.js?v=9';
+import { buildGunModel } from './gunmodels.js?v=9';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=9';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -277,7 +277,8 @@ function applyKick() {
   accPenalty = Math.min(accPenalty + W.inacc.perShot, 0.05);
 }
 function fire(dirOverride) {
-  G.ammo--; G.shots++; G.lastShot = G.time;
+  if (G.mode === 'spray') G.ammo--; // chicken mode: infinite ammo
+  G.shots++; G.lastShot = G.time;
   const dir = dirOverride || shotDirection();
   G.burst++; applyKick();
   gun.kick = 1; gun.flash.visible = true; gun.flash.rotation.z = Math.random() * 3; setTimeout(() => (gun.flash.visible = false), 45);
@@ -430,9 +431,9 @@ function updateHud() {
   $('h-kills').textContent = G.kills;
   $('h-hs').textContent = G.kills ? Math.round(G.hsKills / G.kills * 100) + '%' : '0%';
   $('h-score').textContent = G.score;
-  $('h-ammo').textContent = G.ammo; $('h-mag').textContent = W.mag; $('h-wname').textContent = W.name;
+  const inf = G.mode !== 'spray'; $('h-ammo').textContent = inf ? '∞' : G.ammo; $('h-mag').textContent = inf ? '∞' : W.mag; $('h-wname').textContent = W.name;
   if (G.mode === 'spray') sprayHud();
-  document.querySelector('.ammo').classList.toggle('low', G.ammo <= 6);
+  document.querySelector('.ammo').classList.toggle('low', !inf && G.ammo <= 6);
   $('h-sens').textContent = sensText();
 }
 let bannerTimer;
@@ -493,7 +494,7 @@ canvas.addEventListener('mousedown', (e) => {
 addEventListener('mouseup', (e) => { if (e.button === 0 && G) G.trigger = false; });
 addEventListener('keydown', (e) => {
   if (state !== 'play') return;
-  if (e.code === 'KeyR' && G.mode !== 'spray') reload();
+  // infinite ammo: R does nothing outside spray mode
   const i = ['Digit1', 'Digit2', 'Digit3'].indexOf(e.code); if (i >= 0) switchWeapon(WEAPON_ORDER[i]);
 });
 $('clicklock').addEventListener('click', lock);
