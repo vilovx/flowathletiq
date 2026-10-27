@@ -1,8 +1,12 @@
-// UI strings LV / EN / RU. Language: ?lang= → site's saved language (localStorage "fa-lang") → browser → lv.
+// UI strings LV / EN / RU. Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
+// LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
+// browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
 export const LANGS = [{ code: 'lv', label: 'LV' }, { code: 'en', label: 'EN' }, { code: 'ru', label: 'RU' }];
 const S = {
   lv: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Spēlē uz datora ar peli',
+    'seo.title': 'Aim Trainer pārlūkā — bezmaksas CS2 aim treniņš | FlowAthletiq',
+    'seo.desc': 'Bezmaksas CS2 aim trainer pārlūkā: šauj vistām Kuldīgas vecpilsētā ar AK-47, M4A4 un M4A1-S spray paterniem, savu CS2 sensitivity un crosshair. Iekļūsti TOP 8!',
     'mobile.p1': 'FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.',
     'mobile.p2': 'Atver šo lapu datorā (ieteicams Chrome vai Edge) un pievieno savu CS2 crosshair.', 'mobile.back': 'Atpakaļ uz FlowAthletiq',
     lead: 'Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.',
@@ -11,6 +15,7 @@ const S = {
     'tip.dmg': 'Bojājumi, recoil un šaušanas ātrums pēc CS2 vērtībām. AK-47 headshot caur ķiveri nogalina ar vienu šāvienu, M4 ne.',
     pbTitle: 'Tavs rekords', ranksTitle: 'Rangi', pbNone: 'Vēl nav rezultāta. Uzspēlē pirmo raundu!',
     lbTitle: 'Top spēlētāji', lbAll: 'Visu laiku', lbWeek: 'Šonedēļ', lbEmpty: 'Vēl nav neviena rezultāta. Esi pirmais!', lbOffline: 'Rezultātu tabula pašlaik nav pieejama.', lbLoading: 'Ielādē…', lbLvl: 'Līm.', lbPts: 'Punkti',
+    privacy: 'Mēs neievācam personas datus. Tabulā redzams tikai tavs niks, izvēlētā valsts un rezultāts.',
     subTitle: 'Ieraksti savu rezultātu tabulā', subNick: 'Segvārds', subCountry: 'Valsts', subBtn: 'Iesniegt', subSending: 'Sūta…', subOk: 'Iesniegts ({w})! Tava vieta: #{n}', lbWpn: 'Ierocis',
     'subErr.nick': 'Segvārdam jābūt 2–16 simboliem (burti, cipari, atstarpe, _ . -), bez saitēm un rupjībām.', 'subErr.rate': 'Pārāk bieži. Pamēģini pēc brīža.',
     'subErr.implausible': 'Šis rezultāts neizskatās pēc īstas spēles.', 'subErr.country': 'Izvēlies valsti.', 'subErr.net': 'Neizdevās nosūtīt. Pārbaudi interneta savienojumu.', 'subErr.bad': 'Neizdevās nosūtīt.',
@@ -41,6 +46,8 @@ const S = {
   },
   en: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Play on a computer with a mouse',
+    'seo.title': 'Browser Aim Trainer — free CS2 aim practice | FlowAthletiq',
+    'seo.desc': 'Free CS2 aim trainer in your browser: shoot chickens in Kuldīga old town with AK-47, M4A4 and M4A1-S spray patterns, your CS2 sensitivity and crosshair. Make the TOP 8!',
     'mobile.p1': 'FlowAthletiq Aim Trainer is built for mouse aim training with CS2 sensitivity, so it does not work on phones or tablets.',
     'mobile.p2': 'Open this page on a computer (Chrome or Edge recommended) and bring your CS2 crosshair.', 'mobile.back': 'Back to FlowAthletiq',
     lead: 'Chickens in helmets and armor vests appear in windows, balcony doors and on roof edges: they stick their head out, look right, look left, crouch and jump down onto A site. Shoot every one before it lands. Shoot the one about to jump first! One chicken on the ground and the game is over.',
@@ -49,6 +56,7 @@ const S = {
     'tip.dmg': 'Damage, recoil and fire rate use CS2 values. An AK-47 headshot through a helmet is a one-tap, an M4 is not.',
     pbTitle: 'Your best', ranksTitle: 'Ranks', pbNone: 'No result yet. Play your first round!',
     lbTitle: 'Top players', lbAll: 'All time', lbWeek: 'This week', lbEmpty: 'No scores yet. Be the first!', lbOffline: 'The leaderboard is unavailable right now.', lbLoading: 'Loading…', lbLvl: 'Lvl', lbPts: 'Points',
+    privacy: 'We do not collect personal data. The board only shows your nick, the country you chose and your score.',
     subTitle: 'Put your score on the leaderboard', subNick: 'Nickname', subCountry: 'Country', subBtn: 'Submit', subSending: 'Sending…', subOk: 'Submitted ({w})! Your position: #{n}', lbWpn: 'Weapon',
     'subErr.nick': 'Nickname must be 2–16 characters (letters, digits, space, _ . -), no links or swearing.', 'subErr.rate': 'Too fast. Try again in a moment.',
     'subErr.implausible': "This result doesn't look like a real run.", 'subErr.country': 'Pick a country.', 'subErr.net': 'Could not send. Check your connection.', 'subErr.bad': 'Could not send.',
@@ -79,6 +87,8 @@ const S = {
   },
   ru: {
     title: 'FlowAthletiq Aim Trainer', 'mobile.h': 'Играй на компьютере с мышью',
+    'seo.title': 'Аим-тренер в браузере — бесплатная тренировка аима CS2 | FlowAthletiq',
+    'seo.desc': 'Бесплатный аим-тренер CS2 в браузере: стреляй по курицам в старом городе Кулдиги со спреем AK-47, M4A4 и M4A1-S, своей чувствительностью CS2 и прицелом. Попади в TOP 8!',
     'mobile.p1': 'FlowAthletiq Aim Trainer создан для тренировки аима мышью с сенсой CS2, поэтому на телефоне или планшете он не работает.',
     'mobile.p2': 'Открой эту страницу на компьютере (лучше в Chrome или Edge) и добавь свой прицел из CS2.', 'mobile.back': 'Назад на FlowAthletiq',
     lead: 'Курицы в шлемах и бронежилетах появляются в окнах, дверях балконов и на краях крыш: высовывают голову, смотрят направо и налево, приседают и прыгают вниз на плент A. Подстрели каждую, пока она не приземлилась. Сначала стреляй в ту, что уже готова прыгнуть! Одна приземлившаяся курица — и игра окончена.',
@@ -87,6 +97,7 @@ const S = {
     'tip.dmg': 'Урон, отдача и скорострельность взяты из CS2. Хедшот из AK-47 через шлем убивает с одного выстрела, из M4 — нет.',
     pbTitle: 'Твой рекорд', ranksTitle: 'Ранги', pbNone: 'Результата пока нет. Сыграй первый раунд!',
     lbTitle: 'Лучшие игроки', lbAll: 'За всё время', lbWeek: 'За неделю', lbEmpty: 'Пока нет результатов. Будь первым!', lbOffline: 'Таблица сейчас недоступна.', lbLoading: 'Загрузка…', lbLvl: 'Ур.', lbPts: 'Очки',
+    privacy: 'Мы не собираем персональные данные. В таблице видны только твой ник, выбранная страна и результат.',
     subTitle: 'Добавь свой результат в таблицу', subNick: 'Ник', subCountry: 'Страна', subBtn: 'Отправить', subSending: 'Отправка…', subOk: 'Отправлено ({w})! Твоё место: #{n}', lbWpn: 'Оружие',
     'subErr.nick': 'Ник: 2–16 символов (буквы, цифры, пробел, _ . -), без ссылок и мата.', 'subErr.rate': 'Слишком часто. Попробуй чуть позже.',
     'subErr.implausible': 'Этот результат не похож на настоящую игру.', 'subErr.country': 'Выбери страну.', 'subErr.net': 'Не удалось отправить. Проверь интернет.', 'subErr.bad': 'Не удалось отправить.',
@@ -117,12 +128,25 @@ const S = {
   },
 };
 const valid = (c) => !!S[c];
+// --- visitor country without any IP service: time zone first, then the browser locale's region subtag
+const RU_TZ = ['Europe/Moscow', 'Europe/Kaliningrad', 'Europe/Samara', 'Europe/Volgograd', 'Europe/Saratov', 'Europe/Ulyanovsk', 'Europe/Astrakhan', 'Europe/Kirov',
+  'Asia/Yekaterinburg', 'Asia/Omsk', 'Asia/Novosibirsk', 'Asia/Barnaul', 'Asia/Tomsk', 'Asia/Novokuznetsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Chita',
+  'Asia/Yakutsk', 'Asia/Khandyga', 'Asia/Vladivostok', 'Asia/Ust-Nera', 'Asia/Magadan', 'Asia/Sakhalin', 'Asia/Srednekolymsk', 'Asia/Kamchatka', 'Asia/Anadyr'];
+const KZ_TZ = ['Asia/Almaty', 'Asia/Qostanay', 'Asia/Aqtobe', 'Asia/Aqtau', 'Asia/Atyrau', 'Asia/Oral', 'Asia/Qyzylorda'];
+const TZ_CC = { 'Europe/Riga': 'LV', 'Europe/Minsk': 'BY', 'Asia/Bishkek': 'KG' };
+RU_TZ.forEach((z) => (TZ_CC[z] = 'RU')); KZ_TZ.forEach((z) => (TZ_CC[z] = 'KZ'));
+export function detectCountry() {
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch {}
+  if (TZ_CC[tz]) return TZ_CC[tz];
+  for (const l of navigator.languages || [navigator.language || '']) { const m = /^[a-z]{2,3}(?:-[A-Za-z]{4})?[-_]([A-Za-z]{2})\b/.exec(String(l)); if (m) return m[1].toUpperCase(); }
+  return '';
+}
+export const countryLang = (cc) => (cc === 'LV' ? 'lv' : ['RU', 'BY', 'KZ', 'KG'].includes(cc) ? 'ru' : 'en');
 function pick() {
   const q = (new URLSearchParams(location.search).get('lang') || '').toLowerCase();
   if (valid(q)) { try { localStorage.setItem('fa-lang', q); } catch {} return q; }
   try { const s = localStorage.getItem('fa-lang'); if (valid(s)) return s; } catch {}
-  for (const l of navigator.languages || [navigator.language || '']) { const c = String(l).slice(0, 2).toLowerCase(); if (valid(c)) return c; }
-  return 'lv';
+  return countryLang(detectCountry());
 }
 export let LANG = pick();
 export function t(key, vars) {
@@ -138,8 +162,22 @@ export function setLang(code) {
   const u = new URL(location.href); if (u.searchParams.has('lang')) { u.searchParams.set('lang', code); history.replaceState(null, '', u); }
   applyDom(); listeners.forEach((f) => f(code));
 }
+// localized <title>/description + self-referencing canonical (?lang=) and hreflang alternates (x-default = English)
+const BASE = 'https://flowathletiq.com/aim/';
+function seoHead() {
+  const h = document.head, set = (sel, mk, attr, val) => { let e = h.querySelector(sel); if (!e) { e = mk(); h.appendChild(e); } e.setAttribute(attr, val); };
+  const meta = (k, v) => () => { const m = document.createElement('meta'); m.setAttribute(k, v); return m; };
+  document.title = t('seo.title');
+  set('meta[name="description"]', meta('name', 'description'), 'content', t('seo.desc'));
+  set('meta[property="og:title"]', meta('property', 'og:title'), 'content', t('seo.title'));
+  set('meta[property="og:description"]', meta('property', 'og:description'), 'content', t('seo.desc'));
+  set('meta[property="og:url"]', meta('property', 'og:url'), 'content', BASE + '?lang=' + LANG);
+  set('meta[property="og:locale"]', meta('property', 'og:locale'), 'content', { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU' }[LANG]);
+  set('link[rel="canonical"]', () => { const l = document.createElement('link'); l.rel = 'canonical'; return l; }, 'href', BASE + '?lang=' + LANG);
+}
 export function applyDom(root = document) {
   document.documentElement.lang = LANG;
+  if (root === document) seoHead();
   root.querySelectorAll('[data-i18n]').forEach((el) => (el.textContent = t(el.dataset.i18n)));
   root.querySelectorAll('[data-i18n-html]').forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
   root.querySelectorAll('.lang-sw').forEach((el) => {

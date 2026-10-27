@@ -217,3 +217,6 @@ h2{font-size:22px}
 .sb-msg{min-height:1.3em;margin-top:8px;font-size:14px;font-weight:700}
 .sb-msg.ok{color:#5dffa8}.sb-msg.err{color:#ff7b7b}
 @media (max-width:860px){.menu-side{min-width:0}}
+
+.privacy-note{margin:.45em 0 0;font-size:11.5px;line-height:1.35;color:rgba(220,228,255,.62);text-align:center}
+.privacy-note::before{content:'🔒 '}

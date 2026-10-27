@@ -1,6 +1,6 @@
 // Online leaderboard (Supabase PostgREST RPC via fetch). The publishable key is public by design;
 // the database only allows reading scores and inserting through the checked submit_score() function.
-import { LANG } from './i18n.js?v=17';
+import { LANG, detectCountry } from './i18n.js?v=18';
 const URL_ = 'https://ffnuweijixvrvjdvjhhu.supabase.co/rest/v1/rpc/';
 const KEY = 'sb_publishable_TbkcthcbEITdVoaNZzmbRg_JlYxO4Nt';
 
@@ -25,7 +25,7 @@ export function invalidate() { for (const k in cache) delete cache[k]; }
 
 export async function submitScore(s) {
   const r = await rpc('submit_score', { p_nick: s.nick, p_country: s.country, p_level: s.level, p_score: s.score,
-    p_kills: s.kills, p_hs_pct: s.hs, p_weapon: s.weapon, p_lang: LANG });
+    p_kills: s.kills, p_hs_pct: s.hs, p_weapon: s.weapon, p_lang: null }); // only what the board shows is sent
   invalidate(); return r;
 }
 
@@ -42,6 +42,7 @@ export function countryList() {
   return { pinned: PINNED.map((c) => ({ code: c, name: name(c) })), rest };
 }
 export function guessCountry() {
+  const tc = detectCountry(); if (tc && CODES.includes(tc)) return tc; // same country signal as the language default
   for (const l of navigator.languages || [navigator.language || '']) {
     const m = /^[a-z]{2,3}[-_]([A-Za-z]{2})\b/.exec(String(l)); if (m && CODES.includes(m[1].toUpperCase())) return m[1].toUpperCase();
   }

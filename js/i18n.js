@@ -8,7 +8,26 @@ window.FA_LANGS = [
   { code: "en", label: "EN", name: "English", locale: "en-GB" },
   { code: "ru", label: "RU", name: "Русский", locale: "ru-RU" }
 ];
-window.FA_DEFAULT_LANG = "lv";
+window.FA_DEFAULT_LANG = "lv"; // fallback for missing strings
+/* Default language for a first visit (no ?lang= and no saved choice) = visitor's COUNTRY, detected only in the browser
+ * (time zone, then the region subtag of the browser locale) — no IP lookup, no external request:
+ * LV -> lv; RU, BY, KZ, KG -> ru; everything else -> en. Same rule as the Aim Trainer (aim/js/i18n.js). */
+window.FA_countryLang = (function () {
+  var RU = "Europe/Moscow Europe/Kaliningrad Europe/Samara Europe/Volgograd Europe/Saratov Europe/Ulyanovsk Europe/Astrakhan Europe/Kirov " +
+    "Asia/Yekaterinburg Asia/Omsk Asia/Novosibirsk Asia/Barnaul Asia/Tomsk Asia/Novokuznetsk Asia/Krasnoyarsk Asia/Irkutsk Asia/Chita " +
+    "Asia/Yakutsk Asia/Khandyga Asia/Vladivostok Asia/Ust-Nera Asia/Magadan Asia/Sakhalin Asia/Srednekolymsk Asia/Kamchatka Asia/Anadyr";
+  var KZ = "Asia/Almaty Asia/Qostanay Asia/Aqtobe Asia/Aqtau Asia/Atyrau Asia/Oral Asia/Qyzylorda";
+  var TZ = { "Europe/Riga": "LV", "Europe/Minsk": "BY", "Asia/Bishkek": "KG" };
+  RU.split(" ").forEach(function (z) { TZ[z] = "RU"; }); KZ.split(" ").forEach(function (z) { TZ[z] = "KZ"; });
+  function country() {
+    var tz = ""; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+    if (TZ[tz]) return TZ[tz];
+    var ls = navigator.languages || [navigator.language || ""];
+    for (var i = 0; i < ls.length; i++) { var m = /^[a-z]{2,3}(?:-[A-Za-z]{4})?[-_]([A-Za-z]{2})\b/.exec(String(ls[i])); if (m) return m[1].toUpperCase(); }
+    return "";
+  }
+  return function () { var c = country(); return c === "LV" ? "lv" : (["RU", "BY", "KZ", "KG"].indexOf(c) !== -1 ? "ru" : "en"); };
+})();
 
 window.FA_I18N = {
   lv: {

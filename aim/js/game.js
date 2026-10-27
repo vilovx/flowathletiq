@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=17';
-import { RoastSystem } from './roast.js?v=17';
-import { createChicken, Puffs } from './chicken.js?v=17';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=17';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=17';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=17';
-import { t, onLang, applyDom } from './i18n.js?v=17';
-import { Sfx } from './audio.js?v=17';
-import { buildGunModel } from './gunmodels.js?v=17';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=17';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=17';
+import { buildWorld } from './world.js?v=18';
+import { RoastSystem } from './roast.js?v=18';
+import { createChicken, Puffs } from './chicken.js?v=18';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=18';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=18';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=18';
+import { t, onLang, applyDom } from './i18n.js?v=18';
+import { Sfx } from './audio.js?v=18';
+import { buildGunModel } from './gunmodels.js?v=18';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=18';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=18';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -482,7 +482,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=17" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=18" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;

@@ -40,7 +40,8 @@
     var q = (params.get("lang") || "").toLowerCase();
     if (valid(q)) { store(q); return q; }
     try { var s = localStorage.getItem("fa-lang"); if (valid(s)) return s; } catch (e) {}
-    return DEFAULT;
+    var c = window.FA_countryLang ? window.FA_countryLang() : DEFAULT; // by country (see js/i18n.js); never stored until the visitor picks
+    return valid(c) ? c : DEFAULT;
   }
   function store(code) { try { localStorage.setItem("fa-lang", code); } catch (e) {} }
   function setLang(code) {
@@ -529,6 +530,27 @@
     });
   }
 
+  // ---------- SEO: self-referencing canonical (?lang=) + hreflang alternates for every language (x-default = English) ----------
+  var SITE = "https://flowathletiq.com";
+  function langUrl(code) {
+    var p = new URLSearchParams(location.search), keep = new URLSearchParams();
+    ["id", "cat"].forEach(function (k) { if (p.get(k)) keep.set(k, p.get(k)); });
+    keep.set("lang", code);
+    var path = location.pathname.replace(/\/index\.html$/, "/");
+    return SITE + path + "?" + keep.toString();
+  }
+  function seoLinks() {
+    var h = document.head;
+    h.querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]').forEach(function (e) { e.remove(); });
+    function link(rel, href, hl) { var l = document.createElement("link"); l.rel = rel; l.href = href; if (hl) l.hreflang = hl; h.appendChild(l); }
+    link("canonical", langUrl(LANG));
+    LANGS.forEach(function (l) { link("alternate", langUrl(l.code), l.code); });
+    link("alternate", langUrl("en"), "x-default");
+    function meta(prop, val) { var m = h.querySelector('meta[property="' + prop + '"]'); if (!m) { m = document.createElement("meta"); m.setAttribute("property", prop); h.appendChild(m); } m.setAttribute("content", val); }
+    meta("og:url", langUrl(LANG)); meta("og:locale", ({ lv: "lv_LV", en: "en_GB", ru: "ru_RU" })[LANG]);
+    meta("og:title", document.title);
+    var md = h.querySelector('meta[name="description"]'); if (md) meta("og:description", md.getAttribute("content"));
+  }
   function render() {
     document.documentElement.lang = LANG;
     var titles = t("titles");
@@ -551,6 +573,7 @@
     renderPromo();
     if (page === "index") { renderTourTeaser(); renderAimPromo(); }
     // Only fetch once a cup is linked to a FACEIT championship (avoids 404 noise before that).
+    seoLinks();
     if ((page === "tournaments" || page === "index") && TOURS.some(function (x) { return x.faceitChampionshipId; })) loadTeams();
     if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
       show: page === "category" && params.get("cat") === "cs2-latvia" });

@@ -3,10 +3,32 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>FlowAthletiq Aim Trainer</title>
-<meta name="description" content="FlowAthletiq Aim Trainer: trenē savu aim pārlūkā ar CS2 sensitivity un savu crosshair.">
-<link rel="stylesheet" href="style.css?v=17">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<title>Aim Trainer pārlūkā — bezmaksas CS2 aim treniņš | FlowAthletiq</title>
+<meta name="description" content="Bezmaksas CS2 aim trainer pārlūkā: šauj vistām Kuldīgas vecpilsētā ar AK-47, M4A4 un M4A1-S spray paterniem, savu CS2 sensitivity un crosshair. Iekļūsti TOP 8!">
+<!-- canonical (?lang= of the language shown) is set by js/i18n.js -->
+<link rel="alternate" hreflang="lv" href="https://flowathletiq.com/aim/?lang=lv">
+<link rel="alternate" hreflang="en" href="https://flowathletiq.com/aim/?lang=en">
+<link rel="alternate" hreflang="ru" href="https://flowathletiq.com/aim/?lang=ru">
+<link rel="alternate" hreflang="x-default" href="https://flowathletiq.com/aim/?lang=en">
+<meta name="theme-color" content="#07080f">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:site_name" content="FlowAthletiq">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Aim Trainer pārlūkā — bezmaksas CS2 aim treniņš | FlowAthletiq">
+<meta property="og:description" content="Bezmaksas CS2 aim trainer pārlūkā: šauj vistām Kuldīgas vecpilsētā ar AK-47, M4A4 un M4A1-S spray paterniem, savu CS2 sensitivity un crosshair. Iekļūsti TOP 8!">
+<meta property="og:url" content="https://flowathletiq.com/aim/?lang=lv">
+<meta property="og:locale" content="lv_LV">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta property="og:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
+<link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 <div id="app">
@@ -17,7 +39,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=17" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=18" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -29,7 +51,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <span class="logo-mark"><img src="img/logo-v2.webp?v=17" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+        <span class="logo-mark"><img src="img/logo-v2.webp?v=18" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -55,7 +77,8 @@
         </div>
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=17" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8</div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=18" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8</div><ol id="lb" class="lb"></ol></div></div>
+          <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
       </div>
@@ -154,11 +177,12 @@
           <button type="submit" class="btn" id="o-send" data-i18n="subBtn"></button>
         </div>
         <div class="sb-msg" id="o-msg" aria-live="polite"></div>
+        <p class="privacy-note" data-i18n="privacy"></p>
       </form>
       <div class="btn-row"><button class="btn big" id="o-again" data-i18n="again">Spēlēt vēlreiz</button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button></div>
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=17"></script>
+<script type="module" src="js/main.js?v=18"></script>
 </body>
 </html>
