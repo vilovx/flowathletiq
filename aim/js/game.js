@@ -1,21 +1,22 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=20';
-import { RoastSystem } from './roast.js?v=20';
-import { createChicken, Puffs } from './chicken.js?v=20';
-import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=20';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=20';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=20';
-import { t, onLang, applyDom } from './i18n.js?v=20';
-import { Sfx } from './audio.js?v=20';
-import { buildGunModel } from './gunmodels.js?v=20';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=20';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=20';
+import { buildWorld } from './world.js?v=21';
+import { RoastSystem } from './roast.js?v=21';
+import { createChicken, Puffs } from './chicken.js?v=21';
+import { drawCrosshair, DEFAULT_XHAIR, COLOR_PRESETS } from './crosshair.js?v=21';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=21';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=21';
+import { t, onLang, applyDom } from './i18n.js?v=21';
+import { Sfx } from './audio.js?v=21';
+import { buildGunModel } from './gunmodels.js?v=21';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=21';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=21';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
 const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
+const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
 // ---------------- CS2 constants ----------------
 const M_YAW = 0.022, M_PITCH = 0.022;          // degrees per mouse count (CS2 default)
@@ -495,7 +496,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=20" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=21" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -651,7 +652,7 @@ const sprayWall = (() => {
     g.font = 'bold 30px Oswald, Inter, sans-serif'; g.fillStyle = 'rgba(20,20,30,.75)'; g.textAlign = 'left';
     g.fillText(`${t('sp.wall')} · ${W.name}`, 24, ch - 50);
     g.font = '20px Inter, sans-serif'; g.fillStyle = 'rgba(20,20,30,.55)';
-    g.fillText(t('sp.hint'), 24, ch - 22);
+    g.fillText(tm('sp.hint'), 24, ch - 22);
     if (S.showOverlay) {
       const ideal = idealSpray(W);
       const wpos = (o, sgn) => toPx(sgn * SPRAY_D * Math.tan(o.x * Math.PI / 180), EYE + sgn * SPRAY_D * Math.tan(o.y * Math.PI / 180));
@@ -675,7 +676,7 @@ const sprayWall = (() => {
 })();
 function sprayHit(p) {
   const s = sprayWall;
-  if (s.clearNext) { s.holes = []; s.clearNext = false; s.showOverlay = false; s.result = null; }
+  if (s.clearNext) { s.holes = []; s.clearNext = false; s.showOverlay = false; s.result = null; $('spray-card').classList.remove('has'); }
   const d = Math.hypot(p.x - s.target.x, p.y - s.target.y);
   const score = Math.max(0, Math.min(1, 1 - (d - 3) / 27)); // full credit within 3u (~0.6°), zero beyond 30u (~5.7°)
   s.holes.push({ x: p.x, y: p.y, d, score });
@@ -690,7 +691,7 @@ function sprayStep() {
   s.result = { n, pct };
   const key = W.id + (n >= W.mag ? ':full' : '');
   if (n >= 10 && pct > (s.best[W.id] || 0)) { s.best[W.id] = pct; localStorage.setItem('fa_aim_spray', JSON.stringify(s.best)); }
-  s.showOverlay = true; s.clearNext = true; s.redraw(); drawSprayCard();
+  s.showOverlay = true; s.clearNext = true; s.redraw(); drawSprayCard(); $('spray-card').classList.add('has');
   G.ammo = W.mag; G.reloadT = 0; $('h-reload').classList.add('hidden');
   punch.reset(); recoilIndex = 0;
 }
@@ -713,7 +714,7 @@ function drawSprayCard() {
   g.strokeStyle = '#fff'; g.lineWidth = 1.5; g.beginPath(); g.arc(cx, cy, 5, 0, 7); g.stroke();
   g.font = '600 12px Inter, sans-serif'; g.textAlign = 'left';
   g.fillStyle = '#b07cff'; g.fillText(t('sp.raw'), 8, 14);
-  g.fillStyle = '#00f0ff'; g.fillText(t('sp.ideal'), 150, 14);
+  g.fillStyle = '#00f0ff'; g.fillText(tm('sp.ideal'), 150, 14);
   g.fillStyle = '#2ee27a'; g.fillText(t('sp.yours'), 8, h - 6);
   g.fillStyle = '#9aa3b8'; g.textAlign = 'right'; g.fillText(t('sp.grid'), w - 8, h - 6);
 }
@@ -721,10 +722,10 @@ function sprayHud() {
   const s = sprayWall, r = s.result;
   $('h-spray').innerHTML = `<div class="sp-t">${t('spray')} · <b>${W.name}</b></div>
     <div class="sp-row"><div><span>${t('sp.result')}</span><b>${r ? r.pct + '%' : '—'}</b></div><div><span>${t('sp.bullets')}</span><b>${r ? r.n : s.holes.length}/${W.mag}</b></div><div><span>${t('sp.best')}</span><b>${s.best[W.id] ? s.best[W.id] + '%' : '—'}</b></div></div>
-    <div class="sp-k">${t('sp.keys')}</div>`;
+    <div class="sp-k">${tm('sp.keys')}</div>`;
 }
 function startSpray() {
-  sfx.unlock();
+  sfx.unlock(); $('spray-card').classList.remove('has');
   setMode('spray');
   for (const c of chickens) scene.remove(c.root); chickens.length = 0;
   G = { mode: 'spray', level: 1, cfg: levelCfg(1), score: 0, kills: 0, hsKills: 0, shots: 0, hits: 0, ammo: W.mag, reloadT: 0, nextShot: 0, burst: 0, lastShot: -9, trigger: false, time: 0, over: false, timeLeft: 0, between: 0, spawned: 0 };
