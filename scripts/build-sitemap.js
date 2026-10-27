@@ -12,7 +12,7 @@ const arts = Object.values(byId).filter((a) => catSet.has(a.category) && !isEx(a
 const today = new Date().toISOString().slice(0, 10);
 const entries = [ // [path, extra query, lastmod, priority]
   ["/", "", today, "1.0"], ["/aim/", "", today, "0.9"], ["/tournaments.html", "", today, "0.7"], ["/server.html", "", today, "0.6"],
-  ["/server-top.html", "", today, "0.5"], ["/virsliga.html", "", today, "0.6"], ["/about.html", "", today, "0.4"],
+  ["/server-top.html", "", today, "0.5"], ["/about.html", "", today, "0.4"],
   ...cats.map((c) => ["/category.html", "cat=" + encodeURIComponent(c.slug), today, "0.6"]),
   ...arts.sort((a, b) => String(b.date).localeCompare(String(a.date))).map((a) => ["/article.html", "id=" + encodeURIComponent(a.id), String(a.date || today).slice(0, 10), "0.5"]),
 ];

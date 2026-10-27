@@ -163,13 +163,6 @@ git config user.name "vilovx"
 git config user.email "285768046+vilovx@users.noreply.github.com"
 ```
 
-## Latvian CS2 leagues (CS2 Latvija section)
-
-`category.html?cat=cs2-latvia` shows Kleverr E-sporta liga S7 (Virsliga + 1./2./3. liga, groups A/B)
-with expandable team rosters and upcoming matches (`js/leagues.js`, `#ligas`, tab via `?liga=virsliga|1|2|3`).
-Data: `scripts/leagues.py` parses public league.kleverr.gg pages (home standings, calendar, team pages;
-no API key, nicknames only) and the workflow publishes `leagues.json` to the `server-data` branch;
-`data/leagues.json` is the fallback snapshot. Refresh manually: `python3 scripts/leagues.py data --rosters`.
 
 ## Deploy
 

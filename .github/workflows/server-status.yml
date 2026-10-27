@@ -1,15 +1,14 @@
 name: CS2 server status
 
-# Polls flowathletiq.dat.gg:25082 over A2S (+ Ranks plugin MySQL leaderboard, + Virsliga every 2 h, + FACEIT tournament registrations) and publishes JSON to the `server-data` branch.
+# Polls flowathletiq.dat.gg:25082 over A2S (+ Ranks plugin MySQL leaderboard, + FACEIT tournament registrations) and publishes JSON to the `server-data` branch.
 # The branch is force-pushed as a single commit each run, so main's history and Pages builds stay clean.
 on:
   schedule:
     - cron: "4-59/5 * * * *" # every 5 min, offset from :00 (high-load minute)
-    - cron: "17 */2 * * *" # Virsliga standings/calendar (every 2 h)
   workflow_dispatch:
     inputs:
       leagues:
-        description: "Also refresh Kleverr league data"
+        description: "Unused (league data removed); kept so older dispatch calls still work"
         type: boolean
         default: false
 
@@ -38,7 +37,7 @@ jobs:
         run: |
           mkdir -p out
           if git fetch -q --depth=1 origin server-data 2>/dev/null; then
-            # keep every previously published file (history, top, virsliga); steps below overwrite what they refresh
+            # keep every previously published file (history, top); steps below overwrite what they refresh
             git archive FETCH_HEAD | tar -x -C out
           fi
       - name: Query server
@@ -52,15 +51,6 @@ jobs:
           DB_PASS: ${{ secrets.DB_PASS }}
           DB_NAME: ${{ secrets.DB_NAME }}
         run: python scripts/server_top.py out
-      - name: Virsliga standings + calendar (kleverr.gg)
-        if: (github.event_name == 'workflow_dispatch' && inputs.leagues) || github.event.schedule == '17 */2 * * *' || hashFiles('out/virsliga.json') == ''
-        continue-on-error: true
-        run: python scripts/virsliga.py out
-      - name: Kleverr S7 leagues (Virsliga + 1./2./3. liga groups, rosters, calendar)
-        # Every 2h with the Virsliga step; team rosters are refetched when older than 20h (or missing).
-        if: (github.event_name == 'workflow_dispatch' && inputs.leagues) || github.event.schedule == '17 */2 * * *' || hashFiles('out/leagues.json') == ''
-        continue-on-error: true
-        run: python scripts/leagues.py out
       - name: FACEIT registered teams (official Data API v4)
         # Skips cleanly when the FACEIT_API_KEY secret or a tournament's faceitChampionshipId (data/tournaments.js) is missing.
         continue-on-error: true
@@ -73,6 +63,7 @@ jobs:
           git init -q -b server-data
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f virsliga.json leagues.json # league data removed from the site
           git add -A
           git commit -qm "server status $(date -u +%FT%TZ) [skip ci]"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" server-data

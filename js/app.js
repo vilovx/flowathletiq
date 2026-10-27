@@ -183,7 +183,6 @@
   function currentCat() {
     if (page === "category") return params.get("cat") || params.get("game");
     if (page === "article") { var a = byId[params.get("id")]; return a ? a.category : null; }
-    if (page === "virsliga") return "cs2-latvia";
     return null;
   }
   // ---------- Aim Trainer (browser game at /aim/; mouse on PC, touch controls on phones/tablets) ----------
@@ -587,10 +586,6 @@
     // Only fetch once a cup is linked to a FACEIT championship (avoids 404 noise before that).
     seoLinks();
     if ((page === "tournaments" || page === "index") && TOURS.some(function (x) { return x.faceitChampionshipId; })) loadTeams();
-    if (window.FA_renderLeagues) window.FA_renderLeagues({ t: t, lang: LANG, locale: locale(), esc: esc,
-      show: page === "category" && params.get("cat") === "cs2-latvia" });
-    if (window.FA_renderVirsliga) window.FA_renderVirsliga({ t: t, lang: LANG, locale: locale(), esc: esc,
-      showWidget: page === "index" });
     if ((page === "server" || page === "server-top") && window.FA_renderServer) window.FA_renderServer({ t: t, lang: LANG, locale: locale(), esc: esc });
     fillSlots();
   }
