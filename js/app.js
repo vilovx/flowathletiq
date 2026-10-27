@@ -225,8 +225,8 @@
       }).join("") + "</div>";
     $("site-header").innerHTML =
       '<div class="container header-inner">' +
-      '<a class="brand" href="index.html" aria-label="FlowAthletiq — ' + esc(t("home")) + '"><picture><source srcset="assets/logo.webp" type="image/webp">' +
-      '<img class="brand-logo" src="assets/logo.png" alt="FlowAthletiq" width="480" height="236"></picture></a>' +
+      '<a class="brand" href="index.html" aria-label="FlowAthletiq — ' + esc(t("home")) + '"><span class="brand-mark"><picture><source srcset="assets/logo.webp?v=2" type="image/webp">' +
+      '<img class="brand-logo" src="assets/logo.png?v=2" alt="FlowAthletiq" width="480" height="242"></picture><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span></a>' +
       '<nav id="primary-nav" class="nav" aria-label="' + esc(t("primaryNav")) + '"><ul class="nav-list">' + items + "</ul></nav>" +
       langs +
       '<button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav"><span class="sr-only">' + esc(t("menu")) +
@@ -235,7 +235,7 @@
   function renderFooter() {
     $("site-footer").innerHTML =
       '<div class="container footer-inner">' +
-      '<div><a class="brand" href="index.html"><picture><source srcset="assets/logo.webp" type="image/webp"><img class="brand-logo" src="assets/logo.png" alt="FlowAthletiq" width="480" height="236" loading="lazy"></picture></a>' +
+      '<div><a class="brand" href="index.html"><span class="brand-mark"><picture><source srcset="assets/logo.webp?v=2" type="image/webp"><img class="brand-logo" src="assets/logo.png?v=2" alt="FlowAthletiq" width="480" height="242" loading="lazy"></picture><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span></a>' +
       "<p>" + esc(t("footerTag")) + "</p></div>" +
       '<ul class="footer-links">' + CATS.filter(function (c) { return !c.parent; }).map(function (c) {
         return '<li><a href="' + catUrl(c.slug) + '">' + esc(cname(c)) + "</a></li>"; }).join("") +
