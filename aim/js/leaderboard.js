@@ -1,6 +1,6 @@
 // Online leaderboard (Supabase PostgREST RPC via fetch). The publishable key is public by design;
 // the database only allows reading scores and inserting through the checked submit_score() function.
-import { LANG } from './i18n.js?v=15';
+import { LANG } from './i18n.js?v=16';
 const URL_ = 'https://ffnuweijixvrvjdvjhhu.supabase.co/rest/v1/rpc/';
 const KEY = 'sb_publishable_TbkcthcbEITdVoaNZzmbRg_JlYxO4Nt';
 

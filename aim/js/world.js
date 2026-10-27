@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=15';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=16';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -257,7 +257,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=15');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=16');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -305,7 +305,7 @@ export function buildWorld(scene) {
     const img = new Image(); let ready = false, rows = null, empty = '';
     const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', cursive";
     // small rank emblems (same artwork as the game's ranks) drawn next to each nick
-    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=15`; return im; });
+    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=16`; return im; });
     const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
     function draw() {
       if (!ready) return;
@@ -315,33 +315,33 @@ export function buildWorld(scene) {
       x.drawImage(img, PAD, PAD, IW, IH);
       x.setTransform(1, 0, 0, 1, PAD - 11, PAD - 20); // text layout below uses the original whiteboard coordinates (x 443-1110, y 100-640)
       x.textBaseline = 'alphabetic';
-      x.fillStyle = '#c4161c'; x.font = `700 64px ${MK}`; x.textAlign = 'center'; x.fillText('TOP 8', 776, 168);
-      x.fillStyle = '#1d58c9'; x.font = `700 30px ${MK}`; x.textAlign = 'right'; x.fillText('FlowAthletiq', 1092, 168);
-      x.strokeStyle = 'rgba(196,22,28,.75)'; x.lineWidth = 4; x.beginPath(); x.moveTo(680, 182); x.quadraticCurveTo(776, 176, 872, 184); x.stroke();
+      x.fillStyle = '#c4161c'; x.font = `700 64px ${MK}`; x.textAlign = 'center'; x.fillText('TOP 8', 776, 160);
+      x.fillStyle = '#1d58c9'; x.font = `700 30px ${MK}`; x.textAlign = 'right'; x.fillText('FlowAthletiq', 1092, 160);
+      x.strokeStyle = 'rgba(196,22,28,.75)'; x.lineWidth = 4; x.beginPath(); x.moveTo(680, 172); x.quadraticCurveTo(776, 166, 872, 174); x.stroke();
       if (!rows || !rows.length) {
         x.fillStyle = '#334'; x.font = `700 40px ${MK}`; x.textAlign = 'center'; x.fillText(rows ? empty : '…', 776, 340);
       } else {
         rows.slice(0, 8).forEach((r, i) => {
-          const y = 238 + i * 41;
-          x.font = `700 38px ${MK}`;
-          x.fillStyle = ['#c4161c', '#1d58c9', '#1a7f3b'][i] || '#14204a'; x.textAlign = 'right'; x.fillText(`${r.pos}.`, 508, y);
-          x.strokeStyle = '#14204a'; x.lineWidth = 2.5; x.strokeRect(518, y - 25, 44, 28);
-          x.fillStyle = '#14204a'; x.font = '800 18px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(String(r.country || '').toUpperCase(), 540, y - 4);
-          const ri = RI[r.rank_idx]; if (ri && ri.complete && ri.naturalWidth) x.drawImage(ri, 570, y - 33, 40, 40);
-          x.font = `700 36px ${MK}`; x.textAlign = 'left'; x.fillStyle = '#14204a'; x.fillText(fit(r.nick, 146), 614, y);
+          const y = 222 + i * 48;                                   // 8 rows: tighter text, bigger rank emblems
+          x.font = `700 36px ${MK}`;
+          x.fillStyle = ['#c4161c', '#1d58c9', '#1a7f3b'][i] || '#14204a'; x.textAlign = 'right'; x.fillText(`${r.pos}.`, 500, y);
+          x.strokeStyle = '#14204a'; x.lineWidth = 2.5; x.strokeRect(508, y - 24, 40, 26);
+          x.fillStyle = '#14204a'; x.font = '800 16px Inter, sans-serif'; x.textAlign = 'center'; x.fillText(String(r.country || '').toUpperCase(), 528, y - 5);
+          const ri = RI[r.rank_idx]; if (ri && ri.complete && ri.naturalWidth) x.drawImage(ri, 553, y - 43, 64, 64);   // 1.6x the v15 size
+          x.font = `700 34px ${MK}`; x.textAlign = 'left'; x.fillStyle = '#14204a'; x.fillText(fit(r.nick, 136), 622, y);
           const wl = { ak47: 'AK', m4a4: 'M4A4', m4a1s: 'M4A1-S' }[r.weapon] || '';       // weapon of that best run
-          if (wl) { const wc = { ak47: '#7a2a12', m4a4: '#1d4f9a', m4a1s: '#2f5d3a' }[r.weapon]; x.font = '800 17px Inter, sans-serif'; const tw = x.measureText(wl).width;
-            x.strokeStyle = wc; x.lineWidth = 2; x.strokeRect(764, y - 22, tw + 12, 24); x.fillStyle = wc; x.fillText(wl, 770, y - 4); }
-          x.font = `700 38px ${MK}`; x.fillStyle = '#1d58c9'; x.fillText('L' + r.level, 858, y);
-          x.fillStyle = '#14204a'; x.textAlign = 'right'; x.fillText(String(r.score), 1012, y);
-          x.fillStyle = '#1a7f3b'; x.font = `700 30px ${MK}`; x.fillText(r.hs_pct + '%', 1094, y);
+          if (wl) { const wc = { ak47: '#7a2a12', m4a4: '#1d4f9a', m4a1s: '#2f5d3a' }[r.weapon]; x.font = '800 16px Inter, sans-serif'; const tw = x.measureText(wl).width;
+            x.strokeStyle = wc; x.lineWidth = 2; x.strokeRect(764, y - 21, tw + 12, 23); x.fillStyle = wc; x.fillText(wl, 770, y - 4); }
+          x.font = `700 36px ${MK}`; x.fillStyle = '#1d58c9'; x.fillText('L' + r.level, 858, y);
+          x.fillStyle = '#14204a'; x.textAlign = 'right'; x.fillText(String(r.score), 1018, y);
+          x.fillStyle = '#1a7f3b'; x.font = `700 26px ${MK}`; x.fillText(r.hs_pct + '%', 1094, y);
         });
       }
-      x.fillStyle = 'rgba(20,32,74,.55)'; x.font = `700 26px ${MK}`; x.textAlign = 'right'; x.fillText('flowathletiq.com/aim', 1094, 622);
+      x.fillStyle = 'rgba(20,32,74,.55)'; x.font = `700 26px ${MK}`; x.textAlign = 'right'; x.fillText('flowathletiq.com/aim', 1094, 630);
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=15';
+    img.src = 'img/leaderboard-board.webp?v=16';
     return { plane, set(r, e) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; draw(); } };
   })();
 
