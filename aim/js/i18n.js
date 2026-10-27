@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=27';
+import { MORE } from './i18n-more.js?v=28';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -187,6 +187,16 @@ const PRAC = { // [button, badge, picker title, note, retry, other level, ranked
   zh: ['练习（不计排名）', '练习 – 不计成绩', '练习：选择关卡', '成绩不会提交到排行榜，也不计入个人纪录或段位。', '重玩第 {n} 关', '其他关卡', '排位模式', '返回'],
 };
 for (const l in PRAC) { const a = PRAC[l]; Object.assign(TOUCH[l], { pracBtn: a[0], pracBadge: a[1], pracPick: a[2], pracNote: a[3], pracRetry: a[4], pracOther: a[5], pracRanked: a[6], pracBack: a[7] }); }
+const SHARE = { // [button, toast, share text]
+  lv: ['🔗 Dalīties ar draugiem', 'Saite nokopēta!', 'Izmēģini CS2 aim trainer pārlūkā – šauj vistām Kuldīgā!'],
+  en: ['🔗 Share with friends', 'Link copied!', 'Try this free CS2 aim trainer in your browser – shoot chickens in Kuldīga!'],
+  ru: ['🔗 Поделиться с друзьями', 'Ссылка скопирована!', 'Попробуй бесплатный CS2 aim trainer в браузере – стреляй по курицам в Кулдиге!'],
+  es: ['🔗 Compartir con amigos', '¡Enlace copiado!', 'Prueba este aim trainer de CS2 gratis en el navegador: ¡dispara a gallinas en Kuldīga!'],
+  pt: ['🔗 Compartilhar com amigos', 'Link copiado!', 'Experimente este aim trainer de CS2 grátis no navegador – atire em galinhas em Kuldīga!'],
+  ja: ['🔗 友達に共有', 'リンクをコピーしました！', 'ブラウザで遊べる無料のCS2エイムトレーナー – クルディーガでチキンを撃とう！'],
+  zh: ['🔗 分享给朋友', '链接已复制！', '在浏览器里免费玩 CS2 瞄准训练——在库尔迪加打鸡！'],
+};
+for (const l in SHARE) Object.assign(TOUCH[l], { share: SHARE[l][0], copied: SHARE[l][1], shareText: SHARE[l][2] });
 const TOUCH_IDEAL = { lv: '— ideālais pirksta ceļš', en: '— ideal finger path', ru: '— идеальный путь пальца', es: '— trayectoria ideal del dedo', pt: '— caminho ideal do dedo', ja: '— 理想の指の軌道', zh: '— 理想手指轨迹' };
 const TOUCH_HINTS = {
   lv: ['Turi ◎ un velc ar pirkstu pa cian līniju', '1 / 2 / 3 ierocis · ❚❚ izvēlne'],

@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=27">
+<link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=27" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=28" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,7 +59,7 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=27" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
+        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=28" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
         <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
         <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
         <div class="btn-row">
@@ -67,6 +67,7 @@
           <button class="btn big alt" id="btn-prac" data-i18n="pracBtn">Treniņš (bez ranga)</button>
           <button class="btn ghost" id="btn-xhair" data-i18n="crosshair">Crosshair</button>
           <button class="btn ghost" id="btn-settings" data-i18n="settings">Iestatījumi</button>
+          <button type="button" class="btn ghost" id="btn-share" data-share data-i18n="share">🔗 Dalīties ar draugiem</button>
         </div>
         <div class="weapons" id="weapons"></div>
         <ul class="tips">
@@ -88,7 +89,7 @@
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
             <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=27" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=28" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -221,11 +222,12 @@
         <div class="sb-msg" id="o-msg" aria-live="polite"></div>
         <p class="privacy-note" data-i18n="privacy"></p>
       </form>
-      <div class="btn-row"><button class="btn big" id="o-again">Spēlēt vēlreiz</button><button class="btn alt" id="o-prac" data-i18n="pracBtn"></button><button class="btn ghost hidden" id="o-ranked" data-i18n="pracRanked"></button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button></div>
+      <div class="btn-row"><button class="btn big" id="o-again">Spēlēt vēlreiz</button><button class="btn alt" id="o-prac" data-i18n="pracBtn"></button><button class="btn ghost hidden" id="o-ranked" data-i18n="pracRanked"></button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button><button type="button" class="btn ghost" id="o-share" data-share data-i18n="share"></button></div>
       </div>
     </div>
   </section>
 </div>
-<script type="module" src="js/main.js?v=27"></script>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<script type="module" src="js/main.js?v=28"></script>
 </body>
 </html>
