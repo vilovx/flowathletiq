@@ -1,6 +1,6 @@
 // CS2-style crosshair (classic static) drawn in 2D.
 // CS scales crosshair values against a 480px-tall virtual screen (YRES), so sizes grow with resolution.
-import { t } from './i18n.js?v=29';
+import { t } from './i18n.js?v=30';
 export const COLOR_PRESETS = [
   { get name() { return t('colors')[0]; }, rgb: [250, 50, 50] },
   { get name() { return t('colors')[1]; }, rgb: [50, 250, 50] },
@@ -16,7 +16,7 @@ export const DEFAULT_XHAIR = {
   centerDotEnabled: false, tStyleEnabled: false, style: 4,
 };
 // touch/phone default: bright red, ~2x thicker, slightly longer arms, dark outline, centre gap kept
-export const MOBILE_XHAIR = { ...DEFAULT_XHAIR, length: 3, thickness: 1.6, gap: -1.5, outlineEnabled: true, outline: 1, color: 5, red: 255, green: 42, blue: 42, alpha: 255 };
+export const MOBILE_XHAIR = { ...DEFAULT_XHAIR, length: 5, thickness: 3.2, gap: -1, outlineEnabled: true, outline: 1, color: 5, red: 255, green: 42, blue: 42, alpha: 255 };
 
 export function xhairRGB(x) {
   const p = COLOR_PRESETS[x.color];

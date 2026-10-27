@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=29';
-import { RoastSystem } from './roast.js?v=29';
-import { createChicken, Puffs } from './chicken.js?v=29';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=29';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=29';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=29';
-import { t, onLang, applyDom } from './i18n.js?v=29';
-import { Sfx } from './audio.js?v=29';
-import { buildGunModel } from './gunmodels.js?v=29';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=29';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=29';
+import { buildWorld } from './world.js?v=30';
+import { RoastSystem } from './roast.js?v=30';
+import { createChicken, Puffs } from './chicken.js?v=30';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=30';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=30';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=30';
+import { t, onLang, applyDom } from './i18n.js?v=30';
+import { Sfx } from './audio.js?v=30';
+import { buildGunModel } from './gunmodels.js?v=30';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=30';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=30';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=29';
+import { forced, forceOff } from './rot.js?v=30';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -530,7 +530,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=29" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=30" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
