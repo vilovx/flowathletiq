@@ -1,6 +1,6 @@
 // CS2-style crosshair (classic static) drawn in 2D.
 // CS scales crosshair values against a 480px-tall virtual screen (YRES), so sizes grow with resolution.
-import { t } from './i18n.js?v=7';
+import { t } from './i18n.js?v=8';
 export const COLOR_PRESETS = [
   { get name() { return t('colors')[0]; }, rgb: [250, 50, 50] },
   { get name() { return t('colors')[1]; }, rgb: [50, 250, 50] },
