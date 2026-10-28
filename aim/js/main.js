@@ -1,6 +1,6 @@
 // Entry: translations first, then pick the control mode. Touch mode (drag to aim, FIRE button, landscape) when:
 // ?mobile=1|0 forces; otherwise the saved choice (localStorage fa_aim_touch, set by the Touch mode toggle); otherwise detection.
-import { applyDom } from './i18n.js?v=31';
+import { applyDom } from './i18n.js?v=32';
 export function isPhoneLike() { // same rule as the main site's Aim Trainer card (js/app.js)
   const n = navigator, mm = (q) => { try { return matchMedia(q).matches; } catch { return false; } };
   const tp = n.maxTouchPoints || 0, ua = n.userAgent || '';
@@ -26,5 +26,5 @@ if (touch) { // graphics quality for touch mode: Low / Medium / High, Auto = Hig
   document.documentElement.classList.add('q-' + q); document.documentElement.dataset.q = q;
 }
 applyDom();
-import('./rot.js?v=31').then((m) => m.initRot());
-import('./game.js?v=31');
+import('./rot.js?v=32').then((m) => m.initRot());
+import('./game.js?v=32');
