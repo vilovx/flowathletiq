@@ -1,17 +1,17 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=37';
-import { Locals } from './locals.js?v=37';
-import { buildTavern, TvOverlay, SCREEN as TV_SCREEN } from './tavern.js?v=37';
-import { RoastSystem } from './roast.js?v=37';
-import { createChicken, Puffs } from './chicken.js?v=37';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=37';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=37';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=37';
-import { t, onLang, applyDom } from './i18n.js?v=37';
-import { Sfx } from './audio.js?v=37';
-import { buildGunModel } from './gunmodels.js?v=37';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=37';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=37';
+import { buildWorld } from './world.js?v=38';
+import { Locals } from './locals.js?v=38';
+import { buildTavern, TvOverlay, SCREEN as TV_SCREEN } from './tavern.js?v=38';
+import { RoastSystem } from './roast.js?v=38';
+import { createChicken, Puffs } from './chicken.js?v=38';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=38';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=38';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=38';
+import { t, onLang, applyDom } from './i18n.js?v=38';
+import { Sfx } from './audio.js?v=38';
+import { buildGunModel } from './gunmodels.js?v=38';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=38';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=38';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -19,7 +19,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=37';
+import { forced, forceOff } from './rot.js?v=38';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -135,12 +135,26 @@ function sitDown(seat) {
   camera.position.set(seat.x, 50, seat.z);
   const d = new THREE.Vector3(TV_SCREEN.x, TV_SCREEN.y, TV_SCREEN.z).sub(camera.position).normalize();
   yaw = Math.atan2(-d.x, -d.z) * 180 / Math.PI; pitch = Math.asin(d.y) * 180 / Math.PI;
+  frameScreen();
   document.documentElement.classList.add('tav-seated');
   if (document.pointerLockElement) document.exitPointerLock();
   tav.tv.open(); tav.rect = '';
 }
+function screenQuad() { // projected corners [tl, tr, br, bl] in layout px
+  camera.rotation.set(pitch * Math.PI / 180, yaw * Math.PI / 180, 0); camera.updateMatrixWorld(); const w = VW(), h = VH();
+  return [[-1, 1], [1, 1], [1, -1], [-1, -1]].map(([sx, sy]) => { _c.set(TV_SCREEN.x + sx * TV_SCREEN.w / 2, TV_SCREEN.y + sy * TV_SCREEN.h / 2, TV_SCREEN.z).project(camera); return [(_c.x + 1) / 2 * w, (1 - _c.y) / 2 * h]; });
+}
+function frameScreen() { // seated: look straight at the screen (parallel image plane) with a lens shift that centres it; zoom so it fills ~88% width / ~70% height
+  if (tav.fov0 == null) tav.fov0 = camera.fov;
+  const P = camera.position, d = P.z - TV_SCREEN.z, w = VW(), h = VH(), asp = w / h;
+  const tn = Math.max(TV_SCREEN.h / (2 * d * 0.7), TV_SCREEN.w / (2 * d * asp * 0.88));
+  yaw = 0; pitch = 0; camera.aspect = asp; camera.fov = 2 * Math.atan(tn) * 180 / Math.PI;
+  const xn = (TV_SCREEN.x - P.x) / (d * tn * asp), yn = (TV_SCREEN.y - P.y) / (d * tn);
+  camera.setViewOffset(w, h, xn * w / 2, 0.06 * h - yn * h / 2, w, h); tav.frameWH = w + 'x' + h;
+}
 function standUp(silent) {
   if (!tav.seated) return;
+  if (tav.fov0 != null) { camera.fov = tav.fov0; tav.fov0 = null; camera.clearViewOffset(); camera.updateProjectionMatrix(); }
   const s = tav.seated; tav.seated = null; tav.tv.close(); document.documentElement.classList.remove('tav-seated');
   camera.position.set(s.x, EYE, s.z + 8); pitch = 0;
   tav.T.drawPoster([t('tavLive'), CHANNEL_LABEL(), t('tavPoster')]);
@@ -158,7 +172,7 @@ function tavReset() { if (tav.inside) { standUp(true); tav.inside = false; docum
 function freeHintText() {
   if (MOBILE || !practice || !G || state !== 'play') return ['', ''];
   const P = camera.position; let near = '';
-  if (!tav.inside) { if (Math.hypot(P.x - TAV_DOOR.x, P.z - TAV_DOOR.z) < 110) near = t('tavEnter'); }
+  if (!tav.inside) { if (Math.hypot(P.x - TAV_DOOR.x, P.z - TAV_DOOR.z) < 110) near = t('tavEnter'); else if (holstered) near = t('holsterOn'); }
   else if (!tav.seated) { if (Math.hypot(P.x - tav.T.door.x, P.z - tav.T.door.z) < 80) near = t('tavExit'); else if (nearestSeat()) near = t('tavSit'); }
   return [tav.seated ? '' : t('freeHint'), near];
 }
@@ -576,15 +590,14 @@ function autoQuality(ms) {
   renderer.setPixelRatio(Math.min(devicePixelRatio, QDPR[next])); world.sun.castShadow = false; resize();
 }
 const _c = new THREE.Vector3();
-function placeTv() { // project the 4 screen corners (camera is still while seated) and fit the iframe overlay to them
-  camera.updateMatrixWorld(); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const w = VW(), h = VH();
-  for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { _c.set(TV_SCREEN.x + sx * TV_SCREEN.w / 2, TV_SCREEN.y + sy * TV_SCREEN.h / 2, TV_SCREEN.z).project(camera);
-    const px = (_c.x + 1) / 2 * w, py = (1 - _c.y) / 2 * h; x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
-  const r = { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) }, k = JSON.stringify(r);
-  if (k !== tav.rect) { tav.rect = k; tav.tv.place(r); }
+function placeTv() { // camera is still while seated: position the iframe on the projected screen rectangle
+  if (tav.frameWH !== VW() + 'x' + VH()) frameScreen(); // window resized while seated
+  const q = screenQuad().map((p) => p.map((v) => Math.round(v * 2) / 2)), k = JSON.stringify(q);
+  if (k !== tav.rect) { tav.rect = k; tav.tv.place(q, VH()); }
 }
 let hintTxt = '';
-function updateFreeHint() { const [a, b] = freeHintText(), k = a + '|' + b; if (k === hintTxt) return; hintTxt = k; $('h-free').textContent = a; $('h-near').textContent = b; $('h-near').classList.toggle('hidden', !b); }
+const keyCaps = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]).replace(/\b(WASD|H|E)\b/g, '<kbd>$1</kbd>');
+function updateFreeHint() { const [a, b] = freeHintText(), k = a + '|' + b; if (k === hintTxt) return; hintTxt = k; $('h-free').innerHTML = keyCaps(a); $('h-free').classList.toggle('hidden', !a); $('h-near').textContent = b; $('h-near').classList.toggle('hidden', !b); }
 function tick(now) {
   requestAnimationFrame(tick);
   if (MOBILE && now - lastDraw < 1000 / 61) return; // phones: cap at 60 fps (120 Hz screens would double the GPU work)
@@ -725,7 +738,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=37" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=38" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;

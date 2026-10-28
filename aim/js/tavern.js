@@ -7,7 +7,7 @@ import * as THREE from '../vendor/three.module.min.js';
 export const CHANNELS = [ // verified Twitch channels (Oct 2026)
   { id: 'eslcs', label: 'ESL CS' }, { id: 'blastpremier', label: 'BLAST Premier' }, { id: 'pgl', label: 'PGL' }, { id: 'yekindar', label: 'YEKINDAR 🇱🇻' },
 ];
-const SCREEN = { x: 0, y: 92, z: -215.5, w: 256, h: 144 };
+const SCREEN = { x: 0, y: 196, z: -213.5, w: 416, h: 234 }; // cinema screen: fills most of the back wall (16:9)
 
 function tex(w, h, draw, rep) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
@@ -25,17 +25,19 @@ export function buildTavern() {
     for (let i = 0; i < 12; i++) { g.strokeStyle = `rgba(0,0,0,${0.05 + R() * 0.08})`; g.beginPath(); const yy = y + 4 + R() * 24; g.moveTo(0, yy); g.bezierCurveTo(w * 0.3, yy + R() * 6 - 3, w * 0.6, yy + R() * 6 - 3, w, yy); g.stroke(); }
     g.fillStyle = 'rgba(0,0,0,.4)'; const xs = R() * w; g.fillRect(xs, y, 1.5, 31); } }, [3, 3]);
   const panel = tex(256, 128, (g, w, h) => { g.fillStyle = '#4a2c17'; g.fillRect(0, 0, w, h); for (let x = 0; x < w; x += 64) { g.fillStyle = '#5a361c'; g.fillRect(x + 6, 10, 52, h - 20); g.strokeStyle = '#2c190c'; g.lineWidth = 3; g.strokeRect(x + 6, 10, 52, h - 20); } }, [6, 1]);
-  const plaster = tex(256, 256, (g, w, h) => { g.fillStyle = '#c9a77a'; g.fillRect(0, 0, w, h); for (let i = 0; i < 2500; i++) { g.fillStyle = `rgba(${R() > 0.5 ? '255,235,200' : '90,60,30'},${R() * 0.1})`; g.fillRect(R() * w, R() * h, 3, 3); } }, [3, 1]);
+  const plaster = tex(256, 256, (g, w, h) => { g.fillStyle = '#c9a77a'; g.fillRect(0, 0, w, h); for (let i = 0; i < 2500; i++) { g.fillStyle = `rgba(${R() > 0.5 ? '255,235,200' : '90,60,30'},${R() * 0.1})`; g.fillRect(R() * w, R() * h, 3, 3); } }, [3, 3]);
   const brick = tex(128, 128, (g, w, h) => { g.fillStyle = '#3a2418'; g.fillRect(0, 0, w, h); for (let y = 0; y < h; y += 16) for (let x = (y / 16) % 2 ? -16 : 0; x < w; x += 32) { g.fillStyle = `hsl(${10 + R() * 10},${45 + R() * 15}%,${30 + R() * 10}%)`; g.fillRect(x + 1, y + 1, 30, 14); } }, [2, 2]);
   const M = { floor: lam({ map: boards }), panel: lam({ map: panel }), plaster: lam({ map: plaster }), wood: lam({ color: 0x6b4426 }), dark: lam({ color: 0x3b2414 }), top: lam({ map: boards.clone() }),
     iron: lam({ color: 0x2a2622 }), brick: lam({ map: brick }), bottle: [0x2f6b35, 0x6b3a14, 0x8fb8c9, 0x8a1f1f, 0xc9a227].map((c) => lam({ color: c })), brass: lam({ color: 0xc8a050 }), black: lam({ color: 0x080808 }) };
   M.top.map.repeat.set(1, 1);
   const add = (geo, m, x, y, z, ry = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; };
   const box = (w, h, d, m, x, y, z, ry) => add(new THREE.BoxGeometry(w, h, d), m, x, y, z, ry);
-  const W = 260, D = 220, H = 150;
+  const W = 260, D = 220, H = 360; // tall cinema-hall ceiling
   { const f = new THREE.PlaneGeometry(2 * W, 2 * D); f.rotateX(-Math.PI / 2); add(f, M.floor, 0, 0, 0); }
   { const c = new THREE.PlaneGeometry(2 * W, 2 * D); c.rotateX(Math.PI / 2); add(c, M.dark, 0, H, 0); }
   for (let x = -W + 40; x < W; x += 90) box(14, 12, 2 * D, M.wood, x, H - 6, 0);                               // ceiling beams
+  for (const z of [-180, -20, 140]) { box(2 * W, 18, 16, M.dark, 0, H - 21, z);                                   // heavy cross beams + wall braces
+    for (const sx of [-1, 1]) { box(12, 70, 12, M.dark, sx * (W - 6), H - 65, z); const br = box(10, 80, 9, M.dark, sx * (W - 30), H - 52, z); br.rotation.z = sx * 0.75; } }
   const wall = (len, x, z, ry) => { const g1 = new THREE.PlaneGeometry(len, 52); add(g1, M.panel, x, 26, z, ry); const g2 = new THREE.PlaneGeometry(len, H - 52); add(g2, M.plaster, x, 52 + (H - 52) / 2, z, ry);
     const rail = box(len, 4, 3, M.wood, x, 52, z, ry); rail.position.x += Math.sin(ry) * 1.5; rail.position.z += Math.cos(ry) * 1.5; };
   wall(2 * W, 0, -D, 0); wall(2 * W, 0, D, Math.PI); wall(2 * D, -W, 0, Math.PI / 2); wall(2 * D, W, 0, -Math.PI / 2);
@@ -43,12 +45,19 @@ export function buildTavern() {
   const DOOR = new THREE.Vector3(160, 0, D);
   box(52, 92, 4, M.wood, DOOR.x, 46, D - 1); box(60, 6, 6, M.dark, DOOR.x, 95, D - 2); add(new THREE.SphereGeometry(1.8, 8, 6), M.brass, DOOR.x - 18, 44, D - 4);
   // cinema screen: black frame + screen plane (poster texture while standing; the live iframe is overlaid when seated)
-  box(SCREEN.w + 16, SCREEN.h + 16, 4, M.black, SCREEN.x, SCREEN.y, -D + 2);
+  box(SCREEN.w + 28, SCREEN.h + 28, 6, M.black, SCREEN.x, SCREEN.y, -D + 3);
+  { const velvet = tex(256, 64, (g, w, h) => { for (let x = 0; x < w; x++) { const k = 0.45 + 0.55 * Math.pow(Math.abs(Math.sin(x / w * Math.PI * 7)), 0.6); g.fillStyle = `rgb(${Math.round(110 * k)},${Math.round(14 * k)},${Math.round(22 * k)})`; g.fillRect(x, 0, 1, h); } });
+    const cm = lam({ map: velvet, color: 0xffffff }), top = H - 14, ch = top - 8;
+    for (const sx of [-1, 1]) { add(new THREE.PlaneGeometry(40, ch), cm, sx * (W - 22), 8 + ch / 2, -D + 8); }
+    const vt = velvet.clone(); vt.repeat.set(3, 1); vt.wrapS = THREE.RepeatWrapping; vt.needsUpdate = true;
+    add(new THREE.PlaneGeometry(2 * W - 4, 28), lam({ map: vt }), 0, top - 14, -D + 10);
+    box(2 * W - 4, 3, 5, M.brass, 0, top, -D + 10);
+    box(SCREEN.w + 120, 14, 40, M.dark, 0, 7, -D + 20); }                                                            // small stage
   const poster = document.createElement('canvas'); poster.width = 640; poster.height = 360; const posterT = new THREE.CanvasTexture(poster); posterT.colorSpace = THREE.SRGBColorSpace;
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN.w, SCREEN.h), new THREE.MeshBasicMaterial({ map: posterT, toneMapped: false }));
   screen.position.set(SCREEN.x, SCREEN.y, SCREEN.z); scene.add(screen);
-  const screenGlow = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN.w * 1.9, SCREEN.h * 1.6), new THREE.MeshBasicMaterial({ map: radial('rgba(120,170,255,.35)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
-  screenGlow.position.set(SCREEN.x, SCREEN.y, -D + 0.6); scene.add(screenGlow);
+  const screenGlow = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN.w * 1.5, SCREEN.h * 1.5), new THREE.MeshBasicMaterial({ map: radial('rgba(120,170,255,.35)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  screenGlow.position.set(SCREEN.x, SCREEN.y, -D + 0.4); scene.add(screenGlow);
   // bar counter along the left wall, shelves with bottles, beer taps, bar stools
   box(44, 44, 300, M.wood, -W + 52, 22, 20); box(54, 4, 306, M.top, -W + 50, 45, 20); box(4, 40, 300, M.dark, -W + 76, 20, 20);
   for (const y of [70, 100]) { box(14, 3, 280, M.wood, -W + 8, y, 20); for (let z = -110; z < 150; z += 13) { const m = M.bottle[Math.floor(R() * 5)]; add(new THREE.CylinderGeometry(2.2, 2.2, 10 + R() * 4, 8), m, -W + 8, y + 7, z + R() * 4); } }
@@ -77,13 +86,14 @@ export function buildTavern() {
   // barrels in the corners
   for (const [x, z] of [[W - 30, D - 40], [W - 30, D - 80], [-W + 110, -D + 30]]) add(new THREE.CylinderGeometry(16, 16, 44, 12), M.wood, x, 22, z);
   // pendant lamps (emissive shade + 3 shared point lights) + warm hemisphere
-  scene.add(new THREE.HemisphereLight(0xffd6a0, 0x3a2414, 0.75));
+  scene.add(new THREE.HemisphereLight(0xffd6a0, 0x3a2414, 0.85));
   const lights = [];
-  for (const [x, z] of [[-60, 20], [100, 20], [-200, 20]]) {
-    add(new THREE.CylinderGeometry(0.4, 0.4, 30, 4), M.iron, x, H - 15, z);
-    add(new THREE.ConeGeometry(11, 9, 14, 1, true), lam({ color: 0x5a3a1a, side: THREE.DoubleSide }), x, H - 33, z);
-    add(new THREE.SphereGeometry(3.5, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffe2a8, toneMapped: false }), x, H - 37, z);
-    const L = new THREE.PointLight(0xffb36b, 900, 520, 1.2); L.position.set(x, H - 40, z); scene.add(L); lights.push(L);
+  for (const [x, z] of [[-60, 20], [100, 20], [-200, 20], [-20, 150], [140, -120]]) {
+    const LY = 150; // long cables from the tall ceiling, lamps stay at a cosy height
+    add(new THREE.CylinderGeometry(0.4, 0.4, H - LY - 18, 4), M.iron, x, (H + LY + 18) / 2, z);
+    add(new THREE.ConeGeometry(13, 10, 14, 1, true), lam({ color: 0x5a3a1a, side: THREE.DoubleSide }), x, LY + 4, z);
+    add(new THREE.SphereGeometry(4, 10, 8), new THREE.MeshBasicMaterial({ color: 0xffe2a8, toneMapped: false }), x, LY, z);
+    const L = new THREE.PointLight(0xffb36b, 900, 560, 1.2); L.position.set(x, LY - 4, z); scene.add(L); lights.push(L);
   }
   const fireL = new THREE.PointLight(0xff7a2a, 500, 300, 1.2); fireL.position.set(W - 30, 25, -90); scene.add(fireL);
   const drawPoster = (lines) => { const g = poster.getContext('2d'), w = poster.width, h = poster.height; const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#10131f'); gr.addColorStop(1, '#2a1630'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -91,7 +101,7 @@ export function buildTavern() {
     g.font = '800 54px Oswald, Impact, sans-serif'; g.textAlign = 'center'; g.fillText(lines[1], w / 2, h / 2 + 4); g.font = '600 26px Inter, Arial, sans-serif'; g.fillStyle = '#cfd6ff'; g.fillText(lines[2], w / 2, h - 66); posterT.needsUpdate = true; };
   return {
     scene, seats, tables, door: DOOR, screen, drawPoster, spawn: new THREE.Vector3(DOOR.x, 0, D - 34),
-    bounds: { x0: -W + 100, x1: W - 22, z0: -D + 22, z1: D - 18 }, // the bar counter is the left limit
+    bounds: { x0: -W + 100, x1: W - 22, z0: -D + 46, z1: D - 18 }, // the bar counter is the left limit
     update(t) { const f = 0.85 + 0.1 * Math.sin(t * 7.1) + 0.06 * Math.sin(t * 15.3 + 1) + 0.04 * Math.sin(t * 29.7);
       fireM.opacity = 0.75 + 0.25 * f; fire.scale.set(1, 0.9 + 0.15 * f, 1); fireL.intensity = 420 * f; fireGlow.material.opacity = 0.7 * f; for (const L of lights) L.intensity = 860 + 40 * Math.sin(t * 3 + L.position.x); },
   };
@@ -121,6 +131,12 @@ export class TvOverlay {
     this.setChannel(this.ch); this.el.classList.remove('hidden');
   }
   close() { if (this.iframe) { this.iframe.remove(); this.iframe = null; } this.el.classList.add('hidden'); }
-  place(rect) { const s = this.frame.style; s.left = rect.x + 'px'; s.top = rect.y + 'px'; s.width = rect.w + 'px'; s.height = rect.h + 'px'; const b = this.el.querySelector('.tv-bar').style; b.left = rect.x + 'px'; b.top = (rect.y + rect.h + 10) + 'px'; b.width = rect.w + 'px'; }
+  // q = projected screen corners [tl, tr, br, bl] in px. The seated camera looks straight at the screen (image plane parallel to it, lens
+  // shifted to centre it), so the projection is an exact axis-aligned rectangle and the iframe is simply positioned on it. No CSS
+  // transform on purpose: Twitch pauses a player that is 3D-transformed (visibility check).
+  place(q, vh) { const xs = q.map((p) => p[0]), ys = q.map((p) => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const s = this.frame.style; s.transform = ''; s.left = Math.round(x0) + 'px'; s.top = Math.round(y0) + 'px'; s.width = Math.round(x1 - x0) + 'px'; s.height = Math.round(y1 - y0) + 'px';
+    const b = this.el.querySelector('.tv-bar').style; b.left = Math.round(x0) + 'px'; b.width = Math.round(x1 - x0) + 'px'; b.top = Math.round(Math.min(y1 + 10, vh - 86)) + 'px'; }
 }
 export { SCREEN };
+

@@ -329,7 +329,9 @@ html:not(.mobile) #hud .hud-title,html:not(.mobile) #hud #h-sens{display:none}
 html:not(.mobile) #hud .hud-tl{background:none;border:0;padding:4px 6px;text-shadow:0 1px 3px #000}
 
 /* v37 free mode + Vistu krogs */
-.hud-free{position:absolute;left:16px;bottom:14px;font:600 12px var(--font);color:rgba(255,255,255,.62);letter-spacing:.02em;text-shadow:0 1px 3px rgba(0,0,0,.8)}
+.hud-free{position:absolute;left:16px;bottom:16px;max-width:min(560px,52vw);font:600 14px/1.5 var(--font);color:#fff;letter-spacing:.01em;text-shadow:none;background:rgba(8,10,16,.62);border:1px solid rgba(255,207,110,.45);border-radius:10px;padding:7px 12px}
+.hud-free.hidden{display:none}
+.hud-free kbd{display:inline-block;min-width:1.6em;text-align:center;font:800 13px var(--font);color:#1a1206;background:#ffcf6e;border-radius:5px;padding:1px 6px;margin:0 2px;box-shadow:0 2px 0 #b8892e}
 .hud-near{position:absolute;left:50%;top:62%;transform:translateX(-50%);font:700 16px var(--font);color:#ffe2a8;background:rgba(10,8,6,.55);border:1px solid rgba(255,200,120,.35);padding:7px 14px;border-radius:9px;white-space:nowrap}
 html.mobile .hud-free,html.mobile .hud-near{display:none}
 html.in-tav .hud-tc,html.in-tav .hud-tr,html.in-tav .hud-br,html.in-tav #feed,html.in-tav #banner{display:none!important}

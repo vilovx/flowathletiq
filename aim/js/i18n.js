@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=37';
+import { MORE } from './i18n-more.js?v=38';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -215,14 +215,16 @@ const TOUCH_HINTS = {
 };
 for (const l in TOUCH_HINTS) Object.assign(TOUCH[l], { 'sp.hint.m': TOUCH_HINTS[l][0], 'sp.keys.m': TOUCH_HINTS[l][1], 'sp.ideal.m': TOUCH_IDEAL[l] });
 const TAV = { // Vistu krogs (free mode, desktop): [enter, exit, sit, stand up, leave, screen poster, free-mode hint, live, offline note, channel]
-  lv: ['E — ieiet Vistu krogā', 'E — iziet no kroga', 'E — apsēsties', 'Piecelties (E)', 'Iziet no kroga', 'Apsēdies pie galda (E), lai skatītos tiešraidi', 'Brīvais režīms: WASD staigā brīvi · H ierocis nost/klāt · E krogs', 'TIEŠRAIDE', 'Ja kanāls šobrīd nav tiešsaistē, Twitch rāda bezsaistes ekrānu.', 'Kanāls'],
-  en: ['E — enter Vistu krogs', 'E — leave the tavern', 'E — sit down', 'Stand up (E)', 'Leave the tavern', 'Sit at a table (E) to watch the live stream', 'Free mode: WASD walk anywhere · H holster/draw · E tavern', 'LIVE', 'If the channel is offline right now, Twitch shows its offline screen.', 'Channel'],
+  lv: ['E — ieiet Vistu krogā', 'E — iziet no kroga', 'E — apsēsties', 'Piecelties (E)', 'Iziet no kroga', 'Apsēdies pie galda (E), lai skatītos tiešraidi', 'Brīvais režīms: WASD staigāt · H nolikt/paņemt ieroci · E krogs', 'TIEŠRAIDE', 'Ja kanāls šobrīd nav tiešsaistē, Twitch rāda bezsaistes ekrānu.', 'Kanāls'],
+  en: ['E — enter Vistu krogs', 'E — leave the tavern', 'E — sit down', 'Stand up (E)', 'Leave the tavern', 'Sit at a table (E) to watch the live stream', 'Free mode: WASD walk · H holster/draw weapon · E tavern', 'LIVE', 'If the channel is offline right now, Twitch shows its offline screen.', 'Channel'],
   ru: ['E — войти в Vistu krogs', 'E — выйти из таверны', 'E — сесть', 'Встать (E)', 'Выйти из таверны', 'Сядь за стол (E), чтобы смотреть трансляцию', 'Свободный режим: WASD — ходить везде · H — убрать/достать оружие · E — таверна', 'ПРЯМОЙ ЭФИР', 'Если канал сейчас не в эфире, Twitch показывает экран офлайн.', 'Канал'],
   es: ['E — entrar en Vistu krogs', 'E — salir de la taberna', 'E — sentarse', 'Levantarse (E)', 'Salir de la taberna', 'Siéntate a una mesa (E) para ver el directo', 'Modo libre: WASD camina libre · H guardar/sacar arma · E taberna', 'EN DIRECTO', 'Si el canal no está en directo, Twitch muestra su pantalla offline.', 'Canal'],
   pt: ['E — entrar no Vistu krogs', 'E — sair da taverna', 'E — sentar', 'Levantar (E)', 'Sair da taverna', 'Sente-se a uma mesa (E) para ver a live', 'Modo livre: WASD andar livre · H guardar/sacar arma · E taverna', 'AO VIVO', 'Se o canal estiver offline agora, a Twitch mostra a tela offline.', 'Canal'],
   ja: ['E — Vistu krogsに入る', 'E — 酒場を出る', 'E — 座る', '立ち上がる (E)', '酒場を出る', 'テーブルに座って（E）ライブ配信を見よう', 'フリーモード：WASDで自由に歩く · H 武器をしまう/出す · E 酒場', 'ライブ', 'チャンネルが配信していない場合はTwitchのオフライン画面が表示されます。', 'チャンネル'],
   zh: ['E — 进入 Vistu krogs', 'E — 离开酒馆', 'E — 坐下', '站起来 (E)', '离开酒馆', '在桌边坐下（E）观看直播', '自由模式：WASD 自由行走 · H 收起/拿出武器 · E 酒馆', '直播', '如果频道当前未开播，Twitch 会显示离线画面。', '频道'],
 };
+const HOL = { lv: 'Ierocis nolikts — spied H, lai paņemtu', en: 'Weapon holstered — press H to draw', ru: 'Оружие убрано — нажми H, чтобы достать', es: 'Arma guardada — pulsa H para sacarla', pt: 'Arma guardada — prima H para sacar', ja: '武器をしまいました — H で構える', zh: '武器已收起 — 按 H 取出' };
+for (const l in HOL) if (TOUCH[l]) TOUCH[l].holsterOn = HOL[l];
 for (const l in TAV) { const a = TAV[l]; Object.assign(TOUCH[l], { tavEnter: a[0], tavExit: a[1], tavSit: a[2], tavStand: a[3], tavLeave: a[4], tavPoster: a[5], freeHint: a[6], tavLive: a[7], tavOffline: a[8], tavChannel: a[9] }); }
 for (const l in TOUCH) Object.assign(S[l], TOUCH[l]);
 const valid = (c) => !!S[c];
