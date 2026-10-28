@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=35';
+import { MORE } from './i18n-more.js?v=36';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -38,7 +38,7 @@ const S = {
     level: 'Līmenis', kills: 'Kills', hs: 'HS %', points: 'Punkti', reloading: 'Pārlādē…', clickLock: 'Klikšķini, lai turpinātu',
     pause: 'Pauze', resume: 'Turpināt', toMenu: 'Uz izvēlni', again: 'Spēlēt vēlreiz', accuracy: 'Precizitāte',
     levelBanner: 'Līmenis {n}', chickensN: '{n} vistas', levelDone: 'Līmenis {n} izturēts', timeBonus: 'Laika bonuss +{n}',
-    getReady: 'Gatavojies…', remaining: 'Atlikušas vistas: {n}', escaped: 'Vista aizbēga!', landed: 'Vista piezemējās!', timeUp: 'Laiks beidzās!',
+    idleEnd: 'Treniņš beidzās: 1 minūti bez darbības', getReady: 'Gatavojies…', remaining: 'Atlikušas vistas: {n}', escaped: 'Vista aizbēga!', landed: 'Vista piezemējās!', timeUp: 'Laiks beidzās!',
     chicken: 'Vista', reached: 'Sasniegtais līmenis: {n}', nextRank: ' · nākamais rangs no {n}. līmeņa', topRank: ' · augstākais rangs!',
     newPB: 'Jauns personīgais rekords!', yourPB: 'Tavs rekords: {level}. līmenis, {score} punkti',
     wBanner: '{dmg} bojājums · {rpm} RPM · {mag} lodes', wCard: '{dmg} dmg · {rpm} RPM · {mag} lodes', wHs: 'HS ar ķiveri: {n}', oneTap: ' (one-tap)',
@@ -79,7 +79,7 @@ const S = {
     level: 'Level', kills: 'Kills', hs: 'HS %', points: 'Score', reloading: 'Reloading…', clickLock: 'Click to continue',
     pause: 'Paused', resume: 'Resume', toMenu: 'Main menu', again: 'Play again', accuracy: 'Accuracy',
     levelBanner: 'Level {n}', chickensN: '{n} chickens', levelDone: 'Level {n} cleared', timeBonus: 'Time bonus +{n}',
-    getReady: 'Get ready…', remaining: 'Chickens left: {n}', escaped: 'A chicken escaped!', landed: 'A chicken landed!', timeUp: 'Time is up!',
+    idleEnd: 'Practice ended: 1 minute without input', getReady: 'Get ready…', remaining: 'Chickens left: {n}', escaped: 'A chicken escaped!', landed: 'A chicken landed!', timeUp: 'Time is up!',
     chicken: 'Chicken', reached: 'Level reached: {n}', nextRank: ' · next rank at level {n}', topRank: ' · highest rank!',
     newPB: 'New personal best!', yourPB: 'Your best: level {level}, {score} points',
     wBanner: '{dmg} damage · {rpm} RPM · {mag} rounds', wCard: '{dmg} dmg · {rpm} RPM · {mag} rounds', wHs: 'HS with helmet: {n}', oneTap: ' (one-tap)',
@@ -120,7 +120,7 @@ const S = {
     level: 'Уровень', kills: 'Убийства', hs: 'HS %', points: 'Очки', reloading: 'Перезарядка…', clickLock: 'Кликни, чтобы продолжить',
     pause: 'Пауза', resume: 'Продолжить', toMenu: 'В меню', again: 'Играть снова', accuracy: 'Точность',
     levelBanner: 'Уровень {n}', chickensN: 'Куриц: {n}', levelDone: 'Уровень {n} пройден', timeBonus: 'Бонус за время +{n}',
-    getReady: 'Приготовься…', remaining: 'Осталось куриц: {n}', escaped: 'Курица сбежала!', landed: 'Курица приземлилась!', timeUp: 'Время вышло!',
+    idleEnd: 'Тренировка завершена: 1 минута без действий', getReady: 'Приготовься…', remaining: 'Осталось куриц: {n}', escaped: 'Курица сбежала!', landed: 'Курица приземлилась!', timeUp: 'Время вышло!',
     chicken: 'Курица', reached: 'Достигнутый уровень: {n}', nextRank: ' · следующий ранг с {n} уровня', topRank: ' · высший ранг!',
     newPB: 'Новый личный рекорд!', yourPB: 'Твой рекорд: уровень {level}, {score} очков',
     wBanner: 'Урон {dmg} · {rpm} RPM · {mag} патронов', wCard: '{dmg} урон · {rpm} RPM · {mag} патр.', wHs: 'HS в шлем: {n}', oneTap: ' (ваншот)',

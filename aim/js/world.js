@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=35';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=36';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -262,7 +262,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=35');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=36');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -319,7 +319,7 @@ export function buildWorld(scene) {
     const img = new Image(); let ready = false, rows = null, empty = '', tag = '';
     const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', 'Klee One', 'HGMaruGothicMPRO', 'Hiragino Maru Gothic ProN', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Hiragino Sans', 'Yu Gothic UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', cursive";  // CJK nicks: Caveat has no kana/hanzi
     // small rank emblems (same artwork as the game's ranks) drawn next to each nick
-    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=35`; return im; });
+    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=36`; return im; });
     const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
     function draw() {
       if (!ready) return;
@@ -356,7 +356,7 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=35';
+    img.src = 'img/leaderboard-board.webp?v=36';
     return { plane, set(r, e, tg) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; if (tg !== undefined) tag = tg; draw(); } };
   })();
 
@@ -410,45 +410,105 @@ export function buildWorld(scene) {
   return { arches: ARCH_Z.map((z) => ({ x: 544, z })), torches, sun, worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); if (torches) torches.update(t); }, setBoard: (rows, empty, tag) => board.set(rows, empty, tag) };
 }
 
-// Wall torches in the arcade arches (desktop only). No real lights: an emissive flame + additive glow cards
-// (back wall, halo, cobbles in front) whose opacity flickers. 5 arches = ~25 cheap unlit meshes, no shader cost on the rest of the scene.
+// Wall torches in the arcade arches (desktop only). Each torch hangs on the arch's side reveal: riveted iron wall plate + bracket + collar,
+// tapered wooden handle, pitch wrap in an iron cage, and a shader flame. No real lights and no particles: the warm light on the stone is
+// faked with "light cards" that MULTIPLY the brick underneath (dst * (1 + glow), so mortar stays dark and brick turns warm, like real
+// light), plus an additive ember wash on the dark back wall and a soot smudge above the flame. Everything is merged: all five torches
+// render in 7 draw calls total, with one shared flicker value (flames also get a per-torch phase in the shader).
+function mergeGeos(list) { // [{ geo, m: Matrix4, c: hex }] -> one BufferGeometry with position/normal/uv/color
+  const pos = [], nor = [], uv = [], col = [], c = new THREE.Color();
+  for (const it of list) {
+    let g = it.geo.clone(); if (it.m) g.applyMatrix4(it.m); if (g.index) g = g.toNonIndexed();
+    pos.push(...g.attributes.position.array); nor.push(...g.attributes.normal.array);
+    if (g.attributes.uv) uv.push(...g.attributes.uv.array); else for (let k = 0; k < g.attributes.position.count; k++) uv.push(0, 0);
+    c.setHex(it.c ?? 0xffffff); for (let k = 0; k < g.attributes.position.count; k++) col.push(c.r, c.g, c.b);
+  }
+  const o = new THREE.BufferGeometry();
+  o.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); o.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  o.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); o.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  return o;
+}
 function buildTorches(scene, archZ, canvasTex) {
-  const radial = (stops) => canvasTex(128, 128, (g, w, h) => {
-    const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); for (const [o, c] of stops) gr.addColorStop(o, c); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  const O = new THREE.Object3D(), M4 = (x, y, z, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) => { O.position.set(x, y, z); O.rotation.set(rx, ry, rz); O.scale.set(sx, sy, sz); O.updateMatrix(); return O.matrix.clone(); };
+  const radial = (stops, w = 128, h = 128) => canvasTex(w, h, (g) => { const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); for (const [o, c] of stops) gr.addColorStop(o, c); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const lightT = radial([[0, 'rgb(255,170,80)'], [0.25, 'rgb(190,95,35)'], [0.55, 'rgb(70,30,8)'], [1, 'rgb(0,0,0)']]);  // black = no change (multiply card)
+  const emberT = radial([[0, 'rgba(255,150,60,1)'], [0.4, 'rgba(200,80,25,.5)'], [1, 'rgba(120,40,10,0)']]);
+  const sootT = canvasTex(64, 128, (g, w, h) => { const gr = g.createRadialGradient(w / 2, h * 0.75, 2, w / 2, h * 0.6, h * 0.55); gr.addColorStop(0, 'rgba(10,8,6,.75)'); gr.addColorStop(0.5, 'rgba(15,10,8,.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  for (const t of [lightT, emberT, sootT]) { t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; }
+  const IRON = 0x26231f, IRON2 = 0x3a342d, WOOD = 0x6a4527, WOOD2 = 0x4e321c, PITCH = 0x17110c;
+  const hw = [], lit = [], ember = [], soot = [], flames = [];
+  const plane = new THREE.PlaneGeometry(1, 1), boxG = new THREE.BoxGeometry(1, 1, 1);
+  archZ.forEach((zc, i) => {
+    const z0 = zc - 45, X = 532, Y = 80;                                     // torch-side reveal face (faces +z, toward the spawn)
+    hw.push({ geo: boxG, m: M4(X, Y + 2, z0 + 0.7, 0, 0, 0, 9, 15, 1.4), c: IRON });                        // wall plate
+    for (const [dx, dy] of [[-3, 6], [3, 6], [-3, -2], [3, -2]]) hw.push({ geo: new THREE.SphereGeometry(0.7, 6, 4), m: M4(X + dx, Y + 2 + dy, z0 + 1.5), c: IRON2 }); // rivets
+    hw.push({ geo: boxG, m: M4(X, Y - 3.5, z0 + 5, 0, 0, 0, 1.6, 1.6, 9), c: IRON });                     // bracket arm
+    hw.push({ geo: boxG, m: M4(X, Y - 0.5, z0 + 3.5, 0.75, 0, 0, 1.2, 1.2, 8), c: IRON });                // diagonal strut
+    // handle tilted out of the reveal (toward +z) and toward the plaza (-x) so the flame sits in the opening
+    O.position.set(X, Y - 3, z0 + 9.5); O.rotation.set(0.38, 0, 0.28); O.scale.set(1, 1, 1); O.updateMatrix(); const H = O.matrix.clone();
+    const at = (x, y, z, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) => H.clone().multiply(M4(x, y, z, rx, ry, rz, sx, sy, sz));
+    hw.push({ geo: new THREE.TorusGeometry(2.1, 0.55, 5, 12), m: at(0, 0, 0, Math.PI / 2), c: IRON });     // collar ring
+    hw.push({ geo: new THREE.CylinderGeometry(1.45, 0.95, 22, 8), m: at(0, 4, 0), c: WOOD });              // wooden handle
+    hw.push({ geo: new THREE.CylinderGeometry(1.3, 1.3, 2, 8), m: at(0, -6, 0), c: WOOD2 });              // worn end
+    hw.push({ geo: new THREE.CylinderGeometry(2.3, 1.7, 5.5, 9), m: at(0, 16.5, 0), c: PITCH });           // pitch-soaked wrap
+    hw.push({ geo: new THREE.TorusGeometry(2.7, 0.4, 4, 12), m: at(0, 15, 0, Math.PI / 2), c: IRON });     // cage rings
+    hw.push({ geo: new THREE.TorusGeometry(3.0, 0.4, 4, 12), m: at(0, 19, 0, Math.PI / 2), c: IRON });
+    for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + 0.4; hw.push({ geo: boxG, m: at(Math.cos(a) * 2.85, 17, Math.sin(a) * 2.85, 0, -a, 0, 0.6, 6, 0.6), c: IRON }); } // cage bars
+    const top = new THREE.Vector3(0, 18.5, 0).applyMatrix4(H);              // flame base (inside the cage)
+    flames.push({ c: top, ph: i * 2.3 });
+    // light on the stone: facade around the arch edge, torch-side reveal (strong), far reveal (weak), cobbles; soot above the flame
+    lit.push({ geo: plane, m: M4(519.4, top.y, top.z, 0, -Math.PI / 2, 0, 190, 190) });
+    lit.push({ geo: plane, m: M4(532, top.y - 4, z0 + 0.35, 0, 0, 0, 24, 150) });
+    lit.push({ geo: plane, m: M4(532, top.y - 10, zc + 44.65, 0, Math.PI, 0, 24, 110), c: 0x777777 });
+    lit.push({ geo: plane, m: M4(510, 0.45, top.z + 8, -Math.PI / 2, 0, 0, 120, 120), c: 0xbbbbbb });
+    ember.push({ geo: plane, m: M4(545.4, top.y - 8, top.z + 12, 0, -Math.PI / 2, 0, 150, 160) });
+    soot.push({ geo: plane, m: M4(531, top.y + 17, z0 + 0.45, 0, 0, 0, 13, 32) });
   });
-  const glowT = radial([[0, 'rgba(255,190,110,1)'], [0.35, 'rgba(255,140,50,.55)'], [1, 'rgba(255,110,30,0)']]);
-  const haloT = radial([[0, 'rgba(255,240,200,1)'], [0.2, 'rgba(255,170,70,.8)'], [1, 'rgba(255,120,30,0)']]);
-  const add = (o) => ({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false, ...o });
-  const wood = new THREE.MeshLambertMaterial({ color: 0x4a2f1a }), iron = new THREE.MeshLambertMaterial({ color: 0x222020 });
-  const flameM = new THREE.MeshBasicMaterial({ color: 0xffa640, toneMapped: false }), coreM = new THREE.MeshBasicMaterial({ color: 0xfff1b0, toneMapped: false });
-  const flameG = new THREE.ConeGeometry(3.6, 11, 7), coreG = new THREE.ConeGeometry(1.8, 6, 6);
-  const list = [];
-  archZ.forEach((z, i) => {
-    const g = new THREE.Group(); g.position.set(543, 0, z); scene.add(g);
-    const plate = new THREE.Mesh(new THREE.BoxGeometry(2, 10, 6), iron); plate.position.set(1, 88, 0); g.add(plate);           // wall plate
-    const arm = new THREE.Mesh(new THREE.BoxGeometry(9, 1.6, 1.6), iron); arm.position.set(-4, 86, 0); g.add(arm);            // bracket
-    const stick = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.1, 18, 6), wood); stick.position.set(-8, 92, 0); stick.rotation.z = 0.25; g.add(stick);
-    const cup = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 1.8, 4, 7), iron); cup.position.set(-10.3, 101, 0); g.add(cup);
-    const flame = new THREE.Mesh(flameG, flameM); flame.position.set(-10.5, 107.5, 0); g.add(flame);
-    const core = new THREE.Mesh(coreG, coreM); core.position.set(-10.5, 105.5, 0); g.add(core);
-    const back = new THREE.Mesh(new THREE.PlaneGeometry(150, 190), new THREE.MeshBasicMaterial(add({ map: glowT, opacity: 0.8 })));
-    back.rotation.y = -Math.PI / 2; back.position.set(2.2, 92, 0); g.add(back);                                                 // warm wash on the dark back wall
-    const halo = new THREE.Mesh(new THREE.PlaneGeometry(46, 46), new THREE.MeshBasicMaterial(add({ map: haloT, opacity: 0.75 })));
-    halo.rotation.y = -Math.PI / 2; halo.position.set(-14, 106, 0); g.add(halo);                                                // bloom around the flame
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(130, 120), new THREE.MeshBasicMaterial(add({ map: glowT, opacity: 0.35, polygonOffset: true, polygonOffsetFactor: -2 })));
-    floor.rotation.x = -Math.PI / 2; floor.position.set(-34, 0.6, 0); g.add(floor);                                            // warm pool on the cobbles
-    for (const m of [back, halo, floor]) m.renderOrder = 3;
-    list.push({ flame, core, back, halo, floor, ph: i * 1.7 });
+  const hwMesh = new THREE.Mesh(mergeGeos(hw), new THREE.MeshLambertMaterial({ vertexColors: true })); hwMesh.castShadow = true; scene.add(hwMesh);
+  const card = (geo, o) => { const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false, fog: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, ...o })); m.renderOrder = 3; scene.add(m); return m; };
+  const litM = card(mergeGeos(lit), { map: lightT, vertexColors: true, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.OneFactor });
+  const emberM = card(mergeGeos(ember), { map: emberT, blending: THREE.AdditiveBlending });
+  const sootM = card(mergeGeos(soot), { map: sootT }); sootM.renderOrder = 2;
+  // flames + halo: one merged billboard mesh (per-vertex centre, corner, kind, phase); fragment shader draws a licking flame
+  const P = [], C = [], K = [], F = [];
+  for (const f of flames) for (const kind of [1, 0]) for (const [cx, cy] of [[-1, 0], [1, 0], [1, 1], [-1, 0], [1, 1], [-1, 1]]) { P.push(f.c.x, f.c.y, f.c.z); C.push(cx, cy); K.push(kind); F.push(f.ph); }
+  const fg = new THREE.BufferGeometry();
+  fg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); fg.setAttribute('aCorner', new THREE.Float32BufferAttribute(C, 2));
+  fg.setAttribute('aKind', new THREE.Float32BufferAttribute(K, 1)); fg.setAttribute('aPh', new THREE.Float32BufferAttribute(F, 1));
+  fg.boundingSphere = new THREE.Sphere(new THREE.Vector3(532, 100, -150), 400);
+  const U = { uT: { value: 0 }, uF: { value: 1 } };
+  const flameMat = new THREE.ShaderMaterial({ uniforms: U, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false,
+    vertexShader: `attribute vec2 aCorner; attribute float aKind; attribute float aPh; uniform float uT; uniform float uF; varying vec2 vUv; varying float vK; varying float vPh;
+      void main(){ vUv = vec2(aCorner.x * .5 + .5, aCorner.y); vK = aKind; vPh = aPh;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        float fl = uF * (0.9 + 0.1 * sin(uT * 13.0 + aPh * 3.0));
+        vec2 sz = aKind > 0.5 ? vec2(17.0, 34.0) * (0.9 + 0.12 * fl) : vec2(4.6, 15.0) * (0.85 + 0.2 * fl);
+        mv.xy += vec2(aCorner.x * sz.x, (aCorner.y - (aKind > 0.5 ? 0.42 : 0.12)) * sz.y);
+        gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform float uT; uniform float uF; varying vec2 vUv; varying float vK; varying float vPh;
+      void main(){
+        float y = vUv.y, t = uT;
+        if (vK > 0.5) { vec2 d = vec2((vUv.x - .5) * 1.0, (y - .42) * .5); float r = length(d) * 2.0; float a = pow(max(0.0, 1.0 - r), 2.2) * (0.42 + 0.22 * uF);
+          gl_FragColor = vec4(vec3(1.0, .55, .2) * a, a); return; }
+        float x = (vUv.x - .5) * 2.0;
+        x += (sin(y * 7.0 - t * 10.0 + vPh) * .16 + sin(y * 15.0 - t * 17.0 + vPh * 2.0) * .07) * y;   // licking sideways sway, stronger at the tip
+        float w = mix(.95, .04, pow(y, .9)) * (0.88 + .12 * sin(t * 8.0 + vPh));
+        float s = (1.0 - smoothstep(w * .45, w, abs(x))) * smoothstep(.0, .1, y) * (1.0 - smoothstep(.55 + .2 * uF, 1.0, y));
+        float tongue = smoothstep(.55, .95, y) * (.5 + .5 * sin(t * 21.0 + vPh * 5.0 + y * 9.0));
+        s *= 1.0 - tongue * .6;
+        float core = (1.0 - smoothstep(0.0, w * .5, abs(x))) * (1.0 - smoothstep(.12, .5, y));
+        vec3 c = mix(vec3(.85, .18, .02), vec3(1.0, .62, .16), smoothstep(0.0, .7, s));
+        c = mix(c, vec3(1.0, .93, .7), core);
+        gl_FragColor = vec4(c * s * 1.25, s); }`,
   });
+  const flameMesh = new THREE.Mesh(fg, flameMat); flameMesh.renderOrder = 5; flameMesh.frustumCulled = false; scene.add(flameMesh);
   return {
-    list,
+    hwMesh, flameMesh, U,
     update(t) {
-      for (const T of list) {
-        const f = 0.82 + 0.1 * Math.sin(t * 9.3 + T.ph) + 0.06 * Math.sin(t * 23.7 + T.ph * 2) + 0.04 * Math.sin(t * 41 + T.ph * 3);
-        T.flame.scale.set(1, 0.85 + 0.3 * f, 1); T.flame.rotation.z = 0.08 * Math.sin(t * 11 + T.ph);
-        T.core.scale.set(1, 0.8 + 0.3 * f, 1);
-        T.back.material.opacity = 0.62 + 0.26 * f; T.halo.material.opacity = 0.5 + 0.4 * f; T.floor.material.opacity = 0.22 + 0.16 * f;
-      }
+      // one shared flicker: a few incommensurate sines (gusts + fast flutter)
+      const f = 0.8 + 0.1 * Math.sin(t * 7.3) + 0.07 * Math.sin(t * 17.1 + 1.3) + 0.05 * Math.sin(t * 31.7 + 0.4) + 0.04 * Math.sin(t * 2.1);
+      U.uT.value = t; U.uF.value = f;
+      litM.material.color.setScalar(0.85 * f); emberM.material.opacity = 0.55 + 0.35 * f;
     },
   };
 }

@@ -1,16 +1,16 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=35';
-import { Locals } from './locals.js?v=35';
-import { RoastSystem } from './roast.js?v=35';
-import { createChicken, Puffs } from './chicken.js?v=35';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=35';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=35';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=35';
-import { t, onLang, applyDom } from './i18n.js?v=35';
-import { Sfx } from './audio.js?v=35';
-import { buildGunModel } from './gunmodels.js?v=35';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=35';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=35';
+import { buildWorld } from './world.js?v=36';
+import { Locals } from './locals.js?v=36';
+import { RoastSystem } from './roast.js?v=36';
+import { createChicken, Puffs } from './chicken.js?v=36';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=36';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=36';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=36';
+import { t, onLang, applyDom } from './i18n.js?v=36';
+import { Sfx } from './audio.js?v=36';
+import { buildGunModel } from './gunmodels.js?v=36';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=36';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=36';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -18,7 +18,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=35';
+import { forced, forceOff } from './rot.js?v=36';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -210,7 +210,7 @@ function newRun(level = 1) {
 }
 function startLevel(L) {
   const cfg = levelCfg(L);
-  Object.assign(G, { level: L, cfg, spawned: 0, spawnT: 1.6, timeLeft: cfg.count * cfg.interval + 12, between: 0 });
+  Object.assign(G, { level: L, cfg, spawned: 0, spawnT: 1.6, timeLeft: cfg.count * cfg.interval + 12, between: 0, collected: false, waitT: 0, lvlEsc: 0 });
   showBanner(t('levelBanner', { n: L }), t('chickensN', { n: cfg.count }));
   if (locals) locals.setLevel(L);
   updateHud();
@@ -260,6 +260,7 @@ function nextPhase(c) {
 }
 
 function updateChicken(c, dt) {
+  if (c.state === 'escape') { if (updateEscape(c, dt)) { scene.remove(c.root); c.removed = true; } return; }
   c.t += dt; c.phase += dt;
   const P = c.root.position;
   if (c.state !== 'dead') while (c.t >= c.dur[c.state] && c.state !== 'jump') nextPhase(c);
@@ -305,9 +306,51 @@ roasts = new RoastSystem(scene, world.tavern, groundY);
 const roastSpot = (P) => new THREE.Vector3(Math.max(-500, Math.min(520, P.x)), 0, Math.max(-540, Math.min(330, P.z)));
 
 function chickenLanded(c) { // a chicken that reaches the ground ends the run
+  if (practice && G.mode === 'chickens') { escapeChicken(c); return; } // practice: no game over, the chicken escapes into the Venta
   G.over = true; c.state = 'landed';
   sfx.alarm();
   endRun('landed');
+}
+
+// Practice only: a missed chicken does NOT end the run. It sprints down the street between the back houses to the riverside,
+// leaps off the promenade into the Venta (beyond the rumba, where the water is visible from the square) and paddles away toward
+// the middle arch of the red-brick bridge (~3 s), then disappears; practice just continues. Ranked runs still end on landing.
+const ESC = { run: 760, leap: 0.85, swim: 1.15 };
+function escapeChicken(c) {
+  sfx.alarm(); feed(`<b>${t('escaped')}</b>`, false); G.escapes = (G.escapes || 0) + 1; G.lvlEsc = (G.lvlEsc || 0) + 1;
+  c.dead = true; // no longer a target / not counted as alive (level can still be cleared)
+  const P = c.root.position, sx = Math.max(-95, Math.min(95, P.x)), ex = sx * 0.5;
+  c.state = 'escape'; c.t = 0; c.model.position.y = 0; c.model.rotation.set(0, 0, 0); c.legs.forEach((l) => (l.rotation.x = 0));
+  c.esc = { pts: [P.clone(), new THREE.Vector3(sx, 0, -540), new THREE.Vector3(ex, 0, -752)], i: 1, phase: 'run', from: null,
+    water: new THREE.Vector3(ex * 0.6, -12, -1610), to: new THREE.Vector3(0, -12, -1860) };
+}
+function updateEscape(c, dt) {
+  const E = c.esc, P = c.root.position; c.t += dt;
+  if (E.phase === 'run') {
+    const goal = E.pts[E.i], dx = goal.x - P.x, dz = goal.z - P.z, d = Math.hypot(dx, dz), st = ESC.run * dt;
+    c.root.rotation.y = Math.atan2(dx, dz);
+    if (d <= st) { P.x = goal.x; P.z = goal.z; if (++E.i >= E.pts.length) { E.phase = 'leap'; E.t = 0; E.from = P.clone(); } } else { P.x += dx / d * st; P.z += dz / d * st; }
+    P.y = groundY(P) + Math.abs(Math.sin(c.t * 22)) * 3;
+    c.legs.forEach((l, i) => (l.rotation.x = Math.sin(c.t * 34 + i * Math.PI) * 0.9));
+    c.wings.forEach((w, i) => (w.rotation.z = (i ? -1 : 1) * (0.2 + Math.abs(Math.sin(c.t * 20)) * 0.6)));
+    c.model.rotation.x = 0.25;
+  } else if (E.phase === 'leap') { // big arc off the promenade into the river
+    E.t += dt; const u = Math.min(1, E.t / ESC.leap);
+    P.lerpVectors(E.from, E.water, u); P.y += 260 * 4 * u * (1 - u);
+    c.root.rotation.y = Math.atan2(E.water.x - E.from.x, E.water.z - E.from.z);
+    c.model.rotation.x = (u - 0.35) * 1.1; c.legs.forEach((l) => (l.rotation.x = 0.8));
+    c.wings.forEach((w, i) => (w.rotation.z = (i ? -1 : 1) * (0.3 + Math.abs(Math.sin(c.t * 30)) * 1.2)));
+    if (u >= 1) { E.phase = 'swim'; E.t = 0; puffs.burst(P.clone().setY(P.y + 4), 22, 0xe3f2f8, 170); sfx.thud(); }
+  } else if (E.phase === 'swim') { // floats low in the water, bobbing, paddling toward the bridge arch
+    E.t += dt; const u = Math.min(1, E.t / ESC.swim);
+    P.lerpVectors(E.water, E.to, u * u * 0.5 + u * 0.5); P.y = E.water.y - 9 + Math.sin(E.t * 9) * 1.5;
+    c.root.rotation.y = Math.atan2(E.to.x - E.water.x, E.to.z - E.water.z) + Math.sin(E.t * 6) * 0.15;
+    c.model.rotation.x = 0; c.model.rotation.z = Math.sin(E.t * 5) * 0.12; c.legs.forEach((l) => (l.rotation.x = 0));
+    c.wings.forEach((w, i) => (w.rotation.z = (i ? -1 : 1) * (0.15 + Math.abs(Math.sin(E.t * 8)) * 0.35)));
+    if (Math.random() < dt * 6) puffs.burst(P.clone().setY(E.water.y + 2), 2, 0xe3f2f8, 40);
+    if (u >= 1) return true;
+  }
+  return false;
 }
 
 // ---------------- Shooting ----------------
@@ -466,6 +509,7 @@ function tick(now) {
   else if (state !== 'play') { // idle camera sway on menu
     if (state === 'menu') { yaw = Math.sin(now / 7000) * 8; pitch = 6 + Math.sin(now / 5000) * 2; }
   }
+  if (practice && G && !G.over && (state === 'play' || state === 'pause') && now - lastInput > IDLE_MS) { G.over = true; endRun('idleEnd'); } // practice idle timeout
   if (state === 'over-anim') for (const c of chickens) if (!c.removed && c.dead) updateChicken(c, sdt);
   puffs.update(sdt);
   roasts.update(sdt);
@@ -500,7 +544,11 @@ function step(dt) {
   if (G.mode === 'spray') { sprayStep(); updateHud(); return; }
   // spawning
   if (G.between > 0) {
-    G.between -= dt; if (G.between <= 0) startLevel(G.level + 1);
+    // between levels only: once every shot chicken has landed as a roast, the cook comes out with a tray and collects them all;
+    // the next level waits until he is back inside (no cook runs during a level)
+    if (!G.collected && !chickens.some((c) => !c.removed && c.state !== 'escape')) { G.collected = true; const d = roasts.collect(); if (d) G.between = Math.max(G.between, d + 0.3); }
+    G.between -= dt;
+    if (G.between <= 0) { if ((G.collected && !roasts.busy) || (G.waitT = (G.waitT || 0) + dt) > 8) startLevel(G.level + 1); else G.between = 0.001; }
   } else {
     G.timeLeft -= dt;
     G.spawnT -= dt;
@@ -511,10 +559,10 @@ function step(dt) {
     }
     const alive = aliveN > 0;
     if (G.spawned >= G.cfg.count && !alive) levelCleared();
-    else if (G.timeLeft <= 0 && !G.over) { G.over = true; endRun('timeUp'); }
+    else if (G.timeLeft <= 0 && !G.over) { if (practice) G.timeLeft = 0; else { G.over = true; endRun('timeUp'); } } // practice never ends on the clock
   }
   for (const c of chickens) if (!c.removed) updateChicken(c, dt);
-  // watchdog (ranked + practice): a live chicken that has finished its jump always ends the run
+  // watchdog: a live chicken that has finished its jump always lands (ranked: run over; practice: it escapes)
   if (!G.over && G.mode === 'chickens') { const lost = chickens.find((c) => !c.dead && !c.removed && (c.state === 'landed' || (c.state === 'jump' && c.t >= c.dur.jump))); if (lost) chickenLanded(lost); }
   for (let i = chickens.length - 1; i >= 0; i--) if (chickens[i].removed) chickens.splice(i, 1);
   updateHud();
@@ -525,7 +573,7 @@ function levelCleared() {
   showBanner(t('levelDone', { n: G.level }), t('timeBonus', { n: bonus }));
   G.between = 2.6;
   sfx.level();
-  if (locals) locals.clap();
+  if (locals && !G.lvlEsc) locals.clap(); // locals only applaud a level without escaped chickens
 }
 
 // ---------------- HUD / UI ----------------
@@ -585,7 +633,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=35" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=36" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -702,8 +750,13 @@ function goFull() { // phones: fullscreen + landscape where the browser allows i
     Promise.resolve(p).then(() => screen.orientation && screen.orientation.lock && screen.orientation.lock('landscape')).catch(() => {}); } catch {}
 }
 let practice = false; // unranked practice run: no score submission, no PB/rank saving
+// Practice ends only when the player leaves it, or after 60 s without input (mouse move/click, keys, touch) = idle timeout
+const IDLE_MS = DEBUG && Q.get('idle') ? +Q.get('idle') : 60000;
+let lastInput = performance.now();
+for (const ev of ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove', 'pointerdown', 'wheel']) addEventListener(ev, () => (lastInput = performance.now()), { passive: true, capture: true });
 const PRAC_MAX = 15;
 function startGame(level = 1, countdown = true, prac = false) {
+  lastInput = performance.now();
   practice = prac; $('h-prac').classList.toggle('hidden', !prac);
   sfx.unlock(); goFull();
   yaw = 0; pitch = 3; resetPos();
