@@ -44,26 +44,65 @@
     return p.profile && /^https:\/\/steamcommunity\.com\/profiles\/\d+$/.test(p.profile)
       ? '<a href="' + p.profile + '" target="_blank" rel="noopener nofollow">' + n + "</a>" : n;
   }
+  // FA ranks: the aim trainer's wolf ranks (same artwork in aim/img/ranks). Each title is held by exactly one
+  // player, by table position: #1 Astral, #2 Alfa, #3 Bara sargs, #4 Mednieks, #5 Jaunais vilks, #6+ Vilcēns.
+  function ratingOf(p) { return p.rating != null ? p.rating : p.points; }
+  function rankIdx(pos) { return pos >= 1 && pos <= 5 ? 6 - pos : 0; }
+  function rankBadge(p, cls) {
+    var i = rankIdx(p.pos), name = (s("rankNames") || [])[i] || "";
+    return '<span class="fa-rank ' + (cls || "") + (i === 5 ? " top" : "") + '"><img class="rank-img" src="aim/img/ranks/rank' + (i + 1) + '-96.webp?v=31" alt="" width="96" height="96" loading="lazy" decoding="async">' +
+      '<span class="fa-rank-name">' + ctx.esc(name) + "</span></span>";
+  }
   function fmtMin(m) { m = m || 0; return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  var topTab = /^#(all|visu-laiku)$/.test(location.hash) ? "all" : "week";
+  function fmtDay(iso) {
+    var a = String(iso || "").split("-");
+    try { return new Date(+a[0], a[1] - 1, +a[2]).toLocaleDateString(ctx.locale, { day: "numeric", month: "short" }); }
+    catch (e) { return iso; }
+  }
+  function topTable(pl, week) {
+    var esc = ctx.esc;
+    // [label, class, short label shown on phones]
+    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRating"), "num", s("colRatingShort")], [s("colKills"), "num", "K"],
+      [s("colDeaths"), "num", "D"], [s("colKd"), "num"], [s("colHsPct"), "num"], [s("colTime"), "num hide-md"]];
+    return '<div class="srv-card top-table-wrap"><table class="top-table top-rated"><caption class="sr-only">' + esc(s(week ? "tabWeek" : "tabAll")) + "</caption><thead><tr>" +
+      cols.map(function (c) {
+        var label = c[2] ? '<span class="hide-sm">' + esc(c[0]) + '</span><abbr class="show-sm-i" title="' + esc(c[0]) + '">' + esc(c[2]) + "</abbr>" : esc(c[0]);
+        return '<th scope="col" class="' + c[1] + '">' + label + "</th>";
+      }).join("") + "</tr></thead><tbody>" +
+      pl.map(function (p) {
+        var r = ratingOf(p);
+        var hs = p.hsPct != null ? p.hsPct : (p.kills > 0 ? Math.round(100 * p.headshots / p.kills) : 0);
+        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) + rankBadge(p) + "</td>" +
+          '<td class="num pts' + (r < 0 ? " neg" : "") + '">' + esc(r) + '</td><td class="num">' + esc(p.kills) + '</td><td class="num">' + esc(p.deaths) +
+          '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num">' + esc(hs) + '%</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+  }
   function paintTop() {
     var root = document.getElementById("server-top-root"), esc = ctx.esc;
     var head = '<a class="srv-back" href="server.html">← ' + esc(s("back")) + '</a><span class="kicker">' + esc(s("kicker")) + "</span><h1>" + s("top100H1") + "</h1>" +
-      '<p class="lead">' + esc(s("top100Lead")) + "</p>";
+      '<p class="lead">' + esc(s("top100Lead")) + '</p><p class="top-formula">' + esc(s("ratingFormula")) + "</p>";
     if (!state.loaded) { root.innerHTML = head + '<p class="srv-note">' + esc(s("loading")) + "</p>"; return; }
-    var pl = topPlayers();
+    var pl = topPlayers(), wk = state.top && state.top.week;
     var meta = state.top && state.top.updated ? '<p class="srv-updated">' + esc(s("playersTotal", { n: state.top.totalPlayers || pl.length })) + " · " + esc(s("updated", { t: fmtTime(state.top.updated) })) + "</p>" : "";
     if (!pl.length) { root.innerHTML = head + '<p class="srv-note">' + esc(s("topEmpty")) + "</p>"; return; }
-    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRank"), "rank hide-sm"], [s("colPoints"), "num"], [s("colKills"), "num hide-sm"],
-      [s("colDeaths"), "num hide-sm"], [s("colKd"), "num"], [s("colHs"), "num hide-md"], [s("colTime"), "num hide-md"]];
-    root.innerHTML = head + '<div class="srv-card top-table-wrap"><table class="top-table"><caption class="sr-only">' + esc(s("top100H1").replace(/<[^>]+>/g, "")) + "</caption><thead><tr>" +
-      cols.map(function (c) { return '<th scope="col" class="' + c[1] + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" +
-      pl.map(function (p) {
-        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) +
-          '<small class="show-sm">' + esc(p.rank) + "</small></td>" +
-          '<td class="rank hide-sm">' + esc(p.rank) + '</td><td class="num pts">' + esc(p.points) + '</td><td class="num hide-sm">' + esc(p.kills) +
-          '</td><td class="num hide-sm">' + esc(p.deaths) + '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num hide-md">' + esc(p.headshots) +
-          '</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
-      }).join("") + "</tbody></table></div>" + meta;
+    if (!wk) { root.innerHTML = head + topTable(pl, false) + meta; return; } // older data without weekly stats
+    var tab = function (id, label) {
+      return '<button type="button" role="tab" class="top-tab' + (topTab === id ? " is-active" : "") + '" data-tab="' + id + '" aria-selected="' + (topTab === id) + '">' + esc(label) + "</button>";
+    };
+    var body;
+    if (topTab === "week") {
+      body = '<p class="top-range">' + esc(s("weekRange", { a: fmtDay(wk.start), b: fmtDay(wk.end) })) + " · " + esc(s("weekActive", { n: wk.activePlayers || 0 })) + "</p>" +
+        (wk.players && wk.players.length ? topTable(wk.players, true) : '<p class="srv-note">' + esc(s("weekEmpty")) + "</p>");
+    } else body = topTable(pl, false);
+    root.innerHTML = head + '<div class="top-tabs" role="tablist">' + tab("week", s("tabWeek")) + tab("all", s("tabAll")) + "</div>" + body + meta;
+    Array.prototype.forEach.call(root.querySelectorAll(".top-tab"), function (b) {
+      b.addEventListener("click", function () {
+        topTab = b.getAttribute("data-tab");
+        try { history.replaceState(null, "", topTab === "all" ? "#all" : location.pathname + location.search); } catch (e) {}
+        paintTop();
+      });
+    });
   }
 
   function chartSVG(points) {
@@ -130,7 +169,7 @@
     var topBox = '<aside class="srv-card srv-rank"><h2>' + esc(s("top")) + "</h2>" +
       (top.length ? '<ol class="srv-rank-list">' + top.map(function (p) {
           return '<li><span class="pos">' + p.pos + '</span><span class="who">' + playerLink(p) +
-            '<small>' + esc(p.rank) + "</small></span><strong>" + esc(p.points) + "</strong></li>";
+            rankBadge(p) + "</span><strong>" + esc(ratingOf(p)) + "</strong></li>";
         }).join("") + "</ol>"
         : '<ol class="srv-rank-empty" aria-hidden="true">' + [1, 2, 3, 4, 5].map(function (n) { return "<li><span>#" + n + "</span><i></i></li>"; }).join("") + "</ol>" +
           '<p class="srv-soon">' + esc(s("topEmpty")) + "</p>") +

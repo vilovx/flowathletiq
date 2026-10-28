@@ -426,10 +426,28 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .top-table .rank { color: var(--muted); }
 .top-table .p1 .pos { color: #ffd23f; } .top-table .p2 .pos { color: #cfd6e6; } .top-table .p3 .pos { color: #e09a5a; }
 .top-table .show-sm { display: none; }
+.top-tabs { display: inline-flex; gap: .25rem; margin-top: 1.25rem; padding: .25rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.03); }
+.top-tab { font: inherit; font-size: .85rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: .5rem 1.1rem; cursor: pointer; }
+.top-tab:hover { color: var(--text); }
+.top-tab.is-active { color: #07080f; background: var(--neon); }
+.top-range { margin: .9rem 0 0; font-size: .85rem; color: var(--muted); }
+.top-range + .top-table-wrap { margin-top: .7rem; }
+.top-table .pts.neg { color: #ff6b6b; }
+.fa-rank { display: flex; align-items: center; gap: .35rem; margin-top: .15rem; font-size: .75rem; font-weight: 600; color: var(--muted); min-width: 0; }
+.fa-rank .rank-img { width: 30px; height: 30px; flex: none; object-fit: contain; filter: drop-shadow(0 0 4px rgba(0,240,255,.3)); }
+.fa-rank.top .rank-img { filter: drop-shadow(0 0 6px rgba(176,0,255,.55)); } .fa-rank.top .fa-rank-name { color: #d7a6ff; }
+.fa-rank-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-formula { margin: .35rem 0 0; font-size: .85rem; color: var(--neon); font-weight: 600; }
+.top-table th { white-space: nowrap; } .top-table .show-sm-i { display: none; text-decoration: none; }
 @media (max-width: 900px) { .top-table .hide-md { display: none; } }
 @media (max-width: 560px) {
   .top-table .hide-sm { display: none; }
   .top-table .show-sm { display: block; color: var(--muted); font-weight: 500; font-size: .75rem; }
+  .top-table th .hide-sm { display: none; } .top-table .show-sm-i { display: inline; }
+  .top-table.top-rated .player { max-width: 104px; }
+  .top-table .fa-rank .rank-img { width: 26px; height: 26px; } .top-table .fa-rank-name { white-space: normal; line-height: 1.1; }
+  .top-table.top-rated td, .top-table.top-rated th { padding: .55rem .3rem; font-size: .88rem; }
+  .top-table.top-rated th { font-size: .66rem; letter-spacing: .04em; }
   .top-table td, .top-table th { padding: .55rem .45rem; }
   .top-table .player { max-width: 150px; }
 }
