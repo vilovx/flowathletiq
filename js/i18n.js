@@ -102,7 +102,6 @@ window.FA_I18N = {
       disclosure: "Partnera saite. 18+."
     },
     tournaments: "Turnīri",
-    warm: { nav: "Warmup serveris", note: "CS2 · statuss", short: "Warmup" },
     aim: { nav: "Brīvais režīms", title: "Aim Trainer", kicker: "Jaunums · spēle", text: "Trenē mērķēšanu pārlūkā: šauj vistām no logiem un balkoniem Kuldīgas vecpilsētā, ar AK-47, M4A4 un M4A1-S spray paterniem. Iekļūsti TOP 8!", cta: "Spēlēt", phoneNote: "Arī telefonā", mobileNote: "Spēlējams arī telefonā: pagriez to horizontāli, velc, lai tēmētu, un turi šaušanas pogu." },
     tour: {
       kicker: "FACEIT turnīri",
@@ -287,7 +286,6 @@ window.FA_I18N = {
       disclosure: "Affiliate link. 18+."
     },
     tournaments: "Tournaments",
-    warm: { nav: "Warmup Server", note: "CS2 · status", short: "Warmup" },
     aim: { nav: "Free mode", title: "Aim Trainer", kicker: "New · game", text: "Train your aim in the browser: shoot chickens peeking from windows and balconies in Kuldīga old town, with AK-47, M4A4 and M4A1-S spray patterns. Make the TOP 8!", cta: "Play", phoneNote: "Also on phones", mobileNote: "Playable on your phone too: turn it sideways, drag to aim and hold the fire button." },
     tour: {
       kicker: "FACEIT tournaments",
@@ -472,7 +470,6 @@ window.FA_I18N = {
       disclosure: "Партнёрская ссылка. 18+."
     },
     tournaments: "Турниры",
-    warm: { nav: "Warmup сервер", note: "CS2 · статус", short: "Warmup" },
     aim: { nav: "Свободный режим", title: "Aim Trainer", kicker: "Новинка · игра", text: "Тренируй аим прямо в браузере: стреляй по курицам в окнах и на балконах старого города Кулдиги, со спреем AK-47, M4A4 и M4A1-S. Попади в TOP 8!", cta: "Играть", phoneNote: "И на телефоне", mobileNote: "Можно играть и на телефоне: поверни его горизонтально, веди пальцем для прицела и держи кнопку огня." },
     tour: {
       kicker: "Турниры на FACEIT",

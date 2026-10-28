@@ -202,12 +202,10 @@
   function aimUrl() { return "aim/?lang=" + encodeURIComponent(LANG); }
   function aimNavItem() {
     var A = t("aim") || {};
-    var Wm = t("warm") || {}, onSrv = page === "server" || page === "server-top";
-    // two matching header choices side by side: Brīvais režīms (opens /aim/ straight into the free-mode picker) | Warmup server (our CS2 server page)
-    return '<li class="nav-aim nav-choice"><a class="nav-aim-btn" href="' + aimUrl() + '&amp;mode=free">' + AIM_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.phoneNote) + "</span></a></li>" +
-      '<li class="nav-warm nav-choice"><a class="nav-aim-btn nav-warm-btn" href="server.html"' + (onSrv ? ' aria-current="page"' : "") + ">" + WARM_ICON + '<span class="nw-full">' + esc(Wm.nav || t("server")) + '</span><span class="nw-short">' + esc(Wm.short || "Warmup") + '</span><span class="nav-aim-note">' + esc(Wm.note || "") + "</span></a></li>";
+    // header button: "Brīvais režīms" opens /aim/ straight into the free-mode picker; glowing location pin = the Kuldīga map pin in the game menu
+    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '&amp;mode=free">' + PIN_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.phoneNote) + "</span></a></li>";
   }
-  var WARM_ICON = '<svg class="aim-ico warm-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="6.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="13.5" width="18" height="6.5" rx="1.6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="7.25" r="1.3" fill="currentColor"/><circle cx="7" cy="16.75" r="1.3" fill="currentColor"/></svg>';
+  var PIN_ICON = '<svg class="pin-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><ellipse class="pin-rip" cx="12" cy="21.6" rx="5" ry="1.4"/><path class="pin-drop" d="M12 21C10.6 17.6 5 13.9 5 9.2a7 7 0 1 1 14 0c0 4.7-5.6 8.4-7 11.8z"/><circle class="pin-eye" cx="12" cy="9.2" r="2.7"/></svg>';
   function renderAimPromo() {
     var box = $("aim-promo"); if (!box) return;
     var A = t("aim") || {};
