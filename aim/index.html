@@ -36,7 +36,7 @@
 <meta property="og:image:alt" content="FlowAthletiq Aim Trainer — Kuldīga old town, CS2-style aim practice">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://flowathletiq.com/aim/img/og-aim.jpg">
-<link rel="stylesheet" href="style.css?v=39">
+<link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
 <div id="app">
@@ -47,7 +47,7 @@
   <!-- Mobile / touch notice -->
   <section id="mobile" class="screen hidden">
     <div class="card center">
-      <span class="logo-mark"><img src="img/logo-v2.webp?v=39" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
+      <span class="logo-mark"><img src="img/logo-v2.webp?v=40" alt="FlowAthletiq" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></span>
       <div class="lang-sw"></div><h1 data-i18n="mobile.h">Spēlē uz datora ar peli</h1>
       <p data-i18n="mobile.p1">FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.</p>
       <p class="muted" data-i18n="mobile.p2"></p>
@@ -59,25 +59,56 @@
   <section id="menu" class="screen hidden">
     <div class="menu-wrap">
       <div class="card menu-main"><div class="lang-sw"></div>
-        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=39" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
-        <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
-        <p class="lead" data-i18n="lead">Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.</p>
-        <div class="btn-row">
-          <button class="btn big" id="btn-start" data-i18n="start">Aim Trainer</button>
-          <button class="btn big alt" id="btn-prac" data-i18n="pracBtn">Brīvais režīms</button>
-          <button class="btn ghost" id="btn-xhair" data-i18n="crosshair">Crosshair</button>
-          <button class="btn ghost" id="btn-settings" data-i18n="settings">Iestatījumi</button>
-          <button type="button" class="btn ghost" id="btn-share" data-share data-i18n="share">🔗 Dalīties ar draugiem</button>
+        <a class="logo-mark home-logo" id="home-logo" href="https://flowathletiq.com/" aria-label="FlowAthletiq sākumlapa" data-i18n-aria="homeLink"><img src="img/logo-v2.webp?v=40" alt="" class="logo" width="480" height="242"><span class="logo-eye" aria-hidden="true"><i class="glow"></i><i class="lid"></i></span></a>
+        <!-- landing view: the world map (Kuldīga) + two choices -->
+        <div class="mv mv-home" id="mv-home">
+        <figure class="loc">
+          <svg class="loc-map" viewBox="0 0 400 252" role="img" aria-label="Kuldīga" focusable="false">
+            <defs>
+              <linearGradient id="lvS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3ef2ff"/><stop offset="1" stop-color="#b44dff"/></linearGradient>
+              <radialGradient id="lvF" cx="18%" cy="46%" r="80%"><stop offset="0" stop-color="#7b3cff" stop-opacity=".42"/><stop offset=".55" stop-color="#3a1a7a" stop-opacity=".22"/><stop offset="1" stop-color="#0b0c22" stop-opacity=".1"/></radialGradient>
+              <radialGradient id="pinG"><stop offset="0" stop-color="#e9fbff"/><stop offset=".35" stop-color="#5ff4ff"/><stop offset="1" stop-color="#b44dff" stop-opacity="0"/></radialGradient>
+              <filter id="lvBlur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="4"/></filter>
+            </defs>
+            <!-- Latvia outline: Natural Earth 1:50m admin-0 (public domain), equirectangular, cos(56.9°) aspect -->
+            <path class="lv-glow" d="M305.0 242.0 L302.3 241.5 L294.8 238.5 L288.4 233.9 L284.7 228.0 L278.1 219.8 L273.8 215.6 L267.0 210.3 L255.8 199.6 L251.7 197.2 L231.6 192.5 L224.4 190.4 L217.7 178.3 L215.6 171.2 L212.3 170.0 L208.7 171.4 L204.8 172.9 L195.8 181.1 L192.9 182.3 L187.3 182.4 L174.2 184.2 L168.3 181.2 L157.9 177.9 L152.3 177.4 L147.3 177.5 L125.3 174.2 L121.3 177.8 L117.2 178.4 L113.3 172.9 L108.4 171.4 L103.0 173.2 L93.1 173.5 L81.4 171.7 L66.6 170.4 L64.3 171.0 L47.8 178.2 L43.8 179.3 L25.8 191.6 L11.6 203.0 L10.0 184.7 L10.9 148.1 L13.0 130.0 L22.8 119.5 L27.8 111.2 L30.6 100.3 L31.5 90.1 L33.5 81.7 L47.7 57.7 L59.0 55.1 L74.3 48.4 L91.4 42.8 L94.7 49.9 L96.4 55.3 L117.0 75.0 L122.2 81.6 L130.1 104.3 L149.2 115.8 L164.2 112.1 L170.7 106.6 L182.7 96.3 L188.1 88.7 L189.1 81.5 L187.0 50.5 L183.8 37.0 L184.9 28.7 L187.0 29.1 L192.1 25.1 L208.8 17.6 L212.2 17.2 L216.0 15.7 L226.6 10.0 L230.0 13.0 L232.8 16.5 L234.4 16.5 L235.1 15.2 L234.9 13.0 L235.6 11.4 L238.7 12.3 L250.9 21.7 L255.6 23.9 L258.8 24.5 L262.7 28.9 L273.1 31.8 L274.4 34.1 L275.2 36.9 L284.9 48.8 L289.3 54.8 L298.0 60.2 L301.7 61.5 L316.9 56.0 L321.1 54.0 L324.6 54.0 L328.2 56.9 L336.3 60.8 L343.7 62.1 L345.1 61.8 L351.3 62.2 L353.5 63.8 L354.9 71.3 L362.0 77.3 L368.6 82.3 L370.3 84.6 L370.8 89.0 L370.3 94.1 L369.5 96.8 L366.8 99.9 L364.4 107.7 L364.0 115.1 L360.3 127.9 L361.1 128.1 L369.1 125.8 L371.3 127.2 L373.1 130.0 L373.6 138.0 L376.2 141.6 L378.9 147.3 L379.7 151.7 L384.8 156.9 L385.2 160.3 L388.3 172.3 L389.5 179.2 L390.0 184.6 L388.5 191.3 L387.1 195.9 L385.5 195.7 L381.0 196.9 L373.8 202.4 L363.2 215.4 L360.4 218.3 L357.6 228.3 L356.9 229.3 L350.7 228.8 L349.0 228.6 L342.8 228.8 L329.2 226.2 L324.0 227.9 L317.1 237.9 L314.4 239.4 L306.4 240.8 L305.0 242.0Z" filter="url(#lvBlur)"/>
+            <path class="lv" d="M305.0 242.0 L302.3 241.5 L294.8 238.5 L288.4 233.9 L284.7 228.0 L278.1 219.8 L273.8 215.6 L267.0 210.3 L255.8 199.6 L251.7 197.2 L231.6 192.5 L224.4 190.4 L217.7 178.3 L215.6 171.2 L212.3 170.0 L208.7 171.4 L204.8 172.9 L195.8 181.1 L192.9 182.3 L187.3 182.4 L174.2 184.2 L168.3 181.2 L157.9 177.9 L152.3 177.4 L147.3 177.5 L125.3 174.2 L121.3 177.8 L117.2 178.4 L113.3 172.9 L108.4 171.4 L103.0 173.2 L93.1 173.5 L81.4 171.7 L66.6 170.4 L64.3 171.0 L47.8 178.2 L43.8 179.3 L25.8 191.6 L11.6 203.0 L10.0 184.7 L10.9 148.1 L13.0 130.0 L22.8 119.5 L27.8 111.2 L30.6 100.3 L31.5 90.1 L33.5 81.7 L47.7 57.7 L59.0 55.1 L74.3 48.4 L91.4 42.8 L94.7 49.9 L96.4 55.3 L117.0 75.0 L122.2 81.6 L130.1 104.3 L149.2 115.8 L164.2 112.1 L170.7 106.6 L182.7 96.3 L188.1 88.7 L189.1 81.5 L187.0 50.5 L183.8 37.0 L184.9 28.7 L187.0 29.1 L192.1 25.1 L208.8 17.6 L212.2 17.2 L216.0 15.7 L226.6 10.0 L230.0 13.0 L232.8 16.5 L234.4 16.5 L235.1 15.2 L234.9 13.0 L235.6 11.4 L238.7 12.3 L250.9 21.7 L255.6 23.9 L258.8 24.5 L262.7 28.9 L273.1 31.8 L274.4 34.1 L275.2 36.9 L284.9 48.8 L289.3 54.8 L298.0 60.2 L301.7 61.5 L316.9 56.0 L321.1 54.0 L324.6 54.0 L328.2 56.9 L336.3 60.8 L343.7 62.1 L345.1 61.8 L351.3 62.2 L353.5 63.8 L354.9 71.3 L362.0 77.3 L368.6 82.3 L370.3 84.6 L370.8 89.0 L370.3 94.1 L369.5 96.8 L366.8 99.9 L364.4 107.7 L364.0 115.1 L360.3 127.9 L361.1 128.1 L369.1 125.8 L371.3 127.2 L373.1 130.0 L373.6 138.0 L376.2 141.6 L378.9 147.3 L379.7 151.7 L384.8 156.9 L385.2 160.3 L388.3 172.3 L389.5 179.2 L390.0 184.6 L388.5 191.3 L387.1 195.9 L385.5 195.7 L381.0 196.9 L373.8 202.4 L363.2 215.4 L360.4 218.3 L357.6 228.3 L356.9 229.3 L350.7 228.8 L349.0 228.6 L342.8 228.8 L329.2 226.2 L324.0 227.9 L317.1 237.9 L314.4 239.4 L306.4 240.8 L305.0 242.0Z"/>
+            <g class="pin" transform="translate(60.5 115.9)">
+              <circle class="rip r1" r="9"/><circle class="rip r2" r="9"/>
+              <circle class="halo" r="28" fill="url(#pinG)"/>
+              <path class="drop" d="M0 0 C-3 -7 -9 -11 -9 -18 A9 9 0 1 1 9 -18 C9 -11 3 -7 0 0Z"/>
+              <circle class="eye" cy="-18" r="3.4"/>
+            </g>
+            <text class="loc-lbl" x="76" y="106" data-i18n="locName">Kuldīga</text>
+            <text class="loc-sub" x="77" y="122">56.97°N · 21.97°E</text>
+          </svg>
+        </figure>
+          <div class="btn-row home-row">
+            <button class="btn big" id="btn-aim" data-i18n="start">Aim Trainer</button>
+            <button class="btn big alt" id="btn-prac" data-i18n="exploreBtn">Izpēte</button>
+          </div>
         </div>
-        <div class="weapons" id="weapons"></div>
-        <ul class="tips">
-          <li class="pc-only" data-i18n-html="tip.fire"></li>
-          <li class="pc-only" data-i18n-html="tip.keys"></li>
-          <li class="m-only" data-i18n-html="tip.touch"></li>
-          <li class="pc-only" data-i18n="tip.dmg"></li>
-        </ul>
-        <div class="sensline" id="menu-sens"></div>
-        <button type="button" class="btn small ghost touch-tg" id="btn-touch"><span aria-hidden="true">📱</span> <span data-i18n="touchMode"></span>: <b class="m-only" data-i18n="on"></b><b class="pc-only" data-i18n="off"></b></button>
+        <!-- full Aim Trainer menu (opened from "Aim Trainer") -->
+        <div class="mv mv-aim hidden" id="mv-aim">
+          <h1>FlowAthletiq <span class="grad">Aim Trainer</span></h1>
+          <p class="lead" data-i18n="lead"></p>
+          <div class="btn-row">
+            <button class="btn big" id="btn-start" data-i18n="startRun">Sākt spēli</button>
+            <button class="btn ghost" id="btn-xhair" data-i18n="crosshair">Crosshair</button>
+            <button class="btn ghost" id="btn-settings" data-i18n="settings">Iestatījumi</button>
+            <button type="button" class="btn ghost" id="btn-share" data-share data-i18n="share">🔗 Dalīties ar draugiem</button>
+            <button type="button" class="btn ghost" id="btn-back" data-i18n="menuBack">← Atpakaļ</button>
+          </div>
+          <div class="weapons" id="weapons"></div>
+          <ul class="tips">
+            <li class="pc-only" data-i18n-html="tip.fire"></li>
+            <li class="pc-only" data-i18n-html="tip.keys"></li>
+            <li class="m-only" data-i18n-html="tip.touch"></li>
+            <li class="pc-only" data-i18n="tip.dmg"></li>
+          </ul>
+          <div class="sensline" id="menu-sens"></div>
+          <button type="button" class="btn small ghost touch-tg" id="btn-touch"><span aria-hidden="true">📱</span> <span data-i18n="touchMode"></span>: <b class="m-only" data-i18n="on"></b><b class="pc-only" data-i18n="off"></b></button>
+        </div>
       </div>
       <div class="card menu-side">
         <h2 data-i18n="pbTitle"></h2>
@@ -89,7 +120,7 @@
         <div id="tab-lb" class="tabp">
           <div class="lb-period"><button type="button" class="lbp on" data-p="all" data-i18n="lbAll"></button><button type="button" class="lbp" data-p="week" data-i18n="lbWeek"></button>
             <span class="lb-dev" role="group"><button type="button" class="lbd" data-d="pc">PC</button><button type="button" class="lbd" data-d="mobile" data-i18n="lbMobile">Mobile</button></span></div>
-          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=39" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
+          <div class="lb-art"><img src="img/leaderboard-board-768.webp?v=40" alt="" width="768" height="499" decoding="async"><div class="lb-white"><div class="lb-head">TOP 8 <small id="lb-tag" class="lb-tag">PC</small></div><ol id="lb" class="lb"></ol></div></div>
           <p class="privacy-note" data-i18n="privacy"></p>
         </div>
         <div id="tab-ranks" class="tabp hidden"><ol id="ranks" class="ranks"></ol></div>
@@ -222,13 +253,13 @@
         <div class="sb-msg" id="o-msg" aria-live="polite"></div>
         <p class="privacy-note" data-i18n="privacy"></p>
       </form>
-      <div class="btn-row"><button class="btn big" id="o-again">Spēlēt vēlreiz</button><button class="btn alt" id="o-prac" data-i18n="pracBtn"></button><button class="btn ghost hidden" id="o-ranked" data-i18n="pracRanked"></button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button><button type="button" class="btn ghost" id="o-share" data-share data-i18n="share"></button></div>
+      <div class="btn-row"><button class="btn big hidden" id="o-cont" data-i18n="contBtn">Turpināt</button><button class="btn big" id="o-again">Spēlēt vēlreiz</button><button class="btn alt" id="o-prac" data-i18n="pracBtn"></button><button class="btn ghost hidden" id="o-ranked" data-i18n="pracRanked"></button><button class="btn ghost" id="o-menu" data-i18n="toMenu">Uz izvēlni</button><button type="button" class="btn ghost" id="o-share" data-share data-i18n="share"></button></div>
       </div>
     </div>
   </section>
 </div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 <div id="share-pop" class="share-pop hidden" role="dialog" aria-modal="true"><div class="card center"><p data-i18n="shareManual"></p><input type="text" id="share-url" readonly value="https://flowathletiq.com/aim/"><div class="btn-row"><button type="button" class="btn" id="share-close" data-i18n="shareClose">OK</button></div></div></div>
-<script type="module" src="js/main.js?v=39"></script>
+<script type="module" src="js/main.js?v=40"></script>
 </body>
 </html>

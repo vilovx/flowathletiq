@@ -1,17 +1,17 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=39';
-import { Locals } from './locals.js?v=39';
-import { buildTavern, TvOverlay, SCREEN as TV_SCREEN } from './tavern.js?v=39';
-import { RoastSystem } from './roast.js?v=39';
-import { createChicken, Puffs } from './chicken.js?v=39';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=39';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=39';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=39';
-import { t, onLang, applyDom } from './i18n.js?v=39';
-import { Sfx } from './audio.js?v=39';
-import { buildGunModel } from './gunmodels.js?v=39';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=39';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=39';
+import { buildWorld } from './world.js?v=40';
+import { Locals } from './locals.js?v=40';
+import { buildTavern, TvOverlay, SCREEN as TV_SCREEN } from './tavern.js?v=40';
+import { RoastSystem } from './roast.js?v=40';
+import { createChicken, Puffs } from './chicken.js?v=40';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=40';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=40';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=40';
+import { t, onLang, applyDom } from './i18n.js?v=40';
+import { Sfx } from './audio.js?v=40';
+import { buildGunModel } from './gunmodels.js?v=40';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=40';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=40';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -19,7 +19,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=39';
+import { forced, forceOff } from './rot.js?v=40';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -712,11 +712,11 @@ function show(id) {
   $('hud').classList.toggle('hidden', !(state === 'play' || state === 'pause' || state === 'over-anim'));
 }
 function goMenu() {
-  resetPos();
+  const fromRanked = !!(G && !practice && G.mode === 'chickens' && !G.continued); resetPos();
   $('countdown').className = 'countdown hidden';
   practice = false; $('h-prac').classList.add('hidden');
   state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear(); if (locals) locals.reset(); tavReset();
-  renderMenu(); show('menu'); loadLb();
+  renderMenu(); show('menu'); loadLb(); menuView(fromRanked ? 'aim' : 'home'); // back from a ranked run -> Aim Trainer menu, else the map menu
 }
 const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
 function renderMenu() {
@@ -738,7 +738,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=39" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=40" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -864,6 +864,7 @@ let lastInput = performance.now();
 for (const ev of ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove', 'pointerdown', 'wheel']) addEventListener(ev, () => (lastInput = performance.now()), { passive: true, capture: true });
 const PRAC_MAX = 15;
 function startGame(level = 1, countdown = true, prac = false) {
+  if (prac) countdown = false; // Brīvais režīms starts immediately (ranked keeps its countdown)
   lastInput = performance.now(); tavReset();
   practice = prac; $('h-prac').classList.toggle('hidden', !prac);
   sfx.unlock(); goFull();
@@ -1037,7 +1038,9 @@ function showOver(reason) {
   $('o-hs').textContent = G.kills ? Math.round(G.hsKills / G.kills * 100) + '%' : '0%';
   $('o-acc').textContent = G.shots ? Math.round(G.hits / G.shots * 100) + '%' : '0%';
   $('o-pb').textContent = practice ? t('pracBadge') : isPB ? t('newPB') : t('yourPB', { level: best.level, score: best.score });
-  $('o-again').textContent = practice ? t('pracRetry', { n: practice }) : t('again');
+  const canCont = !practice && reason === 'landed' && G.mode === 'chickens';
+  $('o-cont').classList.toggle('hidden', !canCont); $('o-cont').title = canCont ? t('contNote') : '';
+  $('o-again').textContent = practice ? t('pracRetry', { n: practice }) : canCont ? t('restartBtn') : t('again');
   $('o-prac').textContent = practice ? t('pracOther') : t('pracBtn');
   $('o-ranked').classList.toggle('hidden', !practice);
   setupSubmit();
@@ -1046,6 +1049,10 @@ function showOver(reason) {
 
 // ---------------- Menu buttons ----------------
 $('btn-start').onclick = () => startGame(1);
+// landing menu (map + Aim Trainer / Explore) <-> full Aim Trainer menu
+function menuView(v) { $('mv-home').classList.toggle('hidden', v !== 'home'); $('mv-aim').classList.toggle('hidden', v !== 'aim'); $('menu').dataset.view = v; }
+$('btn-aim').onclick = () => menuView('aim');
+$('btn-back').onclick = () => menuView('home');
 $('btn-xhair').onclick = () => openModal('editor', 'menu');
 $('btn-settings').onclick = () => openModal('settings', 'menu');
 $('p-resume').onclick = () => { lock(); };
@@ -1054,6 +1061,16 @@ $('p-settings').onclick = () => openModal('settings', 'pause');
 $('p-quit').onclick = goMenu;
 $('o-again').onclick = () => (practice ? startGame(practice, true, practice) : startGame(1));
 $('o-ranked').onclick = () => startGame(1);
+// ranked run lost (a chicken landed): the result is already final (PB/rank saved, submit form used the snapshot in lastRun).
+// "Turpināt" carries on from the same level in free-mode rules (escapes, free walking, H, tavern, 10 s pause, idle end), no reload.
+function continueFree() {
+  if (!G || practice || G.mode !== 'chickens') return;
+  practice = G.level; G.over = false; G.continued = true; G.firedAt = G.time; G.trigger = false; lastRun = null;
+  for (const c of chickens) if (!c.removed && c.state === 'landed') escapeChicken(c);
+  $('h-prac').classList.remove('hidden'); lastInput = performance.now();
+  state = 'play'; show(null); lock(); // no countdown: free mode carries on immediately
+}
+$('o-cont').onclick = continueFree;
 let pracFrom = 'over';
 const openPicker = (from) => { pracFrom = from; $('lvl-grid').innerHTML = Array.from({ length: PRAC_MAX }, (_, i) => `<button type="button" class="btn ghost" data-l="${i + 1}">${i + 1}</button>`).join('');
   $('lvl-grid').querySelectorAll('[data-l]').forEach((b) => (b.onclick = () => startGame(+b.dataset.l, true, +b.dataset.l))); show('practice'); };
@@ -1191,7 +1208,9 @@ const XF = ['length', 'thickness', 'gap', 'outline', 'red', 'green', 'blue', 'al
 const XB = ['outlineEnabled', 'centerDotEnabled', 'tStyleEnabled'];
 const fillColors = () => { $('x-color').innerHTML = COLOR_PRESETS.map((c, i) => `<option value="${i}">${c.name}</option>`).join(''); $('x-color').value = xhair.color; };
 fillColors();
+const paintWall = () => world.mural.setText(t('title'), t('lead')); paintWall();
 onLang(() => {
+  paintWall();
   fillColors(); document.title = t('title');
   if (state === 'menu') renderMenu();
   renderLb(); world.setBoard(boardRows, t('boardEmpty'), devTag(DEVICE));
@@ -1241,7 +1260,7 @@ requestAnimationFrame(tick);
 // ---------------- Debug API (for screenshots/tests only, ?debug) ----------------
 if (DEBUG) {
   window.__aim = {
-    THREE, camera, chickens, world, locals, tav, enterTavern, exitTavern, tavInteract, sitDown, standUp, get holstered() { return holstered; }, get dormant() { return dormant(); }, holster(v) { holstered = v; }, get roasts() { return roasts; },
+    THREE, camera, chickens, world, locals, continueFree, tav, enterTavern, exitTavern, tavInteract, sitDown, standUp, get holstered() { return holstered; }, get dormant() { return dormant(); }, holster(v) { holstered = v; }, get roasts() { return roasts; },
     get G() { return G; }, get state() { return state; }, keys, vel, updateMove, MOVE,
     startGame(level = 1, cd = false, prac = false) { startGame(level, cd, prac); }, get practice() { return practice; },
     freeze(v = true) { timeScale = v ? 0 : 1; },

@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=39';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=40';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -258,18 +258,37 @@ export function buildWorld(scene) {
   // --- FlowAthletiq logo mural on the wall behind the spawn (visible when turning 180°), with a blinking red wolf eye
   const mural = (() => {
     const g = new THREE.Group(); g.position.set(-150, 132, 700); g.rotation.y = Math.PI; scene.add(g); // local +z faces the player; shifted so the leaderboard fits on its left
-    const LW = 480, LH = Math.round(LW * 561 / 1113);
+    const LW = 270, LH = Math.round(LW * 561 / 1113); // logo on top, game title + rules painted below (moved here from the menu)
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=39');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=40');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
-    logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
-    const ex = (0.9043 - 0.5) * LW, ey = (0.5 - 0.2184) * LH;
+    logo.position.set(0, 52, 4.6); logo.renderOrder = 2; g.add(logo);
+    // painted text panel: "FlowAthletiq Aim Trainer" + the rules, current language (cheap canvas texture, redrawn on language change)
+    const TW = 560, TH = 104, TS = 3.2, tc = document.createElement('canvas'); tc.width = TW * TS; tc.height = TH * TS;
+    const tt = new THREE.CanvasTexture(tc); tt.colorSpace = THREE.SRGBColorSpace; tt.anisotropy = 8;
+    const tp = new THREE.Mesh(new THREE.PlaneGeometry(TW, TH), new THREE.MeshBasicMaterial({ map: tt, transparent: true, depthWrite: false, toneMapped: false }));
+    tp.position.set(0, -68, 4.6); tp.renderOrder = 2; g.add(tp);
+    let txt = null;
+    const paint = () => { if (!txt) return; const c = tc.getContext('2d'), W = tc.width, H = tc.height; c.clearRect(0, 0, W, H);
+      c.textAlign = 'center'; c.textBaseline = 'top';
+      c.font = '700 70px Oswald, Impact, sans-serif'; const tw = c.measureText(txt.title.toUpperCase()).width;
+      const gr = c.createLinearGradient(W / 2 - tw / 2, 0, W / 2 + tw / 2, 0); gr.addColorStop(0, '#29e6ff'); gr.addColorStop(1, '#b14dff');
+      c.fillStyle = gr; c.fillText(txt.title.toUpperCase(), W / 2, 4);
+      c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(W * 0.2, 84, W * 0.6, 2);
+      let fs = 38; const font = (n) => `600 ${n}px Inter, Arial, "Hiragino Sans", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif`;
+      const wrap = (n) => { c.font = font(n); const words = /\s/.test(txt.body) ? txt.body.split(/\s+/) : Array.from(txt.body), sep = /\s/.test(txt.body) ? ' ' : '', out = []; let line = '';
+        for (const w of words) { const tst = line ? line + sep + w : w; if (c.measureText(tst).width > W - 60 && line) { out.push(line); line = w; } else line = tst; } if (line) out.push(line); return out; };
+      let lines = wrap(fs); while (lines.length * fs * 1.28 > H - 100 && fs > 22) { fs -= 2; lines = wrap(fs); }
+      c.fillStyle = '#e4e8f2'; lines.forEach((l, i) => c.fillText(l, W / 2, 100 + i * fs * 1.28));
+      tt.needsUpdate = true; };
+    if (document.fonts) document.fonts.ready.then(paint).catch(() => {});
+    const ex = (0.9043 - 0.5) * LW, ey = (0.5 - 0.2184) * LH + 52;
     // eyelid: dark almond that closes over the eye during a blink
     const lidTex = canvasTex(64, 32, (c, w, h) => { c.fillStyle = '#07070a'; c.beginPath(); c.ellipse(w / 2, h / 2, w / 2 - 1, h / 2 - 1, 0, 0, 7); c.fill(); });
-    const lid = new THREE.Mesh(new THREE.PlaneGeometry(12.5, 6.5), new THREE.MeshBasicMaterial({ map: lidTex, transparent: true, depthWrite: false, toneMapped: false }));
+    const lid = new THREE.Mesh(new THREE.PlaneGeometry(12.5 * LW / 480, 6.5 * LW / 480), new THREE.MeshBasicMaterial({ map: lidTex, transparent: true, depthWrite: false, toneMapped: false }));
     lid.position.set(ex, ey, 4.8); lid.rotation.z = -0.42; lid.scale.y = 0.001; lid.renderOrder = 3; g.add(lid);
     // red glow (additive) on top of the eye
     const glowTex = canvasTex(64, 64, (c, w, h) => {
@@ -277,13 +296,14 @@ export function buildWorld(scene) {
       gr.addColorStop(0, 'rgba(255,235,225,1)'); gr.addColorStop(0.12, 'rgba(255,60,40,1)'); gr.addColorStop(0.35, 'rgba(255,0,0,.45)'); gr.addColorStop(1, 'rgba(255,0,0,0)');
       c.fillStyle = gr; c.fillRect(0, 0, w, h);
     });
-    const glow = new THREE.Mesh(new THREE.PlaneGeometry(34, 34), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(34 * LW / 480, 34 * LW / 480), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, depthWrite: false, toneMapped: false, blending: THREE.AdditiveBlending }));
     glow.position.set(ex, ey, 5); glow.renderOrder = 4; g.add(glow);
     const still = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     lid.scale.y = 1; lid.material.opacity = 0;
     const sm = (x) => x * x * (3 - 2 * x);
     return {
       lid, glow,
+      setText(title, body) { txt = { title, body }; paint(); },
       update(t) { // t in seconds: 9 s cycle, red -> slow fade to dark -> dark -> relight
         if (still) { glow.material.opacity = 0.8; lid.material.opacity = 0; return; }
         const p = (t % 9) / 9;
@@ -319,7 +339,7 @@ export function buildWorld(scene) {
     const img = new Image(); let ready = false, rows = null, empty = '', tag = '';
     const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', 'Klee One', 'HGMaruGothicMPRO', 'Hiragino Maru Gothic ProN', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Hiragino Sans', 'Yu Gothic UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', cursive";  // CJK nicks: Caveat has no kana/hanzi
     // small rank emblems (same artwork as the game's ranks) drawn next to each nick
-    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=39`; return im; });
+    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=40`; return im; });
     const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
     function draw() {
       if (!ready) return;
@@ -356,7 +376,7 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=39';
+    img.src = 'img/leaderboard-board.webp?v=40';
     return { plane, set(r, e, tg) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; if (tg !== undefined) tag = tg; draw(); } };
   })();
 

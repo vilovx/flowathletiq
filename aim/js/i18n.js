@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=39';
+import { MORE } from './i18n-more.js?v=40';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -225,6 +225,31 @@ const TAV = { // Vistu krogs (free mode, desktop): [enter, exit, sit, stand up, 
 };
 const HOL = { lv: 'Ierocis nolikts — spied H, lai paņemtu', en: 'Weapon holstered — press H to draw', ru: 'Оружие убрано — нажми H, чтобы достать', es: 'Arma guardada — pulsa H para sacarla', pt: 'Arma guardada — prima H para sacar', ja: '武器をしまいました — H で構える', zh: '武器已收起 — 按 H 取出' };
 for (const l in HOL) if (TOUCH[l]) TOUCH[l].holsterOn = HOL[l];
+const CONT = { // ranked run over (a chicken landed): [continue in free mode, restart ranked, note]
+  lv: ['Turpināt (Brīvais režīms)', 'Sākt no jauna', 'Rezultāts ir saglabāts. Turpinot spēle pāriet Brīvajā režīmā — netiek ieskaitīts.'],
+  en: ['Continue (Free mode)', 'Start over', 'Your result is saved. Continuing switches to Free mode — not ranked.'],
+  ru: ['Продолжить (Свободный режим)', 'Начать заново', 'Результат сохранён. Дальше игра идёт в Свободном режиме — без зачёта.'],
+  es: ['Continuar (Modo libre)', 'Empezar de nuevo', 'Tu resultado está guardado. Al continuar pasas al Modo libre — no puntúa.'],
+  pt: ['Continuar (Modo livre)', 'Recomeçar', 'O teu resultado está guardado. Ao continuar passas ao Modo livre — não conta.'],
+  ja: ['続ける（フリーモード）', '最初から', '結果は保存されました。続けるとフリーモードになります（ランク対象外）。'],
+  zh: ['继续（自由模式）', '重新开始', '成绩已保存。继续将切换到自由模式——不计入排名。'],
+};
+for (const l in CONT) if (TOUCH[l]) Object.assign(TOUCH[l], { contBtn: CONT[l][0], restartBtn: CONT[l][1], contNote: CONT[l][2] });
+const MV = { // menus: [start ranked run, back to the map menu, map-menu explore button (opens Brīvais režīms)]
+  lv: ['Sākt spēli', '← Atpakaļ', 'Izpēte'], en: ['Start game', '← Back', 'Explore'], ru: ['Начать игру', '← Назад', 'Исследовать'], es: ['Empezar', '← Volver', 'Explorar'],
+  pt: ['Jogar', '← Voltar', 'Explorar'], ja: ['ゲーム開始', '← 戻る', '探索'], zh: ['开始游戏', '← 返回', '探索'],
+};
+for (const l in MV) if (TOUCH[l]) Object.assign(TOUCH[l], { startRun: MV[l][0], menuBack: MV[l][1], exploreBtn: MV[l][2] });
+const LOC = { // menu location card: [place name, one-line rules]
+  lv: ['Kuldīga', 'Nošauj vistas, pirms tās piezemējas — pirmo to, kura gatavojas lēkt.'],
+  en: ['Kuldīga', 'Shoot the chickens before they land — first the one about to jump.'],
+  ru: ['Кулдига', 'Сбей куриц, пока они не приземлились — сначала ту, что готовится прыгнуть.'],
+  es: ['Kuldīga', 'Dispara a las gallinas antes de que aterricen — primero a la que va a saltar.'],
+  pt: ['Kuldīga', 'Acerta as galinhas antes de aterrarem — primeiro a que vai saltar.'],
+  ja: ['クルディーガ', '着地する前にニワトリを撃て — まずは跳ぼうとしている一羽から。'],
+  zh: ['库尔迪加', '在小鸡落地前击中它们——先打准备起跳的那只。'],
+};
+for (const l in LOC) if (TOUCH[l]) Object.assign(TOUCH[l], { locName: LOC[l][0], leadShort: LOC[l][1] });
 for (const l in TAV) { const a = TAV[l]; Object.assign(TOUCH[l], { tavEnter: a[0], tavExit: a[1], tavSit: a[2], tavStand: a[3], tavLeave: a[4], tavPoster: a[5], freeHint: a[6], tavLive: a[7], tavOffline: a[8], tavChannel: a[9] }); }
 for (const l in TOUCH) Object.assign(S[l], TOUCH[l]);
 const valid = (c) => !!S[c];
