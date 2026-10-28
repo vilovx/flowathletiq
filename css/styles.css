@@ -433,13 +433,16 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .top-range { margin: .9rem 0 0; font-size: .85rem; color: var(--muted); }
 .top-range + .top-table-wrap { margin-top: .7rem; }
 .top-table .pts.neg { color: #ff6b6b; }
+.top-formula { margin: .35rem 0 0; font-size: .85rem; color: var(--neon); font-weight: 600; }
 .top-table th { white-space: nowrap; } .top-table .show-sm-i { display: none; text-decoration: none; }
 @media (max-width: 900px) { .top-table .hide-md { display: none; } }
 @media (max-width: 560px) {
   .top-table .hide-sm { display: none; }
   .top-table .show-sm { display: block; color: var(--muted); font-weight: 500; font-size: .75rem; }
   .top-table th .hide-sm { display: none; } .top-table .show-sm-i { display: inline; }
-  .top-table.top-week .player { max-width: 120px; }
+  .top-table.top-rated .player { max-width: 104px; }
+  .top-table.top-rated td, .top-table.top-rated th { padding: .55rem .3rem; font-size: .88rem; }
+  .top-table.top-rated th { font-size: .66rem; letter-spacing: .04em; }
   .top-table td, .top-table th { padding: .55rem .45rem; }
   .top-table .player { max-width: 150px; }
 }

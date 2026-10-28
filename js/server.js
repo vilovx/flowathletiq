@@ -52,27 +52,27 @@
     catch (e) { return iso; }
   }
   function topTable(pl, week) {
-    var esc = ctx.esc, ks = week ? "num" : "num hide-sm";
-    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRank"), "rank hide-sm"], [week ? s("colGained") : s("colPoints"), "num"], [s("colKills"), ks, "K"],
-      [s("colDeaths"), ks, "D"], [s("colKd"), "num"], [s("colHs"), "num hide-md"], [s("colTime"), "num hide-md"]];
-    return '<div class="srv-card top-table-wrap"><table class="top-table' + (week ? " top-week" : "") + '"><caption class="sr-only">' + esc(s(week ? "tabWeek" : "tabAll")) + "</caption><thead><tr>" +
+    var esc = ctx.esc;
+    // [label, class, short label shown on phones]
+    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRating"), "num", s("colRatingShort")], [s("colKills"), "num", "K"],
+      [s("colDeaths"), "num", "D"], [s("colKd"), "num"], [s("colHsPct"), "num"], [s("colTime"), "num hide-md"]];
+    return '<div class="srv-card top-table-wrap"><table class="top-table top-rated"><caption class="sr-only">' + esc(s(week ? "tabWeek" : "tabAll")) + "</caption><thead><tr>" +
       cols.map(function (c) {
-        var label = week && c[2] ? '<span class="hide-sm">' + esc(c[0]) + '</span><abbr class="show-sm-i" title="' + esc(c[0]) + '">' + c[2] + "</abbr>" : esc(c[0]);
+        var label = c[2] ? '<span class="hide-sm">' + esc(c[0]) + '</span><abbr class="show-sm-i" title="' + esc(c[0]) + '">' + esc(c[2]) + "</abbr>" : esc(c[0]);
         return '<th scope="col" class="' + c[1] + '">' + label + "</th>";
       }).join("") + "</tr></thead><tbody>" +
       pl.map(function (p) {
-        var pts = week && p.points > 0 ? "+" + p.points : p.points;
-        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) +
-          '<small class="show-sm">' + esc(p.rank) + "</small></td>" +
-          '<td class="rank hide-sm">' + esc(p.rank) + '</td><td class="num pts' + (week && p.points < 0 ? " neg" : "") + '">' + esc(pts) + '</td><td class="' + ks + '">' + esc(p.kills) +
-          '</td><td class="' + ks + '">' + esc(p.deaths) + '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num hide-md">' + esc(p.headshots) +
-          '</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
+        var r = p.rating != null ? p.rating : p.kills + p.headshots - p.deaths;
+        var hs = p.hsPct != null ? p.hsPct : (p.kills > 0 ? Math.round(100 * p.headshots / p.kills) : 0);
+        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) + "</td>" +
+          '<td class="num pts' + (r < 0 ? " neg" : "") + '">' + esc(r) + '</td><td class="num">' + esc(p.kills) + '</td><td class="num">' + esc(p.deaths) +
+          '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num">' + esc(hs) + '%</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
   function paintTop() {
     var root = document.getElementById("server-top-root"), esc = ctx.esc;
     var head = '<a class="srv-back" href="server.html">← ' + esc(s("back")) + '</a><span class="kicker">' + esc(s("kicker")) + "</span><h1>" + s("top100H1") + "</h1>" +
-      '<p class="lead">' + esc(s("top100Lead")) + "</p>";
+      '<p class="lead">' + esc(s("top100Lead")) + '</p><p class="top-formula">' + esc(s("ratingFormula")) + "</p>";
     if (!state.loaded) { root.innerHTML = head + '<p class="srv-note">' + esc(s("loading")) + "</p>"; return; }
     var pl = topPlayers(), wk = state.top && state.top.week;
     var meta = state.top && state.top.updated ? '<p class="srv-updated">' + esc(s("playersTotal", { n: state.top.totalPlayers || pl.length })) + " · " + esc(s("updated", { t: fmtTime(state.top.updated) })) + "</p>" : "";
@@ -160,7 +160,7 @@
     var topBox = '<aside class="srv-card srv-rank"><h2>' + esc(s("top")) + "</h2>" +
       (top.length ? '<ol class="srv-rank-list">' + top.map(function (p) {
           return '<li><span class="pos">' + p.pos + '</span><span class="who">' + playerLink(p) +
-            '<small>' + esc(p.rank) + "</small></span><strong>" + esc(p.points) + "</strong></li>";
+            '<small>K/D ' + Number(p.kd).toFixed(2) + "</small></span><strong>" + esc(p.rating != null ? p.rating : p.points) + "</strong></li>";
         }).join("") + "</ol>"
         : '<ol class="srv-rank-empty" aria-hidden="true">' + [1, 2, 3, 4, 5].map(function (n) { return "<li><span>#" + n + "</span><i></i></li>"; }).join("") + "</ol>" +
           '<p class="srv-soon">' + esc(s("topEmpty")) + "</p>") +

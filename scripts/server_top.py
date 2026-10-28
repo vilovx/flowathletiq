@@ -6,6 +6,11 @@ Usage: python scripts/server_top.py OUT_DIR   -> OUT_DIR/server-top.json (+ OUT_
 Only public fields are written: name, points, rank name, kills, deaths, K/D, headshots,
 playtime and a Steam profile link. Never prints credentials.
 
+Order: by the site-side "FA rating" = kills + headshots - deaths (ties: K/D, then kills).
+The plugin's own points (+13 kill, -20 death, -8 lost round...) punish volume, so they are kept
+in the JSON but no longer used for sorting. The rating rewards volume (every kill counts), quality
+(a death cancels a kill, a headshot is a bonus) and tiny samples can't top it (5 kills = rating <= 10).
+
 Weekly top ("week" key in server-top.json): the plugin only stores all-time totals, so the
 workflow keeps a baseline snapshot in server-top-week.json (restored from / published to the
 server-data branch). The week starts Monday 00:00 Europe/Riga; on the first run of a new week
@@ -50,6 +55,14 @@ def profile(steam2):
     return "https://steamcommunity.com/profiles/" + sid if sid else None
 
 
+def rating(k, d, hs):
+    return k + hs - d
+
+
+def order_key(p):
+    return (-p["rating"], -p["kd"], -p["kills"])
+
+
 def week_info(now):
     local = datetime.datetime.fromtimestamp(now, TZ)
     start = (local - datetime.timedelta(days=local.weekday())).date()
@@ -86,14 +99,15 @@ def weekly(rows, out, now):
         dk, dd, dt = c["k"] - b["k"], c["d"] - b["d"], c["t"] - b["t"]
         if dk <= 0 and dd <= 0 and dt <= 0:
             continue
+        dh = c["hs"] - b["hs"]
         players.append({
             "name": (r["name"] or "").strip()[:48] or "—",
-            "points": c["p"] - b["p"], "rank": rank_name(c["p"]),
+            "rating": rating(dk, dd, dh), "points": c["p"] - b["p"], "rank": rank_name(c["p"]),
             "kills": dk, "deaths": dd, "kd": round(dk / dd, 2) if dd else float(dk),
-            "headshots": c["hs"] - b["hs"], "playtimeMin": round(dt / 60),
+            "headshots": dh, "hsPct": round(100 * dh / dk) if dk > 0 else 0, "playtimeMin": round(dt / 60),
             "profile": profile(r["steam"]),
         })
-    players.sort(key=lambda p: (-p["points"], -p["kills"], p["deaths"]))
+    players.sort(key=order_key)
     players = players[:LIMIT]
     for i, p in enumerate(players, 1):
         p["pos"] = i
@@ -112,31 +126,32 @@ def main():
         # bots are never stored by the plugin, but keep only real SteamIDs to be safe
         cur.execute("SELECT COUNT(*) AS n FROM `lvl_base` WHERE `steam` LIKE 'STEAM\\_%%'")
         total = cur.fetchone()["n"]
+        # all players (small table): sorted by FA rating here, and used for the weekly baseline
         cur.execute("SELECT `steam`,`name`,`value`,`kills`,`deaths`,`headshots`,`assists`,`playtime`,`lastconnect` "
-                    "FROM `lvl_base` WHERE `steam` LIKE 'STEAM\\_%%' ORDER BY `value` DESC, `kills` DESC LIMIT %s", (LIMIT,))
-        rows = cur.fetchall()
-        # all players (small table) for the weekly baseline
-        cur.execute("SELECT `steam`,`name`,`value`,`kills`,`deaths`,`headshots`,`playtime` "
                     "FROM `lvl_base` WHERE `steam` LIKE 'STEAM\\_%%'")
         allrows = cur.fetchall()
     now = time.time()
     os.makedirs(out, exist_ok=True)
     week = weekly(allrows, out, now)
     players = []
-    for i, r in enumerate(rows, 1):
-        k, d = int(r["kills"]), int(r["deaths"])
+    for r in allrows:
+        k, d, hs = int(r["kills"]), int(r["deaths"]), int(r["headshots"])
         players.append({
-            "pos": i,
             "name": (r["name"] or "").strip()[:48] or "—",
+            "rating": rating(k, d, hs),
             "points": int(r["value"]),
             "rank": rank_name(int(r["value"])),
             "kills": k, "deaths": d, "kd": round(k / d, 2) if d else float(k),
-            "headshots": int(r["headshots"]), "assists": int(r["assists"]),
+            "headshots": hs, "hsPct": round(100 * hs / k) if k > 0 else 0, "assists": int(r["assists"]),
             "playtimeMin": round(int(r["playtime"]) / 60),
             "lastSeen": int(r["lastconnect"]) or None,
             "profile": profile(r["steam"]),
         })
-    data = {"status": "ok", "updated": int(now), "totalPlayers": int(total), "players": players, "week": week}
+    players.sort(key=order_key)
+    players = players[:LIMIT]
+    for i, p in enumerate(players, 1):
+        p["pos"] = i
+    data = {"status": "ok", "ratingFormula": "kills + headshots - deaths", "updated": int(now), "totalPlayers": int(total), "players": players, "week": week}
     with open(os.path.join(out, "server-top.json"), "w") as f:
         json.dump(data, f, ensure_ascii=False, indent=1)
     print("top players exported:", len(players), "of", total, "| week", week["id"], "active:", week["activePlayers"])
