@@ -46,7 +46,7 @@
   }
   // FA ranks: the aim trainer's wolf ranks (same artwork in aim/img/ranks). Each title is held by exactly one
   // player, by table position: #1 Astral, #2 Alfa, #3 Bara sargs, #4 Mednieks, #5 Jaunais vilks, #6+ Vilcēns.
-  function ratingOf(p) { return p.rating != null ? p.rating : p.kills + p.headshots - p.deaths; }
+  function ratingOf(p) { return p.rating != null ? p.rating : p.points; }
   function rankIdx(pos) { return pos >= 1 && pos <= 5 ? 6 - pos : 0; }
   function rankBadge(p, cls) {
     var i = rankIdx(p.pos), name = (s("rankNames") || [])[i] || "";
