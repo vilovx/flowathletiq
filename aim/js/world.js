@@ -1,7 +1,7 @@
 // Low-poly Kuldīga (Latvia) old-town square with an "A" site; backdrop: the red-brick bridge over the Venta and Ventas rumba.
 // 1 unit = 1 CS unit (inch). All assets procedural/original.
 import * as THREE from '../vendor/three.module.min.js';
-import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=34';
+import { kuldigaTextures, buildBackdrop, tex } from './kuldiga.js?v=35';
 
 function rnd(seed) { let s = seed; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
 
@@ -235,6 +235,8 @@ export function buildWorld(scene) {
     add(geo, stoneX, 544, 0, 0);
   }
   box(20, 170, 900, M.dark, 556, 85, -150, { cast: false, recv: false }); // dark arcade interior
+  const ARCH_Z = [-450, -300, -150, 0, 150];
+  const torches = ROOT.classList.contains('mobile') ? null : buildTorches(scene, ARCH_Z, canvasTex); // desktop only: torch-lit arches
   for (const z of [-450, -300, -150, 0, 150]) windowAt(548, 215, z, '-x', M.shutter2, 34, 52);
 
   // Wall behind the player & corner fillers
@@ -260,7 +262,7 @@ export function buildWorld(scene) {
     box(590, 246, 4, mat({ color: 0x14161d }), 0, 0, 2, { parent: g, cast: false });           // dark painted board
     for (const y of [-125, 125]) box(606, 8, 8, M.wood, 0, y, 4, { parent: g, cast: false });  // wooden frame
     for (const x of [-299, 299]) box(8, 258, 8, M.wood, x, 0, 4, { parent: g, cast: false });
-    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=34');
+    const tex = new THREE.TextureLoader().load('img/logo-wall.webp?v=35');
     tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const logo = new THREE.Mesh(new THREE.PlaneGeometry(LW, LH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
     logo.position.set(0, 0, 4.6); logo.renderOrder = 2; g.add(logo);
@@ -317,7 +319,7 @@ export function buildWorld(scene) {
     const img = new Image(); let ready = false, rows = null, empty = '', tag = '';
     const MK = "'Caveat', 'Segoe Print', 'Comic Sans MS', 'Klee One', 'HGMaruGothicMPRO', 'Hiragino Maru Gothic ProN', 'Kaiti SC', 'STKaiti', 'KaiTi', 'Hiragino Sans', 'Yu Gothic UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', cursive";  // CJK nicks: Caveat has no kana/hanzi
     // small rank emblems (same artwork as the game's ranks) drawn next to each nick
-    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=34`; return im; });
+    const RI = [1, 2, 3, 4, 5, 6].map((n) => { const im = new Image(); im.onload = () => draw(); im.src = `img/ranks/rank${n}-96.webp?v=35`; return im; });
     const fit = (txt, max) => { let s = String(txt); if (x.measureText(s).width <= max) return s; while (s.length > 1 && x.measureText(s + '…').width > max) s = s.slice(0, -1); return s + '…'; };
     function draw() {
       if (!ready) return;
@@ -354,7 +356,7 @@ export function buildWorld(scene) {
       tex.needsUpdate = true;
     }
     img.onload = () => { ready = true; draw(); (document.fonts ? document.fonts.load('700 40px Caveat').catch(() => {}) : Promise.resolve()).then(draw); };
-    img.src = 'img/leaderboard-board.webp?v=34';
+    img.src = 'img/leaderboard-board.webp?v=35';
     return { plane, set(r, e, tg) { if (r !== undefined && r !== null) rows = r; if (e) empty = e; if (tg !== undefined) tag = tg; draw(); } };
   })();
 
@@ -405,5 +407,48 @@ export function buildWorld(scene) {
   ];
   const site = { x0: -270, x1: 270, z0: -420, z1: -170, y: 8 };
   const blockers = [{ x0: -270, x1: -130, z0: -420, z1: -340 }, { x0: 190, x1: 270, z0: -230, z1: -150 }];
-  return { sun, worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); }, setBoard: (rows, empty, tag) => board.set(rows, empty, tag) };
+  return { arches: ARCH_Z.map((z) => ({ x: 544, z })), torches, sun, worldMeshes, spawns, sideSpawns, exits, site, blockers, mural, board, tavern, update: (t) => { mural.update(t); backdrop.update(t); if (torches) torches.update(t); }, setBoard: (rows, empty, tag) => board.set(rows, empty, tag) };
+}
+
+// Wall torches in the arcade arches (desktop only). No real lights: an emissive flame + additive glow cards
+// (back wall, halo, cobbles in front) whose opacity flickers. 5 arches = ~25 cheap unlit meshes, no shader cost on the rest of the scene.
+function buildTorches(scene, archZ, canvasTex) {
+  const radial = (stops) => canvasTex(128, 128, (g, w, h) => {
+    const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2); for (const [o, c] of stops) gr.addColorStop(o, c); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  });
+  const glowT = radial([[0, 'rgba(255,190,110,1)'], [0.35, 'rgba(255,140,50,.55)'], [1, 'rgba(255,110,30,0)']]);
+  const haloT = radial([[0, 'rgba(255,240,200,1)'], [0.2, 'rgba(255,170,70,.8)'], [1, 'rgba(255,120,30,0)']]);
+  const add = (o) => ({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false, ...o });
+  const wood = new THREE.MeshLambertMaterial({ color: 0x4a2f1a }), iron = new THREE.MeshLambertMaterial({ color: 0x222020 });
+  const flameM = new THREE.MeshBasicMaterial({ color: 0xffa640, toneMapped: false }), coreM = new THREE.MeshBasicMaterial({ color: 0xfff1b0, toneMapped: false });
+  const flameG = new THREE.ConeGeometry(3.6, 11, 7), coreG = new THREE.ConeGeometry(1.8, 6, 6);
+  const list = [];
+  archZ.forEach((z, i) => {
+    const g = new THREE.Group(); g.position.set(543, 0, z); scene.add(g);
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(2, 10, 6), iron); plate.position.set(1, 88, 0); g.add(plate);           // wall plate
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(9, 1.6, 1.6), iron); arm.position.set(-4, 86, 0); g.add(arm);            // bracket
+    const stick = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.1, 18, 6), wood); stick.position.set(-8, 92, 0); stick.rotation.z = 0.25; g.add(stick);
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 1.8, 4, 7), iron); cup.position.set(-10.3, 101, 0); g.add(cup);
+    const flame = new THREE.Mesh(flameG, flameM); flame.position.set(-10.5, 107.5, 0); g.add(flame);
+    const core = new THREE.Mesh(coreG, coreM); core.position.set(-10.5, 105.5, 0); g.add(core);
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(150, 190), new THREE.MeshBasicMaterial(add({ map: glowT, opacity: 0.8 })));
+    back.rotation.y = -Math.PI / 2; back.position.set(2.2, 92, 0); g.add(back);                                                 // warm wash on the dark back wall
+    const halo = new THREE.Mesh(new THREE.PlaneGeometry(46, 46), new THREE.MeshBasicMaterial(add({ map: haloT, opacity: 0.75 })));
+    halo.rotation.y = -Math.PI / 2; halo.position.set(-14, 106, 0); g.add(halo);                                                // bloom around the flame
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(130, 120), new THREE.MeshBasicMaterial(add({ map: glowT, opacity: 0.35, polygonOffset: true, polygonOffsetFactor: -2 })));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(-34, 0.6, 0); g.add(floor);                                            // warm pool on the cobbles
+    for (const m of [back, halo, floor]) m.renderOrder = 3;
+    list.push({ flame, core, back, halo, floor, ph: i * 1.7 });
+  });
+  return {
+    list,
+    update(t) {
+      for (const T of list) {
+        const f = 0.82 + 0.1 * Math.sin(t * 9.3 + T.ph) + 0.06 * Math.sin(t * 23.7 + T.ph * 2) + 0.04 * Math.sin(t * 41 + T.ph * 3);
+        T.flame.scale.set(1, 0.85 + 0.3 * f, 1); T.flame.rotation.z = 0.08 * Math.sin(t * 11 + T.ph);
+        T.core.scale.set(1, 0.8 + 0.3 * f, 1);
+        T.back.material.opacity = 0.62 + 0.26 * f; T.halo.material.opacity = 0.5 + 0.4 * f; T.floor.material.opacity = 0.22 + 0.16 * f;
+      }
+    },
+  };
 }

@@ -1,15 +1,16 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=34';
-import { RoastSystem } from './roast.js?v=34';
-import { createChicken, Puffs } from './chicken.js?v=34';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=34';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=34';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=34';
-import { t, onLang, applyDom } from './i18n.js?v=34';
-import { Sfx } from './audio.js?v=34';
-import { buildGunModel } from './gunmodels.js?v=34';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=34';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=34';
+import { buildWorld } from './world.js?v=35';
+import { Locals } from './locals.js?v=35';
+import { RoastSystem } from './roast.js?v=35';
+import { createChicken, Puffs } from './chicken.js?v=35';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=35';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=35';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=35';
+import { t, onLang, applyDom } from './i18n.js?v=35';
+import { Sfx } from './audio.js?v=35';
+import { buildGunModel } from './gunmodels.js?v=35';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=35';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=35';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +18,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=34';
+import { forced, forceOff } from './rot.js?v=35';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -91,6 +92,7 @@ if (MOBILE && QUALITY !== 'low') { // sharper textures at grazing angles (cobble
   scene.traverse((o) => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) if (m.map && m.map.anisotropy < an) { m.map.anisotropy = an; m.map.needsUpdate = true; } });
 }
 const puffs = new Puffs(scene);
+const locals = MOBILE ? null : new Locals(scene, world.arches); // desktop only: locals walk out of the arcade arches on higher levels (cosmetic)
 let roasts = null; // created after groundY is defined
 const sfx = new Sfx(() => settings.sound);
 
@@ -202,13 +204,15 @@ function newRun(level = 1) {
   for (const c of chickens) scene.remove(c.root);
   chickens.length = 0;
   G = { mode: 'chickens', level, score: 0, kills: 0, hsKills: 0, shots: 0, hits: 0, ammo: W.mag, reloadT: 0, nextShot: 0, burst: 0, lastShot: -9,
-    trigger: false, time: 0, over: false };
+    trigger: false, time: 0, over: false, hsStreak: 0 };
+  if (locals) locals.reset();
   startLevel(level);
 }
 function startLevel(L) {
   const cfg = levelCfg(L);
   Object.assign(G, { level: L, cfg, spawned: 0, spawnT: 1.6, timeLeft: cfg.count * cfg.interval + 12, between: 0 });
   showBanner(t('levelBanner', { n: L }), t('chickensN', { n: cfg.count }));
+  if (locals) locals.setLevel(L);
   updateHud();
 }
 
@@ -404,6 +408,8 @@ function damageChicken(c, zone, dist, point) {
     G.kills++;
     const hs = zone === 'head';
     if (hs) G.hsKills++;
+    G.hsStreak = hs ? (G.hsStreak || 0) + 1 : 0;
+    if (locals && hs && G.hsStreak >= 3 && G.hsStreak % 3 === 0) locals.whisper(); // 3, 6, 9 ... headshots in a row: the locals notice
     const pts = (hs ? 100 : 40) + 10 * (G.level - 1);
     G.score += pts;
     puffs.burst(point, 14, 0xffffff, 140);
@@ -463,6 +469,7 @@ function tick(now) {
   if (state === 'over-anim') for (const c of chickens) if (!c.removed && c.dead) updateChicken(c, sdt);
   puffs.update(sdt);
   roasts.update(sdt);
+  if (locals) locals.update(sdt, camera.position);
   world.update(now / 1000);
   // view punch: the camera follows part of the aim punch (CS view_recoil_tracking 0.45)
   const vt = RECOIL.scale * RECOIL.viewTracking;
@@ -518,6 +525,7 @@ function levelCleared() {
   showBanner(t('levelDone', { n: G.level }), t('timeBonus', { n: bonus }));
   G.between = 2.6;
   sfx.level();
+  if (locals) locals.clap();
 }
 
 // ---------------- HUD / UI ----------------
@@ -535,6 +543,7 @@ function updateHud() {
   const inf = G.mode !== 'spray'; $('h-ammo').textContent = inf ? '∞' : G.ammo; $('h-mag').textContent = inf ? '∞' : W.mag; $('h-wname').textContent = W.name;
   if (G.mode === 'spray') sprayHud();
   document.querySelector('.ammo').classList.toggle('low', !inf && G.ammo <= 6);
+  if (!MOBILE) document.querySelector('.ammo').classList.toggle('hidden', inf); // desktop: no '∞ / ∞' counter in the chicken mode (unlimited ammo)
   $('h-sens').textContent = sensText();
 }
 let bannerTimer;
@@ -553,7 +562,7 @@ function goMenu() {
   resetPos();
   $('countdown').className = 'countdown hidden';
   practice = false; $('h-prac').classList.add('hidden');
-  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear();
+  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear(); if (locals) locals.reset();
   renderMenu(); show('menu'); loadLb();
 }
 const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
@@ -576,7 +585,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=34" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=35" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -843,6 +852,7 @@ function renderWeaponPick() {
 }
 function endRun(reason) {
   state = 'over-anim'; G.trigger = false;
+  if (locals) locals.sad();
   if (document.pointerLockElement) document.exitPointerLock();
   setTimeout(() => showOver(reason), DEBUG ? 0 : 900);
 }
@@ -1069,7 +1079,7 @@ requestAnimationFrame(tick);
 // ---------------- Debug API (for screenshots/tests only, ?debug) ----------------
 if (DEBUG) {
   window.__aim = {
-    THREE, camera, chickens, world, get roasts() { return roasts; },
+    THREE, camera, chickens, world, locals, get roasts() { return roasts; },
     get G() { return G; }, get state() { return state; }, keys, vel, updateMove, MOVE,
     startGame(level = 1, cd = false, prac = false) { startGame(level, cd, prac); }, get practice() { return practice; },
     freeze(v = true) { timeScale = v ? 0 : 1; },
