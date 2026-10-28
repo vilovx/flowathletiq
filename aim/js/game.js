@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=31';
-import { RoastSystem } from './roast.js?v=31';
-import { createChicken, Puffs } from './chicken.js?v=31';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=31';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=31';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=31';
-import { t, onLang, applyDom } from './i18n.js?v=31';
-import { Sfx } from './audio.js?v=31';
-import { buildGunModel } from './gunmodels.js?v=31';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=31';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=31';
+import { buildWorld } from './world.js?v=32';
+import { RoastSystem } from './roast.js?v=32';
+import { createChicken, Puffs } from './chicken.js?v=32';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=32';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=32';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=32';
+import { t, onLang, applyDom } from './i18n.js?v=32';
+import { Sfx } from './audio.js?v=32';
+import { buildGunModel } from './gunmodels.js?v=32';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=32';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=32';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=31';
+import { forced, forceOff } from './rot.js?v=32';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -139,16 +139,40 @@ let timeScale = 1;
 let rawInput = null;
 
 const CH_SCALE = 1.45; // touch mode chicken size
+// Difficulty curve v32 (researched pacing): geometric ramp from L1 to L15 (p = 0..1).
+// L15 = ~1.2 chickens/s sustained (interval 0.85 s), max 3 alive, each shootable ~2.7 s:
+// hard for 250 ms reaction + flick + 1-2 taps, but humanly doable (old L15: 0.45 s / 2.1 s / unlimited).
+const ramp = (L, a, b) => a * Math.pow(b / a, Math.min(1, Math.max(0, (L - 1) / 14)));
 function levelCfg(L) {
   return {
     count: 6 + 2 * (L - 1),
-    interval: Math.max(0.45, 2.0 * Math.pow(0.88, L - 1)),
-    warn: Math.max(0.3, 0.9 - 0.06 * (L - 1)),            // crouch / wind-up before the jump
-    look: Math.max(0.22, 0.6 * Math.pow(0.9, L - 1)),       // each head turn (look right, look left)
-    jump: Math.max(0.75, 1.35 - 0.05 * (L - 1)),
+    interval: ramp(L, 2.2, 0.85),                             // spawn gap (s), +-25 % jitter
+    warn: ramp(L, 0.9, 0.45),                                // crouch / wind-up before the jump
+    look: ramp(L, 0.6, 0.32),                                // each head turn (look right, look left)
+    jump: ramp(L, 1.35, 0.95),
+    maxAlive: L < 4 ? 2 : 3,                                 // cap simultaneous threats
     spawnCount: Math.min(world.spawns.length, 5 + 3 * (L - 1)),
-    sideChance: Math.min(0.22, 0.12 + 0.015 * (L - 1)),      // rare flank spawns from side-building windows
+    outChance: L < 4 ? 0 : Math.min(0.15, 0.02 * (L - 3)),   // occasional spawn just outside the view (challenge)
   };
+}
+// Spawn direction: pick spawn points inside the current horizontal view (frontal arc around camera yaw).
+function hHalfFov() { return Math.atan(Math.tan(camera.fov * Math.PI / 360) * camera.aspect) * 180 / Math.PI; }
+function signedOff(sp) { // horizontal degrees from camera forward to the spawn's perch (+ = left)
+  const dx = sp.perch.x - camera.position.x, dz = sp.perch.z - camera.position.z;
+  const d = Math.atan2(-dx, -dz) * 180 / Math.PI - yaw; return ((d % 360) + 540) % 360 - 180;
+}
+const offAngle = (sp) => Math.abs(signedOff(sp));
+function pickSpawn(cfg) {
+  const busy = new Set(chickens.filter((c) => !c.dead && c.state !== 'jump').map((c) => c.sp));
+  let pool = world.spawns.slice(0, cfg.spawnCount); if (G.level >= 3) pool = pool.concat(world.sideSpawns);
+  const free = pool.filter((x) => !busy.has(x)); if (free.length) pool = free;
+  const half = hHalfFov(), inner = half * 0.85;
+  const inView = pool.filter((x) => offAngle(x) <= inner);
+  const edge = pool.filter((x) => { const a = offAngle(x); return a > inner && a <= half + 30; });
+  const any = (a) => a[Math.floor(Math.random() * a.length)];
+  if (edge.length && Math.random() < cfg.outChance) return any(edge);
+  if (inView.length) return any(inView);
+  return pool.slice().sort((a, b) => offAngle(a) - offAngle(b))[0]; // nothing in view (sky / mural): nearest to where you look
 }
 
 function newRun(level = 1) {
@@ -172,15 +196,7 @@ function spawnChicken(opts = {}) {
   const parts = createChicken();
   if (MOBILE) parts.model.scale.multiplyScalar(CH_SCALE); // touch mode: bigger chickens (hit zones are children, so they scale too)
   let sp = opts.spawn;
-  if (!sp) { // free spawn point (no two chickens in the same window)
-    const busy = new Set(chickens.filter((c) => !c.dead && c.state !== 'jump').map((c) => c.sp));
-    const freeSide = world.sideSpawns.filter((x) => !busy.has(x));
-    if (freeSide.length && Math.random() < cfg.sideChance) sp = freeSide[Math.floor(Math.random() * freeSide.length)]; // flank surprise
-    else {
-      const free = world.spawns.slice(0, cfg.spawnCount).filter((x) => !busy.has(x));
-      sp = (free.length ? free : world.spawns.slice(0, cfg.spawnCount))[Math.floor(Math.random() * (free.length || cfg.spawnCount))];
-    }
-  }
+  if (!sp) sp = pickSpawn(cfg); // in-view spawn point (no two chickens in the same window)
   const s = world.site;
   let land;
   for (let k = 0; k < 20; k++) {
@@ -202,7 +218,7 @@ function spawnChicken(opts = {}) {
   c.root.position.copy(c.pHide);
   c.root.rotation.y = Math.atan2(sp.fwd.x, sp.fwd.z);
   c.root.__c = c; scene.add(c.root); chickens.push(c);
-  if (sp.side && !opts.state) sfx.peek(sp.fwd.x < 0 ? 0.8 : -0.8); // subtle flank cue (panned to that side)
+  if (!opts.state && offAngle(sp) > hHalfFov() * 0.85) sfx.peek(signedOff(sp) > 0 ? -0.8 : 0.8); // subtle off-screen cue (panned to that side)
   if (opts.state) { c.state = opts.state; c.t = (opts.u ?? 0.5) * c.dur[c.state]; updateChicken(c, 0); }
   return c;
 }
@@ -458,8 +474,12 @@ function step(dt) {
   } else {
     G.timeLeft -= dt;
     G.spawnT -= dt;
-    if (G.spawned < G.cfg.count && G.spawnT <= 0) { spawnChicken(); G.spawned++; G.spawnT = G.cfg.interval * (0.75 + Math.random() * 0.5); }
-    const alive = chickens.some((c) => !c.dead);
+    const aliveN = chickens.filter((c) => !c.dead).length;
+    if (G.spawned < G.cfg.count && G.spawnT <= 0) {
+      if (aliveN >= G.cfg.maxAlive) { G.spawnT = 0.3; G.timeLeft += dt; } // capped: wait (and don't burn the level clock)
+      else { spawnChicken(); G.spawned++; G.spawnT = G.cfg.interval * (0.75 + Math.random() * 0.5); }
+    }
+    const alive = aliveN > 0;
     if (G.spawned >= G.cfg.count && !alive) levelCleared();
     else if (G.timeLeft <= 0 && !G.over) { G.over = true; endRun('timeUp'); }
   }
@@ -530,7 +550,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=31" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=32" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
