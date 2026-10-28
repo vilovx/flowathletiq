@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=38';
+import { MORE } from './i18n-more.js?v=39';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -13,7 +13,7 @@ const S = {
     'mobile.p1': 'FlowAthletiq Aim Trainer ir veidots peles aim treniņam ar CS2 sensitivity, tāpēc telefonā vai planšetē tas nedarbojas.',
     'mobile.p2': 'Atver šo lapu datorā (ieteicams Chrome vai Edge) un pievieno savu CS2 crosshair.', 'mobile.back': 'Atpakaļ uz FlowAthletiq',
     lead: 'Vistas ar ķiverēm un bruņuvestēm parādās logos, balkonu durvīs un uz jumtu malām: izbāž galvu, paskatās pa labi un pa kreisi, pietupstas un lec lejā uz A site. Nošauj katru, pirms tā piezemējas. Pirmo šauj to, kura jau gatavojas lēkt! Viena piezemējusies vista, un spēle beigusies.',
-    start: 'Sākt spēli', spray: 'Spray treniņš', crosshair: 'Crosshair', settings: 'Iestatījumi',
+    start: 'Aim Trainer', spray: 'Spray treniņš', crosshair: 'Crosshair', settings: 'Iestatījumi',
     'tip.fire': '<b>Kreisā poga:</b> šaut (turi, lai šautu sērijā)', 'tip.keys': '<b>1 / 2 / 3:</b> ierocis &nbsp; <b>ESC:</b> pauze',
     'tip.dmg': 'Bojājumi, recoil un šaušanas ātrums pēc CS2 vērtībām. AK-47 headshot caur ķiveri nogalina ar vienu šāvienu, M4 ne.',
     pbTitle: 'Tavs rekords', ranksTitle: 'Rangi', pbNone: 'Vēl nav rezultāta. Uzspēlē pirmo raundu!',
@@ -54,7 +54,7 @@ const S = {
     'mobile.p1': 'FlowAthletiq Aim Trainer is built for mouse aim training with CS2 sensitivity, so it does not work on phones or tablets.',
     'mobile.p2': 'Open this page on a computer (Chrome or Edge recommended) and bring your CS2 crosshair.', 'mobile.back': 'Back to FlowAthletiq',
     lead: 'Chickens in helmets and armor vests appear in windows, balcony doors and on roof edges: they stick their head out, look right, look left, crouch and jump down onto A site. Shoot every one before it lands. Shoot the one about to jump first! One chicken on the ground and the game is over.',
-    start: 'Start game', spray: 'Spray training', crosshair: 'Crosshair', settings: 'Settings',
+    start: 'Aim Trainer', spray: 'Spray training', crosshair: 'Crosshair', settings: 'Settings',
     'tip.fire': '<b>Left click:</b> shoot (hold to spray)', 'tip.keys': '<b>1 / 2 / 3:</b> weapon &nbsp; <b>ESC:</b> pause',
     'tip.dmg': 'Damage, recoil and fire rate use CS2 values. An AK-47 headshot through a helmet is a one-tap, an M4 is not.',
     pbTitle: 'Your best', ranksTitle: 'Ranks', pbNone: 'No result yet. Play your first round!',
@@ -95,7 +95,7 @@ const S = {
     'mobile.p1': 'FlowAthletiq Aim Trainer создан для тренировки аима мышью с сенсой CS2, поэтому на телефоне или планшете он не работает.',
     'mobile.p2': 'Открой эту страницу на компьютере (лучше в Chrome или Edge) и добавь свой прицел из CS2.', 'mobile.back': 'Назад на FlowAthletiq',
     lead: 'Курицы в шлемах и бронежилетах появляются в окнах, дверях балконов и на краях крыш: высовывают голову, смотрят направо и налево, приседают и прыгают вниз на плент A. Подстрели каждую, пока она не приземлилась. Сначала стреляй в ту, что уже готова прыгнуть! Одна приземлившаяся курица — и игра окончена.',
-    start: 'Начать игру', spray: 'Тренировка спрея', crosshair: 'Прицел', settings: 'Настройки',
+    start: 'Aim Trainer', spray: 'Тренировка спрея', crosshair: 'Прицел', settings: 'Настройки',
     'tip.fire': '<b>Левая кнопка:</b> стрелять (зажми для очереди)', 'tip.keys': '<b>1 / 2 / 3:</b> оружие &nbsp; <b>ESC:</b> пауза',
     'tip.dmg': 'Урон, отдача и скорострельность взяты из CS2. Хедшот из AK-47 через шлем убивает с одного выстрела, из M4 — нет.',
     pbTitle: 'Твой рекорд', ranksTitle: 'Ранги', pbNone: 'Результата пока нет. Сыграй первый раунд!',
