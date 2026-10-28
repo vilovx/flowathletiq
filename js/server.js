@@ -44,13 +44,12 @@
     return p.profile && /^https:\/\/steamcommunity\.com\/profiles\/\d+$/.test(p.profile)
       ? '<a href="' + p.profile + '" target="_blank" rel="noopener nofollow">' + n + "</a>" : n;
   }
-  // FA ranks: the aim trainer's wolf ranks (same artwork in aim/img/ranks), assigned by FA rating so the
-  // rank always follows the table order. Weekly ratings are much smaller, so the week uses its own scale.
-  var RANK_MIN = { all: [-Infinity, 50, 150, 300, 600, 1200], week: [-Infinity, 10, 30, 75, 150, 300] };
+  // FA ranks: the aim trainer's wolf ranks (same artwork in aim/img/ranks). Each title is held by exactly one
+  // player, by table position: #1 Astral, #2 Alfa, #3 Bara sargs, #4 Mednieks, #5 Jaunais vilks, #6+ Vilcēns.
   function ratingOf(p) { return p.rating != null ? p.rating : p.kills + p.headshots - p.deaths; }
-  function rankIdx(r, scale) { var m = RANK_MIN[scale], i = 0; for (var j = 1; j < m.length; j++) if (r >= m[j]) i = j; return i; }
-  function rankBadge(p, scale, cls) {
-    var i = rankIdx(ratingOf(p), scale), name = (s("rankNames") || [])[i] || "";
+  function rankIdx(pos) { return pos >= 1 && pos <= 5 ? 6 - pos : 0; }
+  function rankBadge(p, cls) {
+    var i = rankIdx(p.pos), name = (s("rankNames") || [])[i] || "";
     return '<span class="fa-rank ' + (cls || "") + (i === 5 ? " top" : "") + '"><img class="rank-img" src="aim/img/ranks/rank' + (i + 1) + '-96.webp?v=31" alt="" width="96" height="96" loading="lazy" decoding="async">' +
       '<span class="fa-rank-name">' + ctx.esc(name) + "</span></span>";
   }
@@ -74,7 +73,7 @@
       pl.map(function (p) {
         var r = ratingOf(p);
         var hs = p.hsPct != null ? p.hsPct : (p.kills > 0 ? Math.round(100 * p.headshots / p.kills) : 0);
-        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) + rankBadge(p, week ? "week" : "all") + "</td>" +
+        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) + rankBadge(p) + "</td>" +
           '<td class="num pts' + (r < 0 ? " neg" : "") + '">' + esc(r) + '</td><td class="num">' + esc(p.kills) + '</td><td class="num">' + esc(p.deaths) +
           '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num">' + esc(hs) + '%</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
       }).join("") + "</tbody></table></div>";
@@ -170,7 +169,7 @@
     var topBox = '<aside class="srv-card srv-rank"><h2>' + esc(s("top")) + "</h2>" +
       (top.length ? '<ol class="srv-rank-list">' + top.map(function (p) {
           return '<li><span class="pos">' + p.pos + '</span><span class="who">' + playerLink(p) +
-            rankBadge(p, "all") + "</span><strong>" + esc(ratingOf(p)) + "</strong></li>";
+            rankBadge(p) + "</span><strong>" + esc(ratingOf(p)) + "</strong></li>";
         }).join("") + "</ol>"
         : '<ol class="srv-rank-empty" aria-hidden="true">' + [1, 2, 3, 4, 5].map(function (n) { return "<li><span>#" + n + "</span><i></i></li>"; }).join("") + "</ol>" +
           '<p class="srv-soon">' + esc(s("topEmpty")) + "</p>") +
