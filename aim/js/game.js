@@ -1,16 +1,17 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=36';
-import { Locals } from './locals.js?v=36';
-import { RoastSystem } from './roast.js?v=36';
-import { createChicken, Puffs } from './chicken.js?v=36';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=36';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=36';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=36';
-import { t, onLang, applyDom } from './i18n.js?v=36';
-import { Sfx } from './audio.js?v=36';
-import { buildGunModel } from './gunmodels.js?v=36';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=36';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=36';
+import { buildWorld } from './world.js?v=37';
+import { Locals } from './locals.js?v=37';
+import { buildTavern, TvOverlay, SCREEN as TV_SCREEN } from './tavern.js?v=37';
+import { RoastSystem } from './roast.js?v=37';
+import { createChicken, Puffs } from './chicken.js?v=37';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=37';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=37';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=37';
+import { t, onLang, applyDom } from './i18n.js?v=37';
+import { Sfx } from './audio.js?v=37';
+import { buildGunModel } from './gunmodels.js?v=37';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=37';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=37';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -18,7 +19,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=36';
+import { forced, forceOff } from './rot.js?v=37';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -81,10 +82,85 @@ function updateMove(dt) {
   if (tx.lengthSq() > 0) tx.normalize().multiplyScalar(max);
   vel.lerp(tx, 1 - Math.exp(-MOVE.accel * dt));
   if (vel.lengthSq() < 1) vel.set(0, 0);
+  if (tav.seated) { vel.set(0, 0); return; }
   const P = camera.position; P.x += vel.x * dt; P.z += vel.y * dt;
-  for (const [x, z, rr] of PROPS) { const dx = P.x - x, dz = P.z - z, d = Math.hypot(dx, dz), m = rr + MOVE.r; if (d < m && d > 0) { P.x = x + dx / d * m; P.z = z + dz / d * m; } }
+  const Z = tav.inside ? tav.zone : practice ? FREE : null; // free mode: walk the whole square (buildings collide); ranked: limited box
+  for (const [x, z, rr] of (Z ? Z.circles : PROPS)) { const dx = P.x - x, dz = P.z - z, d = Math.hypot(dx, dz), m = rr + MOVE.r; if (d < m && d > 0) { P.x = x + dx / d * m; P.z = z + dz / d * m; } }
+  if (Z) { const vz = vel.y; // intent before the walls zero it (door walk-in/out)
+    for (const b of Z.boxes) { const x0 = b.x0 - MOVE.r, x1 = b.x1 + MOVE.r, z0 = b.z0 - MOVE.r, z1 = b.z1 + MOVE.r;
+      if (P.x > x0 && P.x < x1 && P.z > z0 && P.z < z1) { const o = [P.x - x0, x1 - P.x, P.z - z0, z1 - P.z], m = Math.min(...o), k = o.indexOf(m);
+        if (k === 0) P.x = x0; else if (k === 1) P.x = x1; else if (k === 2) P.z = z0; else P.z = z1; } }
+    const cx = Math.max(Z.x0, Math.min(Z.x1, P.x)), cz = Math.max(Z.z0, Math.min(Z.z1, P.z));
+    if (cx !== P.x) vel.x = 0; if (cz !== P.z) vel.y = 0; P.x = cx; P.z = cz;
+    P.y = EYE + (tav.inside ? 0 : groundY(P));
+    doorCheck(vz);
+    return;
+  }
   const cx = Math.max(MOVE.x0, Math.min(MOVE.x1, P.x)), cz = Math.max(PLAYER.z - MOVE.fwd, Math.min(MOVE.z1, P.z));
   if (cx !== P.x) vel.x = 0; if (cz !== P.z) vel.y = 0; P.x = cx; P.z = cz; P.y = EYE;
+}
+// ---- Free mode (desktop): whole square walkable; the back houses, crates, barrels and trees collide. "Vistu krogs" door at x -385.
+const FREE = { x0: -504, x1: 509, z0: -745, z1: 678,
+  boxes: [{ x0: -440, x1: -150, z0: -700, z1: -556 }, { x0: 150, x1: 440, z0: -700, z1: -556 }, { x0: -262, x1: -134, z0: -412, z1: -348 },
+    { x0: 192, x1: 268, z0: -228, z1: -152 }, { x0: -354, x1: -306, z0: -104, z1: -56 }, { x0: 300, x1: 360, z0: 10, z1: 70 }],
+  circles: PROPS.concat([[-329, -544, 12]]) };
+const TAV_DOOR = new THREE.Vector3(-385, 0, -540);
+const tav = { inside: false, seated: null, T: null, tv: null, zone: null, wasHolstered: false, hint: '' };
+let holstered = false; // free mode: H puts the weapon away (no viewmodel, no shooting)
+function doorCheck(vz) {
+  const P = camera.position;
+  if (!tav.inside && Math.abs(P.x - TAV_DOOR.x) < 28 && P.z < TAV_DOOR.z + 6 && vz < -30) enterTavern();        // walk into the door
+  else if (tav.inside && Math.abs(P.x - tav.T.door.x) < 28 && P.z > tav.zone.z1 - 6 && vz > 30) exitTavern();
+}
+function enterTavern() {
+  if (MOBILE || !practice || tav.inside) return;
+  if (!tav.T) { tav.T = buildTavern(); const B = tav.T.bounds;
+    tav.zone = { ...B, boxes: [], circles: tav.T.tables.map(([x, z, r]) => [x, z, r - 4]).concat([[230, 180, 16], [230, 140, 16], [-150, -190, 16]]) };
+    tav.tv = new TvOverlay($('app'), () => ({ live: t('tavLive'), stand: t('tavStand'), leave: t('tavLeave'), offline: t('tavOffline') }));
+    tav.tv.el.querySelector('.tv-stand').onclick = () => { standUp(); lock(); }; tav.tv.el.querySelector('.tv-leave').onclick = () => { standUp(); exitTavern(); lock(); }; }
+  tav.inside = true; tav.wasHolstered = holstered; holstered = true; if (G) G.trigger = false;
+  tav.T.drawPoster([t('tavLive'), CHANNEL_LABEL(), t('tavPoster')]);
+  camera.position.set(tav.T.spawn.x, EYE, tav.T.spawn.z); yaw = 0; pitch = 0; vel.set(0, 0);
+  document.documentElement.classList.add('in-tav'); sfx.thud();
+}
+function exitTavern() {
+  if (!tav.inside) return;
+  standUp(true); tav.inside = false; holstered = tav.wasHolstered;
+  camera.position.set(TAV_DOOR.x, EYE, TAV_DOOR.z + 30); yaw = 180; pitch = 2; vel.set(0, 0);
+  document.documentElement.classList.remove('in-tav'); lastInput = performance.now();
+}
+const CHANNEL_LABEL = () => { const c = tav.tv && tav.tv.ch; return (c || 'eslcs').toUpperCase(); };
+function sitDown(seat) {
+  tav.seated = seat; keys.clear(); vel.set(0, 0);
+  camera.position.set(seat.x, 50, seat.z);
+  const d = new THREE.Vector3(TV_SCREEN.x, TV_SCREEN.y, TV_SCREEN.z).sub(camera.position).normalize();
+  yaw = Math.atan2(-d.x, -d.z) * 180 / Math.PI; pitch = Math.asin(d.y) * 180 / Math.PI;
+  document.documentElement.classList.add('tav-seated');
+  if (document.pointerLockElement) document.exitPointerLock();
+  tav.tv.open(); tav.rect = '';
+}
+function standUp(silent) {
+  if (!tav.seated) return;
+  const s = tav.seated; tav.seated = null; tav.tv.close(); document.documentElement.classList.remove('tav-seated');
+  camera.position.set(s.x, EYE, s.z + 8); pitch = 0;
+  tav.T.drawPoster([t('tavLive'), CHANNEL_LABEL(), t('tavPoster')]);
+}
+function tavInteract() {
+  if (MOBILE || !practice || !G) return;
+  const P = camera.position;
+  if (!tav.inside) { if (Math.hypot(P.x - TAV_DOOR.x, P.z - TAV_DOOR.z) < 90) enterTavern(); return; }
+  if (tav.seated) { standUp(); lock(); return; }
+  if (Math.hypot(P.x - tav.T.door.x, P.z - tav.T.door.z) < 70) { exitTavern(); return; }
+  const s = nearestSeat(); if (s) sitDown(s);
+}
+function nearestSeat() { const P = camera.position; let best = null, bd = 60; for (const s of tav.T.seats) { const d = Math.hypot(P.x - s.x, P.z - s.z); if (d < bd) { bd = d; best = s; } } return best; }
+function tavReset() { if (tav.inside) { standUp(true); tav.inside = false; document.documentElement.classList.remove('in-tav'); } holstered = false; }
+function freeHintText() {
+  if (MOBILE || !practice || !G || state !== 'play') return ['', ''];
+  const P = camera.position; let near = '';
+  if (!tav.inside) { if (Math.hypot(P.x - TAV_DOOR.x, P.z - TAV_DOOR.z) < 110) near = t('tavEnter'); }
+  else if (!tav.seated) { if (Math.hypot(P.x - tav.T.door.x, P.z - tav.T.door.z) < 80) near = t('tavExit'); else if (nearestSeat()) near = t('tavSit'); }
+  return [tav.seated ? '' : t('freeHint'), near];
 }
 const world = buildWorld(scene);
 if (MOBILE && QUALITY !== 'low') { // sharper textures at grazing angles (cobbles, walls) on phones
@@ -263,6 +339,7 @@ function updateChicken(c, dt) {
   if (c.state === 'escape') { if (updateEscape(c, dt)) { scene.remove(c.root); c.removed = true; } return; }
   c.t += dt; c.phase += dt;
   const P = c.root.position;
+  if (c.state === 'crouch' && dormant()) c.t = Math.min(c.t, c.dur.crouch - 1e-3); // hold the wind-up, no jump while the shooter is idle
   if (c.state !== 'dead') while (c.t >= c.dur[c.state] && c.state !== 'jump') nextPhase(c);
   const u = c.state === 'dead' ? 0 : Math.min(1, c.t / c.dur[c.state]);
   const H = c.headG.rotation;
@@ -317,7 +394,8 @@ function chickenLanded(c) { // a chicken that reaches the ground ends the run
 // the middle arch of the red-brick bridge (~3 s), then disappears; practice just continues. Ranked runs still end on landing.
 const ESC = { run: 760, leap: 0.85, swim: 1.15 };
 function escapeChicken(c) {
-  sfx.alarm(); feed(`<b>${t('escaped')}</b>`, false); G.escapes = (G.escapes || 0) + 1; G.lvlEsc = (G.lvlEsc || 0) + 1;
+  // free mode: silent (no landing alarm)
+  feed(`<b>${t('escaped')}</b>`, false); G.escapes = (G.escapes || 0) + 1; G.lvlEsc = (G.lvlEsc || 0) + 1;
   c.dead = true; // no longer a target / not counted as alive (level can still be cleared)
   const P = c.root.position, sx = Math.max(-95, Math.min(95, P.x)), ex = sx * 0.5;
   c.state = 'escape'; c.t = 0; c.model.position.y = 0; c.model.rotation.set(0, 0, 0); c.legs.forEach((l) => (l.rotation.x = 0));
@@ -340,7 +418,7 @@ function updateEscape(c, dt) {
     c.root.rotation.y = Math.atan2(E.water.x - E.from.x, E.water.z - E.from.z);
     c.model.rotation.x = (u - 0.35) * 1.1; c.legs.forEach((l) => (l.rotation.x = 0.8));
     c.wings.forEach((w, i) => (w.rotation.z = (i ? -1 : 1) * (0.3 + Math.abs(Math.sin(c.t * 30)) * 1.2)));
-    if (u >= 1) { E.phase = 'swim'; E.t = 0; puffs.burst(P.clone().setY(P.y + 4), 22, 0xe3f2f8, 170); sfx.thud(); }
+    if (u >= 1) { E.phase = 'swim'; E.t = 0; puffs.burst(P.clone().setY(P.y + 4), 22, 0xe3f2f8, 170); } // silent splash (free mode only)
   } else if (E.phase === 'swim') { // floats low in the water, bobbing, paddling toward the bridge arch
     E.t += dt; const u = Math.min(1, E.t / ESC.swim);
     P.lerpVectors(E.water, E.to, u * u * 0.5 + u * 0.5); P.y = E.water.y - 9 + Math.sin(E.t * 9) * 1.5;
@@ -403,7 +481,7 @@ function fire(dirOverride) {
   if (DEBUG) lastDir = dir.clone();
   G.burst++; applyKick();
   gun.kick = 1; gun.flash.visible = true; gun.flash.rotation.z = Math.random() * 3; setTimeout(() => (gun.flash.visible = false), 45);
-  sfx.shot(W.id);
+  sfx.shot(W.id); G.firedAt = G.time;
   ray.set(camera.position, dir); ray.far = W.range;
   if (G.mode === 'spray') { const sh = ray.intersectObject(sprayWall.mesh, false)[0]; if (sh) sprayHit(sh.point); updateHud(); return; }
   const targets = world.worldMeshes.slice();
@@ -497,6 +575,16 @@ function autoQuality(ms) {
   document.documentElement.dataset.q = next; try { sessionStorage.setItem('fa_aim_qauto', next); } catch {}
   renderer.setPixelRatio(Math.min(devicePixelRatio, QDPR[next])); world.sun.castShadow = false; resize();
 }
+const _c = new THREE.Vector3();
+function placeTv() { // project the 4 screen corners (camera is still while seated) and fit the iframe overlay to them
+  camera.updateMatrixWorld(); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; const w = VW(), h = VH();
+  for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { _c.set(TV_SCREEN.x + sx * TV_SCREEN.w / 2, TV_SCREEN.y + sy * TV_SCREEN.h / 2, TV_SCREEN.z).project(camera);
+    const px = (_c.x + 1) / 2 * w, py = (1 - _c.y) / 2 * h; x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+  const r = { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) }, k = JSON.stringify(r);
+  if (k !== tav.rect) { tav.rect = k; tav.tv.place(r); }
+}
+let hintTxt = '';
+function updateFreeHint() { const [a, b] = freeHintText(), k = a + '|' + b; if (k === hintTxt) return; hintTxt = k; $('h-free').textContent = a; $('h-near').textContent = b; $('h-near').classList.toggle('hidden', !b); }
 function tick(now) {
   requestAnimationFrame(tick);
   if (MOBILE && now - lastDraw < 1000 / 61) return; // phones: cap at 60 fps (120 Hz screens would double the GPU work)
@@ -505,16 +593,15 @@ function tick(now) {
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
   fpsAcc += dt; fpsN++; if (fpsAcc > 0.5) { $('h-fps').textContent = settings.fps ? `${Math.round(fpsN / fpsAcc)} FPS` : ''; fpsAcc = 0; fpsN = 0; }
   const sdt = dt * timeScale;
-  if (state === 'play' && G && sdt > 0) step(sdt);
+  if (state === 'play' && G && sdt > 0) { if (tav.inside) updateMove(sdt); else step(sdt); } // inside the tavern the game is paused
   else if (state !== 'play') { // idle camera sway on menu
     if (state === 'menu') { yaw = Math.sin(now / 7000) * 8; pitch = 6 + Math.sin(now / 5000) * 2; }
   }
-  if (practice && G && !G.over && (state === 'play' || state === 'pause') && now - lastInput > IDLE_MS) { G.over = true; endRun('idleEnd'); } // practice idle timeout
+  if (practice && G && !G.over && !tav.inside && (state === 'play' || state === 'pause') && now - lastInput > IDLE_MS) { G.over = true; endRun('idleEnd'); } // practice idle timeout
   if (state === 'over-anim') for (const c of chickens) if (!c.removed && c.dead) updateChicken(c, sdt);
   puffs.update(sdt);
   roasts.update(sdt);
-  if (locals) locals.update(sdt, camera.position);
-  world.update(now / 1000);
+  if (tav.inside) tav.T.update(now / 1000); else { if (locals) locals.update(sdt, camera.position); world.update(now / 1000); }
   // view punch: the camera follows part of the aim punch (CS view_recoil_tracking 0.45)
   const vt = RECOIL.scale * RECOIL.viewTracking;
   camera.rotation.set((pitch + punch.y * vt) * Math.PI / 180, (yaw - punch.x * vt) * Math.PI / 180, 0);
@@ -523,9 +610,11 @@ function tick(now) {
   gun.root.position.set(gun.base.x, gun.base.y + gun.kick * 0.3, gun.base.z + gun.kick * 1.4);
   gun.root.rotation.x = VM.rx + gun.kick * 0.05;
   if (G && G.reloadT > 0) { const r = G.reloadT / W.reload; gun.root.rotation.x = VM.rx - Math.sin(r * Math.PI) * 0.5; gun.root.position.y -= Math.sin(r * Math.PI) * 3; }
-  renderer.clear(); renderer.render(scene, camera);
+  if (tav.seated) placeTv();
+  updateFreeHint();
+  renderer.clear(); renderer.render(tav.inside ? tav.T.scene : scene, camera);
   if (showcaseCam) { gun.root.position.copy(gun.base); gun.root.rotation.set(0, 0, 0); renderer.setClearColor(0x0b0e19); renderer.clear(); renderer.render(vmScene, showcaseCam); return; }
-  if (state === 'play' || state === 'pause') { renderer.clearDepth(); renderer.render(vmScene, vmCam); }
+  if ((state === 'play' || state === 'pause') && !holstered) { renderer.clearDepth(); renderer.render(vmScene, vmCam); }
   drawOverlay(dt);
 }
 function step(dt) {
@@ -537,7 +626,7 @@ function step(dt) {
   if (G.reloadT > 0) {
     G.reloadT -= dt;
     if (G.reloadT <= 0) { G.reloadT = 0; G.ammo = W.mag; $('h-reload').classList.add('hidden'); }
-  } else if (G.trigger && G.time >= G.nextShot) {
+  } else if (G.trigger && G.time >= G.nextShot && !holstered) {
     if (G.ammo > 0) { fire(); G.nextShot = Math.max(G.nextShot + W.cycle, G.time - W.cycle * 0.5); if (G.nextShot < G.time) G.nextShot = G.time + W.cycle; }
     else { reload(); }
   }
@@ -549,6 +638,7 @@ function step(dt) {
     if (!G.collected && !chickens.some((c) => !c.removed && c.state !== 'escape')) { G.collected = true; const d = roasts.collect(); if (d) G.between = Math.max(G.between, d + 0.3); }
     G.between -= dt;
     if (G.between <= 0) { if ((G.collected && !roasts.busy) || (G.waitT = (G.waitT || 0) + dt) > 8) startLevel(G.level + 1); else G.between = 0.001; }
+  } else if (dormant()) { // free mode: no shot for 10 s (or holstered): nothing new spawns and waiting chickens don't jump
   } else {
     G.timeLeft -= dt;
     G.spawnT -= dt;
@@ -567,6 +657,8 @@ function step(dt) {
   for (let i = chickens.length - 1; i >= 0; i--) if (chickens[i].removed) chickens.splice(i, 1);
   updateHud();
 }
+const DORMANT_S = 10;
+const dormant = () => !!(practice && G && G.mode === 'chickens' && (holstered || tav.inside || G.time - (G.firedAt || 0) > DORMANT_S));
 function levelCleared() {
   const bonus = Math.round(Math.max(0, G.timeLeft) * 5);
   G.score += bonus;
@@ -610,7 +702,7 @@ function goMenu() {
   resetPos();
   $('countdown').className = 'countdown hidden';
   practice = false; $('h-prac').classList.add('hidden');
-  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear(); if (locals) locals.reset();
+  state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear(); if (locals) locals.reset(); tavReset();
   renderMenu(); show('menu'); loadLb();
 }
 const bestRank = () => { const v = parseInt(localStorage.getItem(LS.rank), 10); return Number.isFinite(v) ? Math.min(v, RANKS.length - 1) : -1; };
@@ -633,7 +725,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=36" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=37" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -719,7 +811,7 @@ async function lock() {
 const locked = () => document.pointerLockElement === canvas;
 document.addEventListener('pointerlockchange', () => {
   if (locked()) { $('clicklock').classList.add('hidden'); if (state === 'pause') { state = 'play'; show(null); } }
-  else if (state === 'play') { state = 'pause'; if (G) G.trigger = false; keys.clear(); show('pause'); }
+  else if (state === 'play' && !tav.seated) { state = 'pause'; if (G) G.trigger = false; keys.clear(); show('pause'); }
 });
 document.addEventListener('mousemove', (e) => {
   if (!locked() || state !== 'play') return;
@@ -728,7 +820,7 @@ document.addEventListener('mousemove', (e) => {
   pitch = Math.max(-89, Math.min(89, pitch));
 });
 canvas.addEventListener('mousedown', (e) => {
-  if (state !== 'play') return;
+  if (state !== 'play' || tav.seated) return;
   if (!locked()) { lock(); return; }
   if (e.button === 0) G.trigger = true;
 });
@@ -737,6 +829,9 @@ addEventListener('keydown', (e) => {
   if (state !== 'play') return;
   if (!MOBILE && MOVE_KEYS[e.code]) { keys.add(MOVE_KEYS[e.code]); if (e.code.startsWith('Arrow')) e.preventDefault(); }
   if (!MOBILE && (e.code === 'ShiftLeft' || e.code === 'ShiftRight')) keys.add('walk');
+  if (!MOBILE && practice && e.code === 'KeyE') tavInteract();
+  if (!MOBILE && practice && e.code === 'KeyH' && !tav.inside) { holstered = !holstered; if (G) G.trigger = false; }
+  if (tav.seated && e.code === 'Escape') { standUp(); }
   // infinite ammo: R does nothing outside spray mode
   const i = ['Digit1', 'Digit2', 'Digit3'].indexOf(e.code); if (i >= 0) switchWeapon(WEAPON_ORDER[i]);
 });
@@ -756,7 +851,7 @@ let lastInput = performance.now();
 for (const ev of ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove', 'pointerdown', 'wheel']) addEventListener(ev, () => (lastInput = performance.now()), { passive: true, capture: true });
 const PRAC_MAX = 15;
 function startGame(level = 1, countdown = true, prac = false) {
-  lastInput = performance.now();
+  lastInput = performance.now(); tavReset();
   practice = prac; $('h-prac').classList.toggle('hidden', !prac);
   sfx.unlock(); goFull();
   yaw = 0; pitch = 3; resetPos();
@@ -1132,7 +1227,7 @@ requestAnimationFrame(tick);
 // ---------------- Debug API (for screenshots/tests only, ?debug) ----------------
 if (DEBUG) {
   window.__aim = {
-    THREE, camera, chickens, world, locals, get roasts() { return roasts; },
+    THREE, camera, chickens, world, locals, tav, enterTavern, exitTavern, tavInteract, sitDown, standUp, get holstered() { return holstered; }, get dormant() { return dormant(); }, holster(v) { holstered = v; }, get roasts() { return roasts; },
     get G() { return G; }, get state() { return state; }, keys, vel, updateMove, MOVE,
     startGame(level = 1, cd = false, prac = false) { startGame(level, cd, prac); }, get practice() { return practice; },
     freeze(v = true) { timeScale = v ? 0 : 1; },

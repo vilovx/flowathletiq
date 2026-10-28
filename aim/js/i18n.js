@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=36';
+import { MORE } from './i18n-more.js?v=37';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -38,7 +38,7 @@ const S = {
     level: 'Līmenis', kills: 'Kills', hs: 'HS %', points: 'Punkti', reloading: 'Pārlādē…', clickLock: 'Klikšķini, lai turpinātu',
     pause: 'Pauze', resume: 'Turpināt', toMenu: 'Uz izvēlni', again: 'Spēlēt vēlreiz', accuracy: 'Precizitāte',
     levelBanner: 'Līmenis {n}', chickensN: '{n} vistas', levelDone: 'Līmenis {n} izturēts', timeBonus: 'Laika bonuss +{n}',
-    idleEnd: 'Treniņš beidzās: 1 minūti bez darbības', getReady: 'Gatavojies…', remaining: 'Atlikušas vistas: {n}', escaped: 'Vista aizbēga!', landed: 'Vista piezemējās!', timeUp: 'Laiks beidzās!',
+    idleEnd: 'Brīvais režīms beidzās: 1 minūti bez darbības', getReady: 'Gatavojies…', remaining: 'Atlikušas vistas: {n}', escaped: 'Vista aizbēga!', landed: 'Vista piezemējās!', timeUp: 'Laiks beidzās!',
     chicken: 'Vista', reached: 'Sasniegtais līmenis: {n}', nextRank: ' · nākamais rangs no {n}. līmeņa', topRank: ' · augstākais rangs!',
     newPB: 'Jauns personīgais rekords!', yourPB: 'Tavs rekords: {level}. līmenis, {score} punkti',
     wBanner: '{dmg} bojājums · {rpm} RPM · {mag} lodes', wCard: '{dmg} dmg · {rpm} RPM · {mag} lodes', wHs: 'HS ar ķiveri: {n}', oneTap: ' (one-tap)',
@@ -79,7 +79,7 @@ const S = {
     level: 'Level', kills: 'Kills', hs: 'HS %', points: 'Score', reloading: 'Reloading…', clickLock: 'Click to continue',
     pause: 'Paused', resume: 'Resume', toMenu: 'Main menu', again: 'Play again', accuracy: 'Accuracy',
     levelBanner: 'Level {n}', chickensN: '{n} chickens', levelDone: 'Level {n} cleared', timeBonus: 'Time bonus +{n}',
-    idleEnd: 'Practice ended: 1 minute without input', getReady: 'Get ready…', remaining: 'Chickens left: {n}', escaped: 'A chicken escaped!', landed: 'A chicken landed!', timeUp: 'Time is up!',
+    idleEnd: 'Free mode ended: 1 minute without input', getReady: 'Get ready…', remaining: 'Chickens left: {n}', escaped: 'A chicken escaped!', landed: 'A chicken landed!', timeUp: 'Time is up!',
     chicken: 'Chicken', reached: 'Level reached: {n}', nextRank: ' · next rank at level {n}', topRank: ' · highest rank!',
     newPB: 'New personal best!', yourPB: 'Your best: level {level}, {score} points',
     wBanner: '{dmg} damage · {rpm} RPM · {mag} rounds', wCard: '{dmg} dmg · {rpm} RPM · {mag} rounds', wHs: 'HS with helmet: {n}', oneTap: ' (one-tap)',
@@ -120,7 +120,7 @@ const S = {
     level: 'Уровень', kills: 'Убийства', hs: 'HS %', points: 'Очки', reloading: 'Перезарядка…', clickLock: 'Кликни, чтобы продолжить',
     pause: 'Пауза', resume: 'Продолжить', toMenu: 'В меню', again: 'Играть снова', accuracy: 'Точность',
     levelBanner: 'Уровень {n}', chickensN: 'Куриц: {n}', levelDone: 'Уровень {n} пройден', timeBonus: 'Бонус за время +{n}',
-    idleEnd: 'Тренировка завершена: 1 минута без действий', getReady: 'Приготовься…', remaining: 'Осталось куриц: {n}', escaped: 'Курица сбежала!', landed: 'Курица приземлилась!', timeUp: 'Время вышло!',
+    idleEnd: 'Свободный режим завершён: 1 минута без действий', getReady: 'Приготовься…', remaining: 'Осталось куриц: {n}', escaped: 'Курица сбежала!', landed: 'Курица приземлилась!', timeUp: 'Время вышло!',
     chicken: 'Курица', reached: 'Достигнутый уровень: {n}', nextRank: ' · следующий ранг с {n} уровня', topRank: ' · высший ранг!',
     newPB: 'Новый личный рекорд!', yourPB: 'Твой рекорд: уровень {level}, {score} очков',
     wBanner: 'Урон {dmg} · {rpm} RPM · {mag} патронов', wCard: '{dmg} урон · {rpm} RPM · {mag} патр.', wHs: 'HS в шлем: {n}', oneTap: ' (ваншот)',
@@ -178,13 +178,13 @@ for (const l in NR) TOUCH[l].noRecoil = NR[l];
 const HOME = { lv: 'FlowAthletiq sākumlapa', en: 'FlowAthletiq home page', ru: 'Главная страница FlowAthletiq', es: 'Página de inicio de FlowAthletiq', pt: 'Página inicial do FlowAthletiq', ja: 'FlowAthletiq ホームページ', zh: 'FlowAthletiq 首页' };
 for (const l in HOME) TOUCH[l].homeLink = HOME[l];
 const PRAC = { // [button, badge, picker title, note, retry, other level, ranked again, back]
-  lv: ['Treniņš (bez ranga)', 'TRENIŅŠ – netiek ieskaitīts', 'Treniņš: izvēlies līmeni', 'Rezultāts netiek iesniegts tabulā un neskaitās rekordā vai rangā.', 'Atkārtot {n}. līmeni', 'Cits līmenis', 'Spēlēt ar rangu', 'Atpakaļ'],
-  en: ['Practice (unranked)', 'PRACTICE – not counted', 'Practice: choose a level', 'Scores are not submitted to the leaderboard and do not count for your record or rank.', 'Retry level {n}', 'Other level', 'Play ranked', 'Back'],
-  ru: ['Тренировка (без ранга)', 'ТРЕНИРОВКА – не засчитывается', 'Тренировка: выбери уровень', 'Результат не отправляется в таблицу и не идёт в рекорд или ранг.', 'Повторить уровень {n}', 'Другой уровень', 'Играть на ранг', 'Назад'],
-  es: ['Práctica (sin rango)', 'PRÁCTICA – no cuenta', 'Práctica: elige un nivel', 'La puntuación no se envía a la clasificación y no cuenta para tu récord ni tu rango.', 'Repetir nivel {n}', 'Otro nivel', 'Jugar con rango', 'Atrás'],
-  pt: ['Treino (sem rank)', 'TREINO – não conta', 'Treino: escolha um nível', 'A pontuação não é enviada ao ranking e não conta para seu recorde nem rank.', 'Repetir nível {n}', 'Outro nível', 'Jogar ranqueado', 'Voltar'],
-  ja: ['練習（ランクなし）', '練習 – 記録されません', '練習：レベルを選択', 'スコアはランキングに送信されず、自己ベストやランクにも反映されません。', 'レベル{n}をもう一度', '別のレベル', 'ランク戦をプレイ', '戻る'],
-  zh: ['练习（不计排名）', '练习 – 不计成绩', '练习：选择关卡', '成绩不会提交到排行榜，也不计入个人纪录或段位。', '重玩第 {n} 关', '其他关卡', '排位模式', '返回'],
+  lv: ['Brīvais režīms', 'BRĪVAIS REŽĪMS – netiek ieskaitīts', 'Brīvais režīms: izvēlies līmeni', 'Rezultāts netiek iesniegts tabulā un neskaitās rekordā vai rangā.', 'Atkārtot {n}. līmeni', 'Cits līmenis', 'Spēlēt ar rangu', 'Atpakaļ'],
+  en: ['Free mode', 'FREE MODE – not counted', 'Free mode: choose a level', 'Scores are not submitted to the leaderboard and do not count for your record or rank.', 'Retry level {n}', 'Other level', 'Play ranked', 'Back'],
+  ru: ['Свободный режим', 'СВОБОДНЫЙ РЕЖИМ – не засчитывается', 'Свободный режим: выбери уровень', 'Результат не отправляется в таблицу и не идёт в рекорд или ранг.', 'Повторить уровень {n}', 'Другой уровень', 'Играть на ранг', 'Назад'],
+  es: ['Modo libre', 'MODO LIBRE – no cuenta', 'Modo libre: elige un nivel', 'La puntuación no se envía a la clasificación y no cuenta para tu récord ni tu rango.', 'Repetir nivel {n}', 'Otro nivel', 'Jugar con rango', 'Atrás'],
+  pt: ['Modo livre', 'MODO LIVRE – não conta', 'Modo livre: escolha um nível', 'A pontuação não é enviada ao ranking e não conta para seu recorde nem rank.', 'Repetir nível {n}', 'Outro nível', 'Jogar ranqueado', 'Voltar'],
+  ja: ['フリーモード', 'フリーモード – 記録されません', 'フリーモード：レベルを選択', 'スコアはランキングに送信されず、自己ベストやランクにも反映されません。', 'レベル{n}をもう一度', '別のレベル', 'ランク戦をプレイ', '戻る'],
+  zh: ['自由模式', '自由模式 – 不计成绩', '自由模式：选择关卡', '成绩不会提交到排行榜，也不计入个人纪录或段位。', '重玩第 {n} 关', '其他关卡', '排位模式', '返回'],
 };
 for (const l in PRAC) { const a = PRAC[l]; Object.assign(TOUCH[l], { pracBtn: a[0], pracBadge: a[1], pracPick: a[2], pracNote: a[3], pracRetry: a[4], pracOther: a[5], pracRanked: a[6], pracBack: a[7] }); }
 const SHARE = { // [button, toast, share text]
@@ -214,6 +214,16 @@ const TOUCH_HINTS = {
   zh: ['按住 ◎，用手指沿着青色线拖动', '1 / 2 / 3 武器 · ❚❚ 菜单'],
 };
 for (const l in TOUCH_HINTS) Object.assign(TOUCH[l], { 'sp.hint.m': TOUCH_HINTS[l][0], 'sp.keys.m': TOUCH_HINTS[l][1], 'sp.ideal.m': TOUCH_IDEAL[l] });
+const TAV = { // Vistu krogs (free mode, desktop): [enter, exit, sit, stand up, leave, screen poster, free-mode hint, live, offline note, channel]
+  lv: ['E — ieiet Vistu krogā', 'E — iziet no kroga', 'E — apsēsties', 'Piecelties (E)', 'Iziet no kroga', 'Apsēdies pie galda (E), lai skatītos tiešraidi', 'Brīvais režīms: WASD staigā brīvi · H ierocis nost/klāt · E krogs', 'TIEŠRAIDE', 'Ja kanāls šobrīd nav tiešsaistē, Twitch rāda bezsaistes ekrānu.', 'Kanāls'],
+  en: ['E — enter Vistu krogs', 'E — leave the tavern', 'E — sit down', 'Stand up (E)', 'Leave the tavern', 'Sit at a table (E) to watch the live stream', 'Free mode: WASD walk anywhere · H holster/draw · E tavern', 'LIVE', 'If the channel is offline right now, Twitch shows its offline screen.', 'Channel'],
+  ru: ['E — войти в Vistu krogs', 'E — выйти из таверны', 'E — сесть', 'Встать (E)', 'Выйти из таверны', 'Сядь за стол (E), чтобы смотреть трансляцию', 'Свободный режим: WASD — ходить везде · H — убрать/достать оружие · E — таверна', 'ПРЯМОЙ ЭФИР', 'Если канал сейчас не в эфире, Twitch показывает экран офлайн.', 'Канал'],
+  es: ['E — entrar en Vistu krogs', 'E — salir de la taberna', 'E — sentarse', 'Levantarse (E)', 'Salir de la taberna', 'Siéntate a una mesa (E) para ver el directo', 'Modo libre: WASD camina libre · H guardar/sacar arma · E taberna', 'EN DIRECTO', 'Si el canal no está en directo, Twitch muestra su pantalla offline.', 'Canal'],
+  pt: ['E — entrar no Vistu krogs', 'E — sair da taverna', 'E — sentar', 'Levantar (E)', 'Sair da taverna', 'Sente-se a uma mesa (E) para ver a live', 'Modo livre: WASD andar livre · H guardar/sacar arma · E taverna', 'AO VIVO', 'Se o canal estiver offline agora, a Twitch mostra a tela offline.', 'Canal'],
+  ja: ['E — Vistu krogsに入る', 'E — 酒場を出る', 'E — 座る', '立ち上がる (E)', '酒場を出る', 'テーブルに座って（E）ライブ配信を見よう', 'フリーモード：WASDで自由に歩く · H 武器をしまう/出す · E 酒場', 'ライブ', 'チャンネルが配信していない場合はTwitchのオフライン画面が表示されます。', 'チャンネル'],
+  zh: ['E — 进入 Vistu krogs', 'E — 离开酒馆', 'E — 坐下', '站起来 (E)', '离开酒馆', '在桌边坐下（E）观看直播', '自由模式：WASD 自由行走 · H 收起/拿出武器 · E 酒馆', '直播', '如果频道当前未开播，Twitch 会显示离线画面。', '频道'],
+};
+for (const l in TAV) { const a = TAV[l]; Object.assign(TOUCH[l], { tavEnter: a[0], tavExit: a[1], tavSit: a[2], tavStand: a[3], tavLeave: a[4], tavPoster: a[5], freeHint: a[6], tavLive: a[7], tavOffline: a[8], tavChannel: a[9] }); }
 for (const l in TOUCH) Object.assign(S[l], TOUCH[l]);
 const valid = (c) => !!S[c];
 // --- visitor country without any IP service: time zone first, then the browser locale's region subtag
