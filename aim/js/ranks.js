@@ -1,4 +1,4 @@
-import { t } from './i18n.js?v=40';
+import { t } from './i18n.js?v=41';
 // Wolf-themed ranks (FlowAthletiq's own names and artwork by the site owner, not Valve ranks).
 // Rank = level reached; the top rank additionally needs a headshot share of at least TOP_HS % in that run.
 const LEVELS = [1, 3, 5, 7, 9, 12];
@@ -18,5 +18,5 @@ export function rankFor(level, hsPct) {
 }
 export function rankIcon(idx, big = false) {
   const sz = big ? 512 : 256;
-  return `<img class="rank-img${idx === TOP ? ' top' : ''}" src="img/ranks/rank${idx + 1}-${sz}.webp?v=40" alt="" width="${sz}" height="${sz}" decoding="async">`;
+  return `<img class="rank-img${idx === TOP ? ' top' : ''}" src="img/ranks/rank${idx + 1}-${sz}.webp?v=41" alt="" width="${sz}" height="${sz}" decoding="async">`;
 }

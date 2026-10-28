@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=40';
+import { MORE } from './i18n-more.js?v=41';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -236,8 +236,8 @@ const CONT = { // ranked run over (a chicken landed): [continue in free mode, re
 };
 for (const l in CONT) if (TOUCH[l]) Object.assign(TOUCH[l], { contBtn: CONT[l][0], restartBtn: CONT[l][1], contNote: CONT[l][2] });
 const MV = { // menus: [start ranked run, back to the map menu, map-menu explore button (opens Brīvais režīms)]
-  lv: ['Sākt spēli', '← Atpakaļ', 'Izpēte'], en: ['Start game', '← Back', 'Explore'], ru: ['Начать игру', '← Назад', 'Исследовать'], es: ['Empezar', '← Volver', 'Explorar'],
-  pt: ['Jogar', '← Voltar', 'Explorar'], ja: ['ゲーム開始', '← 戻る', '探索'], zh: ['开始游戏', '← 返回', '探索'],
+  lv: ['Sākt spēli', '← Atpakaļ', 'Explore'], en: ['Start game', '← Back', 'Explore'], ru: ['Начать игру', '← Назад', 'Explore'], es: ['Empezar', '← Volver', 'Explore'],
+  pt: ['Jogar', '← Voltar', 'Explore'], ja: ['ゲーム開始', '← 戻る', 'Explore'], zh: ['开始游戏', '← 返回', 'Explore'],
 };
 for (const l in MV) if (TOUCH[l]) Object.assign(TOUCH[l], { startRun: MV[l][0], menuBack: MV[l][1], exploreBtn: MV[l][2] });
 const LOC = { // menu location card: [place name, one-line rules]
