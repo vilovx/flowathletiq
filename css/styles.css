@@ -591,6 +591,14 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 /* phones/tablets: the game has touch controls; show a short how-to under the Play button */
 html.fa-touch .aim-promo-mobile { display: block; margin-top: .6rem !important; padding: .5rem .7rem; border-radius: 10px; background: rgba(0,240,255,.08); border: 1px dashed rgba(0,240,255,.4); color: var(--text) !important; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .nav .nav-aim-btn .aim-ico { animation: none; } }
+/* header "Brīvais režīms" button: glowing location pin (same pin as the Kuldīga map in the game menu) */
+.pin-ico { display: inline-block; vertical-align: -3px; flex: none; overflow: visible; }
+.pin-ico .pin-drop { fill: #0d0b24; stroke: #0d0b24; stroke-width: 1.2; stroke-linejoin: round; }
+.pin-ico .pin-eye { fill: #e9fbff; filter: drop-shadow(0 0 2px #5ff4ff); animation: pin-glow 3.2s ease-in-out infinite; }
+.pin-ico .pin-rip { fill: none; stroke: #0d0b24; stroke-width: 1.1; opacity: .55; transform-box: fill-box; transform-origin: center; animation: pin-rip 3.2s ease-out infinite; }
+@keyframes pin-glow { 0%, 100% { opacity: .75; } 50% { opacity: 1; filter: drop-shadow(0 0 3px #5ff4ff) drop-shadow(0 0 5px #b44dff); } }
+@keyframes pin-rip { 0% { opacity: .6; transform: scale(.5); } 100% { opacity: 0; transform: scale(1.5); } }
+@media (prefers-reduced-motion: reduce) { .pin-ico .pin-eye, .pin-ico .pin-rip { animation: none; } }
 .aim-promo-art { position: relative; }
 .aim-promo-wb { position: absolute; left: calc(.8rem + (100% - 1.6rem) * .395); width: calc((100% - 1.6rem) * .575); top: calc(.6rem + 12%); height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; color: #14204a; text-align: center; }
 .aim-promo-wb b { font-family: var(--display); font-weight: 600; font-size: clamp(1.1rem, 2.2vw, 1.7rem); color: #c4161c; letter-spacing: .04em; line-height: 1; }

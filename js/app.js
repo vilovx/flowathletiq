@@ -202,8 +202,10 @@
   function aimUrl() { return "aim/?lang=" + encodeURIComponent(LANG); }
   function aimNavItem() {
     var A = t("aim") || {};
-    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '">' + AIM_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.phoneNote) + "</span></a></li>";
+    // header button: "Brīvais režīms" opens /aim/ straight into the free-mode picker; glowing location pin = the Kuldīga map pin in the game menu
+    return '<li class="nav-aim"><a class="nav-aim-btn" href="' + aimUrl() + '&amp;mode=free">' + PIN_ICON + "<span>" + esc(A.nav) + '</span><span class="nav-aim-note">' + esc(A.phoneNote) + "</span></a></li>";
   }
+  var PIN_ICON = '<svg class="pin-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><ellipse class="pin-rip" cx="12" cy="21.6" rx="5" ry="1.4"/><path class="pin-drop" d="M12 21C10.6 17.6 5 13.9 5 9.2a7 7 0 1 1 14 0c0 4.7-5.6 8.4-7 11.8z"/><circle class="pin-eye" cx="12" cy="9.2" r="2.7"/></svg>';
   function renderAimPromo() {
     var box = $("aim-promo"); if (!box) return;
     var A = t("aim") || {};
