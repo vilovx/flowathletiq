@@ -426,10 +426,20 @@ code { background: var(--bg-2); padding: .1rem .4rem; border-radius: 6px; }
 .top-table .rank { color: var(--muted); }
 .top-table .p1 .pos { color: #ffd23f; } .top-table .p2 .pos { color: #cfd6e6; } .top-table .p3 .pos { color: #e09a5a; }
 .top-table .show-sm { display: none; }
+.top-tabs { display: inline-flex; gap: .25rem; margin-top: 1.25rem; padding: .25rem; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.03); }
+.top-tab { font: inherit; font-size: .85rem; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 999px; padding: .5rem 1.1rem; cursor: pointer; }
+.top-tab:hover { color: var(--text); }
+.top-tab.is-active { color: #07080f; background: var(--neon); }
+.top-range { margin: .9rem 0 0; font-size: .85rem; color: var(--muted); }
+.top-range + .top-table-wrap { margin-top: .7rem; }
+.top-table .pts.neg { color: #ff6b6b; }
+.top-table th { white-space: nowrap; } .top-table .show-sm-i { display: none; text-decoration: none; }
 @media (max-width: 900px) { .top-table .hide-md { display: none; } }
 @media (max-width: 560px) {
   .top-table .hide-sm { display: none; }
   .top-table .show-sm { display: block; color: var(--muted); font-weight: 500; font-size: .75rem; }
+  .top-table th .hide-sm { display: none; } .top-table .show-sm-i { display: inline; }
+  .top-table.top-week .player { max-width: 120px; }
   .top-table td, .top-table th { padding: .55rem .45rem; }
   .top-table .player { max-width: 150px; }
 }

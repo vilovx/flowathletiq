@@ -44,6 +44,7 @@ jobs:
         run: python scripts/server_status.py out
       - name: Export ranks leaderboard (top 100)
         # On failure the previous server-top.json (if any) is kept.
+        # Also maintains server-top-week.json (weekly baseline, resets Monday 00:00 Europe/Riga).
         continue-on-error: true
         env:
           DB_HOST: ${{ secrets.DB_HOST }}

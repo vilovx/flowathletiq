@@ -45,25 +45,55 @@
       ? '<a href="' + p.profile + '" target="_blank" rel="noopener nofollow">' + n + "</a>" : n;
   }
   function fmtMin(m) { m = m || 0; return m >= 60 ? Math.floor(m / 60) + " h " + (m % 60) + " min" : m + " min"; }
+  var topTab = /^#(all|visu-laiku)$/.test(location.hash) ? "all" : "week";
+  function fmtDay(iso) {
+    var a = String(iso || "").split("-");
+    try { return new Date(+a[0], a[1] - 1, +a[2]).toLocaleDateString(ctx.locale, { day: "numeric", month: "short" }); }
+    catch (e) { return iso; }
+  }
+  function topTable(pl, week) {
+    var esc = ctx.esc, ks = week ? "num" : "num hide-sm";
+    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRank"), "rank hide-sm"], [week ? s("colGained") : s("colPoints"), "num"], [s("colKills"), ks, "K"],
+      [s("colDeaths"), ks, "D"], [s("colKd"), "num"], [s("colHs"), "num hide-md"], [s("colTime"), "num hide-md"]];
+    return '<div class="srv-card top-table-wrap"><table class="top-table' + (week ? " top-week" : "") + '"><caption class="sr-only">' + esc(s(week ? "tabWeek" : "tabAll")) + "</caption><thead><tr>" +
+      cols.map(function (c) {
+        var label = week && c[2] ? '<span class="hide-sm">' + esc(c[0]) + '</span><abbr class="show-sm-i" title="' + esc(c[0]) + '">' + c[2] + "</abbr>" : esc(c[0]);
+        return '<th scope="col" class="' + c[1] + '">' + label + "</th>";
+      }).join("") + "</tr></thead><tbody>" +
+      pl.map(function (p) {
+        var pts = week && p.points > 0 ? "+" + p.points : p.points;
+        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) +
+          '<small class="show-sm">' + esc(p.rank) + "</small></td>" +
+          '<td class="rank hide-sm">' + esc(p.rank) + '</td><td class="num pts' + (week && p.points < 0 ? " neg" : "") + '">' + esc(pts) + '</td><td class="' + ks + '">' + esc(p.kills) +
+          '</td><td class="' + ks + '">' + esc(p.deaths) + '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num hide-md">' + esc(p.headshots) +
+          '</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
+      }).join("") + "</tbody></table></div>";
+  }
   function paintTop() {
     var root = document.getElementById("server-top-root"), esc = ctx.esc;
     var head = '<a class="srv-back" href="server.html">← ' + esc(s("back")) + '</a><span class="kicker">' + esc(s("kicker")) + "</span><h1>" + s("top100H1") + "</h1>" +
       '<p class="lead">' + esc(s("top100Lead")) + "</p>";
     if (!state.loaded) { root.innerHTML = head + '<p class="srv-note">' + esc(s("loading")) + "</p>"; return; }
-    var pl = topPlayers();
+    var pl = topPlayers(), wk = state.top && state.top.week;
     var meta = state.top && state.top.updated ? '<p class="srv-updated">' + esc(s("playersTotal", { n: state.top.totalPlayers || pl.length })) + " · " + esc(s("updated", { t: fmtTime(state.top.updated) })) + "</p>" : "";
     if (!pl.length) { root.innerHTML = head + '<p class="srv-note">' + esc(s("topEmpty")) + "</p>"; return; }
-    var cols = [["#", "pos"], [s("colPlayer"), "player"], [s("colRank"), "rank hide-sm"], [s("colPoints"), "num"], [s("colKills"), "num hide-sm"],
-      [s("colDeaths"), "num hide-sm"], [s("colKd"), "num"], [s("colHs"), "num hide-md"], [s("colTime"), "num hide-md"]];
-    root.innerHTML = head + '<div class="srv-card top-table-wrap"><table class="top-table"><caption class="sr-only">' + esc(s("top100H1").replace(/<[^>]+>/g, "")) + "</caption><thead><tr>" +
-      cols.map(function (c) { return '<th scope="col" class="' + c[1] + '">' + esc(c[0]) + "</th>"; }).join("") + "</tr></thead><tbody>" +
-      pl.map(function (p) {
-        return '<tr class="' + (p.pos <= 3 ? "podium p" + p.pos : "") + '"><td class="pos">' + p.pos + '</td><td class="player">' + playerLink(p) +
-          '<small class="show-sm">' + esc(p.rank) + "</small></td>" +
-          '<td class="rank hide-sm">' + esc(p.rank) + '</td><td class="num pts">' + esc(p.points) + '</td><td class="num hide-sm">' + esc(p.kills) +
-          '</td><td class="num hide-sm">' + esc(p.deaths) + '</td><td class="num">' + Number(p.kd).toFixed(2) + '</td><td class="num hide-md">' + esc(p.headshots) +
-          '</td><td class="num hide-md">' + esc(fmtMin(p.playtimeMin)) + "</td></tr>";
-      }).join("") + "</tbody></table></div>" + meta;
+    if (!wk) { root.innerHTML = head + topTable(pl, false) + meta; return; } // older data without weekly stats
+    var tab = function (id, label) {
+      return '<button type="button" role="tab" class="top-tab' + (topTab === id ? " is-active" : "") + '" data-tab="' + id + '" aria-selected="' + (topTab === id) + '">' + esc(label) + "</button>";
+    };
+    var body;
+    if (topTab === "week") {
+      body = '<p class="top-range">' + esc(s("weekRange", { a: fmtDay(wk.start), b: fmtDay(wk.end) })) + " · " + esc(s("weekActive", { n: wk.activePlayers || 0 })) + "</p>" +
+        (wk.players && wk.players.length ? topTable(wk.players, true) : '<p class="srv-note">' + esc(s("weekEmpty")) + "</p>");
+    } else body = topTable(pl, false);
+    root.innerHTML = head + '<div class="top-tabs" role="tablist">' + tab("week", s("tabWeek")) + tab("all", s("tabAll")) + "</div>" + body + meta;
+    Array.prototype.forEach.call(root.querySelectorAll(".top-tab"), function (b) {
+      b.addEventListener("click", function () {
+        topTab = b.getAttribute("data-tab");
+        try { history.replaceState(null, "", topTab === "all" ? "#all" : location.pathname + location.search); } catch (e) {}
+        paintTop();
+      });
+    });
   }
 
   function chartSVG(points) {
