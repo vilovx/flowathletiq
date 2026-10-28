@@ -1,7 +1,7 @@
 // UI strings LV / EN / RU here; ES / PT / JA / ZH in i18n-more.js (missing keys fall back to English). Language: ?lang= → saved choice (localStorage "fa-lang", shared with the main site) → visitor's country:
 // LV → lv; RU, BY, KZ, KG → ru; anything else → en. Country comes from the time zone (no IP lookup), with the
 // browser locale's region (e.g. lv-LV) as a fallback when the time zone does not tell.
-import { MORE } from './i18n-more.js?v=32';
+import { MORE } from './i18n-more.js?v=33';
 export const LANGS = [{ code: 'lv', label: 'LV', name: 'Latviešu' }, { code: 'en', label: 'EN', name: 'English' }, { code: 'ru', label: 'RU', name: 'Русский' },
   { code: 'es', label: 'ES', name: 'Español' }, { code: 'pt', label: 'PT', name: 'Português' }, { code: 'ja', label: 'JA', name: '日本語' }, { code: 'zh', label: 'ZH', name: '中文（简体）' }];
 export const LOCALE = { lv: 'lv_LV', en: 'en_GB', ru: 'ru_RU', es: 'es_ES', pt: 'pt_BR', ja: 'ja_JP', zh: 'zh_CN' };
@@ -42,7 +42,7 @@ const S = {
     chicken: 'Vista', reached: 'Sasniegtais līmenis: {n}', nextRank: ' · nākamais rangs no {n}. līmeņa', topRank: ' · augstākais rangs!',
     newPB: 'Jauns personīgais rekords!', yourPB: 'Tavs rekords: {level}. līmenis, {score} punkti',
     wBanner: '{dmg} bojājums · {rpm} RPM · {mag} lodes', wCard: '{dmg} dmg · {rpm} RPM · {mag} lodes', wHs: 'HS ar ķiveri: {n}', oneTap: ' (one-tap)',
-    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
+    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S · WASD',
     'sp.wall': 'SPRAY TRENIŅŠ', 'sp.hint': 'Turi šaušanu un velc peli pa ciāna līniju', 'sp.result': 'Rezultāts', 'sp.bullets': 'Lodes', 'sp.best': 'Labākais',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC izvēlne', 'sp.raw': '● recoil bez kontroles', 'sp.ideal': '— ideālais peles ceļš', 'sp.yours': '● tavas lodes', 'sp.grid': 'režģis 2°',
     ranks: ['Vilcēns', 'Jaunais vilks', 'Mednieks', 'Bara sargs', 'Alfa', 'Astral'],
@@ -83,7 +83,7 @@ const S = {
     chicken: 'Chicken', reached: 'Level reached: {n}', nextRank: ' · next rank at level {n}', topRank: ' · highest rank!',
     newPB: 'New personal best!', yourPB: 'Your best: level {level}, {score} points',
     wBanner: '{dmg} damage · {rpm} RPM · {mag} rounds', wCard: '{dmg} dmg · {rpm} RPM · {mag} rounds', wHs: 'HS with helmet: {n}', oneTap: ' (one-tap)',
-    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
+    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S · WASD',
     'sp.wall': 'SPRAY TRAINING', 'sp.hint': 'Hold fire and drag your mouse along the cyan line', 'sp.result': 'Score', 'sp.bullets': 'Bullets', 'sp.best': 'Best',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC menu', 'sp.raw': '● recoil without control', 'sp.ideal': '— ideal mouse path', 'sp.yours': '● your bullets', 'sp.grid': 'grid 2°',
     ranks: ['Wolf Pup', 'Young Wolf', 'Hunter', 'Pack Guard', 'Alpha', 'Astral'],
@@ -124,7 +124,7 @@ const S = {
     chicken: 'Курица', reached: 'Достигнутый уровень: {n}', nextRank: ' · следующий ранг с {n} уровня', topRank: ' · высший ранг!',
     newPB: 'Новый личный рекорд!', yourPB: 'Твой рекорд: уровень {level}, {score} очков',
     wBanner: 'Урон {dmg} · {rpm} RPM · {mag} патронов', wCard: '{dmg} урон · {rpm} RPM · {mag} патр.', wHs: 'HS в шлем: {n}', oneTap: ' (ваншот)',
-    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S',
+    wKeys: '1 AK-47 · 2 M4A4 · 3 M4A1-S · WASD',
     'sp.wall': 'ТРЕНИРОВКА СПРЕЯ', 'sp.hint': 'Зажми огонь и веди мышь по голубой линии', 'sp.result': 'Результат', 'sp.bullets': 'Пули', 'sp.best': 'Лучший',
     'sp.keys': '1 AK-47 · 2 M4A4 · 3 M4A1-S · ESC меню', 'sp.raw': '● отдача без контроля', 'sp.ideal': '— идеальный путь мыши', 'sp.yours': '● твои пули', 'sp.grid': 'сетка 2°',
     ranks: ['Волчонок', 'Молодой волк', 'Охотник', 'Страж стаи', 'Альфа', 'Астрал'],

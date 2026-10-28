@@ -1,15 +1,15 @@
 import * as THREE from '../vendor/three.module.min.js';
-import { buildWorld } from './world.js?v=32';
-import { RoastSystem } from './roast.js?v=32';
-import { createChicken, Puffs } from './chicken.js?v=32';
-import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=32';
-import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=32';
-import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=32';
-import { t, onLang, applyDom } from './i18n.js?v=32';
-import { Sfx } from './audio.js?v=32';
-import { buildGunModel } from './gunmodels.js?v=32';
-import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=32';
-import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=32';
+import { buildWorld } from './world.js?v=33';
+import { RoastSystem } from './roast.js?v=33';
+import { createChicken, Puffs } from './chicken.js?v=33';
+import { drawCrosshair, DEFAULT_XHAIR as PC_XHAIR, MOBILE_XHAIR, COLOR_PRESETS } from './crosshair.js?v=33';
+import { decodeCrosshair, encodeCrosshair } from './sharecode.js?v=33';
+import { RANKS, rankFor, rankIcon, TOP, TOP_HS } from './ranks.js?v=33';
+import { t, onLang, applyDom } from './i18n.js?v=33';
+import { Sfx } from './audio.js?v=33';
+import { buildGunModel } from './gunmodels.js?v=33';
+import { fetchTop, submitScore, countryList, guessCountry, flagHtml, esc, wpnShort, wpnName } from './leaderboard.js?v=33';
+import { WEAPONS, WEAPON_ORDER, RECOIL, recoilTable, Punch, idealSpray } from './weapons.js?v=33';
 
 const $ = (id) => document.getElementById(id);
 const Q = new URLSearchParams(location.search);
@@ -17,7 +17,7 @@ const DEBUG = Q.has('debug');
 const MOBILE = document.documentElement.classList.contains('mobile'); // touch mode (set in main.js)
 const DEVICE = MOBILE ? 'mobile' : 'pc';
 const QUALITY = document.documentElement.dataset.q || 'desktop'; // touch mode: high | medium | low
-import { forced, forceOff } from './rot.js?v=32';
+import { forced, forceOff } from './rot.js?v=33';
 const VW = () => document.getElementById('app').clientWidth, VH = () => document.getElementById('app').clientHeight; // layout size (= rotated size in forced landscape)
 const tm = (k, v) => (MOBILE ? t(k + '.m', v) : t(k, v)); // touch wording for control hints on phones
 
@@ -63,6 +63,28 @@ const camera = new THREE.PerspectiveCamera(VFOV, 16 / 9, 2, 6000);
 camera.rotation.order = 'YXZ';
 const PLAYER = new THREE.Vector3(0, EYE, 250);
 camera.position.copy(PLAYER);
+// ---- Desktop movement (WASD / arrows): CS2-like walk speeds in Hammer-ish units (EYE 64 = CS2 eye height).
+// Left/right and back up to the wall, forward only ~2 steps (60 u = ~1.5 m) from the start point. Touch mode: no movement.
+const MOVE = { fwd: 60, x0: -504, x1: 509, z1: 678, r: 16, walk: 0.52, accel: 10 };
+const PROPS = [[-440, 160, 16], [430, 200, 16], [-480, 200, 26], [-480, 80, 26]]; // barrels + cypress trees (x, z, radius)
+const keys = new Set(), vel = new THREE.Vector2();
+const MOVE_KEYS = { KeyW: 'f', ArrowUp: 'f', KeyS: 'b', ArrowDown: 'b', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
+const RUN_SPEED = { ak47: 215, m4a4: 225, m4a1s: 225 };
+function resetPos() { camera.position.copy(PLAYER); vel.set(0, 0); keys.clear(); }
+function moveFrac() { return Math.min(1, vel.length() / (RUN_SPEED[W.id] || 215)); }
+function updateMove(dt) {
+  if (MOBILE || !G || G.mode !== 'chickens') return;
+  const f = (keys.has('f') ? 1 : 0) - (keys.has('b') ? 1 : 0), r = (keys.has('r') ? 1 : 0) - (keys.has('l') ? 1 : 0);
+  const max = (RUN_SPEED[W.id] || 215) * (keys.has('walk') ? MOVE.walk : 1), a = yaw * Math.PI / 180;
+  const tx = new THREE.Vector2(-Math.sin(a) * f + Math.cos(a) * r, -Math.cos(a) * f - Math.sin(a) * r);
+  if (tx.lengthSq() > 0) tx.normalize().multiplyScalar(max);
+  vel.lerp(tx, 1 - Math.exp(-MOVE.accel * dt));
+  if (vel.lengthSq() < 1) vel.set(0, 0);
+  const P = camera.position; P.x += vel.x * dt; P.z += vel.y * dt;
+  for (const [x, z, rr] of PROPS) { const dx = P.x - x, dz = P.z - z, d = Math.hypot(dx, dz), m = rr + MOVE.r; if (d < m && d > 0) { P.x = x + dx / d * m; P.z = z + dz / d * m; } }
+  const cx = Math.max(MOVE.x0, Math.min(MOVE.x1, P.x)), cz = Math.max(PLAYER.z - MOVE.fwd, Math.min(MOVE.z1, P.z));
+  if (cx !== P.x) vel.x = 0; if (cz !== P.z) vel.y = 0; P.x = cx; P.z = cz; P.y = EYE;
+}
 const world = buildWorld(scene);
 if (MOBILE && QUALITY !== 'low') { // sharper textures at grazing angles (cobbles, walls) on phones
   const an = Math.min(8, renderer.capabilities.getMaxAnisotropy());
@@ -313,7 +335,7 @@ function shotDirection(noSpread) {
   if (noRecoil()) return new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(pitch * Math.PI / 180, yaw * Math.PI / 180, 0, 'YXZ'));
   let dp = punch.y * RECOIL.scale, dy = -punch.x * RECOIL.scale; // degrees
   if (!noSpread) {
-    const inacc = W.inacc.stand + accPenalty, r1 = Math.random() * inacc, a1 = Math.random() * Math.PI * 2;
+    const mv = MOBILE ? 0 : Math.max(0, (moveFrac() - 0.34) / 0.66), inacc = W.inacc.stand + accPenalty + W.inacc.stand * 1.5 * mv, r1 = Math.random() * inacc, a1 = Math.random() * Math.PI * 2;
     const r2 = Math.random() * W.inacc.spread, a2 = Math.random() * Math.PI * 2;
     const ox = Math.cos(a1) * r1 + Math.cos(a2) * r2, oy = Math.sin(a1) * r1 + Math.sin(a2) * r2; // radians
     dy += ox * 180 / Math.PI; dp += oy * 180 / Math.PI;
@@ -456,9 +478,10 @@ function tick(now) {
   drawOverlay(dt);
 }
 function step(dt) {
-  if (G.countdown > 0) { updateRecoil(dt); countdownStep(dt); updateHud(); return; }
+  if (G.countdown > 0) { updateMove(dt); updateRecoil(dt); countdownStep(dt); updateHud(); return; }
   G.time += dt;
   updateRecoil(dt);
+  updateMove(dt);
   if (G.time - G.lastShot > 0.38) G.burst = 0;
   if (G.reloadT > 0) {
     G.reloadT -= dt;
@@ -525,6 +548,7 @@ function show(id) {
   $('hud').classList.toggle('hidden', !(state === 'play' || state === 'pause' || state === 'over-anim'));
 }
 function goMenu() {
+  resetPos();
   $('countdown').className = 'countdown hidden';
   practice = false; $('h-prac').classList.add('hidden');
   state = 'menu'; G = null; for (const c of chickens) scene.remove(c.root); chickens.length = 0; roasts.clear();
@@ -550,7 +574,7 @@ const myNick = () => (localStorage.getItem(LS.nick) || '').toLowerCase();
 function lbRankImg(i) {
   if (!Number.isInteger(i) || i < 0 || i > TOP) return '<span class="ri"></span>';
   const n = esc(RANKS[i].name);
-  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=32" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
+  return `<img class="ri${i === TOP ? ' top' : ''}" src="img/ranks/rank${i + 1}-96.webp?v=33" width="96" height="96" alt="${n}" title="${n}" decoding="async">`;
 }
 function lbRowsHtml(rows) {
   if (lbErr) return `<li class="msg">${t('lbOffline')}</li>`;
@@ -636,7 +660,7 @@ async function lock() {
 const locked = () => document.pointerLockElement === canvas;
 document.addEventListener('pointerlockchange', () => {
   if (locked()) { $('clicklock').classList.add('hidden'); if (state === 'pause') { state = 'play'; show(null); } }
-  else if (state === 'play') { state = 'pause'; if (G) G.trigger = false; show('pause'); }
+  else if (state === 'play') { state = 'pause'; if (G) G.trigger = false; keys.clear(); show('pause'); }
 });
 document.addEventListener('mousemove', (e) => {
   if (!locked() || state !== 'play') return;
@@ -652,9 +676,13 @@ canvas.addEventListener('mousedown', (e) => {
 addEventListener('mouseup', (e) => { if (e.button === 0 && G) G.trigger = false; });
 addEventListener('keydown', (e) => {
   if (state !== 'play') return;
+  if (!MOBILE && MOVE_KEYS[e.code]) { keys.add(MOVE_KEYS[e.code]); if (e.code.startsWith('Arrow')) e.preventDefault(); }
+  if (!MOBILE && (e.code === 'ShiftLeft' || e.code === 'ShiftRight')) keys.add('walk');
   // infinite ammo: R does nothing outside spray mode
   const i = ['Digit1', 'Digit2', 'Digit3'].indexOf(e.code); if (i >= 0) switchWeapon(WEAPON_ORDER[i]);
 });
+addEventListener('keyup', (e) => { if (MOVE_KEYS[e.code]) keys.delete(MOVE_KEYS[e.code]); if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.delete('walk'); });
+addEventListener('blur', () => keys.clear());
 $('clicklock').addEventListener('click', lock);
 
 function goFull() { // phones: fullscreen + landscape where the browser allows it (Android); iOS Safari just ignores it
@@ -667,7 +695,7 @@ const PRAC_MAX = 15;
 function startGame(level = 1, countdown = true, prac = false) {
   practice = prac; $('h-prac').classList.toggle('hidden', !prac);
   sfx.unlock(); goFull();
-  yaw = 0; pitch = 3;
+  yaw = 0; pitch = 3; resetPos();
   setMode('chickens');
   state = 'play'; newRun(level); show(null); lock();
   if (countdown) { G.countdown = 5; G.cdShown = 0; clearTimeout(bannerTimer); $('banner').classList.add('hidden'); } // 5 s get-ready before the first level
@@ -795,6 +823,7 @@ function sprayHud() {
     <div class="sp-k">${tm('sp.keys')}</div>`;
 }
 function startSpray() {
+  resetPos();
   if (MOBILE) return; // spray training is desktop-only
   sfx.unlock(); $('spray-card').classList.remove('has');
   setMode('spray');
@@ -1039,7 +1068,7 @@ requestAnimationFrame(tick);
 if (DEBUG) {
   window.__aim = {
     THREE, camera, chickens, world, get roasts() { return roasts; },
-    get G() { return G; }, get state() { return state; },
+    get G() { return G; }, get state() { return state; }, keys, vel, updateMove, MOVE,
     startGame(level = 1, cd = false, prac = false) { startGame(level, cd, prac); }, get practice() { return practice; },
     freeze(v = true) { timeScale = v ? 0 : 1; },
     view(y, p) { yaw = y; pitch = p; },
