@@ -1,0 +1,130 @@
+{
+ "status": "ok",
+ "ratingFormula": "1000*(0.6*KD*/avgKD + 0.4*HS*/avgHS)*min(1,kills/150|50), shrink prior 50",
+ "serverAvg": {
+  "kd": 1.0,
+  "hsPct": 65.4
+ },
+ "updated": 1793474006,
+ "totalPlayers": 6,
+ "players": [
+  {
+   "name": "vilov",
+   "rating": 1105,
+   "points": 84,
+   "rank": "Silver I",
+   "kills": 548,
+   "deaths": 506,
+   "kd": 1.08,
+   "headshots": 417,
+   "hsPct": 76,
+   "assists": 22,
+   "playtimeMin": 665,
+   "lastSeen": 1793380133,
+   "profile": "https://steamcommunity.com/profiles/76561199017431717",
+   "pos": 1
+  },
+  {
+   "name": "RX LV",
+   "rating": 1062,
+   "points": 743,
+   "rank": "Gold Nova II",
+   "kills": 373,
+   "deaths": 327,
+   "kd": 1.14,
+   "headshots": 236,
+   "hsPct": 63,
+   "assists": 28,
+   "playtimeMin": 134,
+   "lastSeen": 1793207522,
+   "profile": "https://steamcommunity.com/profiles/76561198062068722",
+   "pos": 2
+  },
+  {
+   "name": "Genesis xGx",
+   "rating": 1031,
+   "points": 466,
+   "rank": "Silver Elite",
+   "kills": 197,
+   "deaths": 164,
+   "kd": 1.2,
+   "headshots": 104,
+   "hsPct": 53,
+   "assists": 9,
+   "playtimeMin": 33,
+   "lastSeen": 1793038938,
+   "profile": "https://steamcommunity.com/profiles/76561199192763545",
+   "pos": 3
+  },
+  {
+   "name": "RimFir3",
+   "rating": 899,
+   "points": 480,
+   "rank": "Silver Elite",
+   "kills": 494,
+   "deaths": 575,
+   "kd": 0.86,
+   "headshots": 303,
+   "hsPct": 61,
+   "assists": 29,
+   "playtimeMin": 235,
+   "lastSeen": 1793207403,
+   "profile": "https://steamcommunity.com/profiles/76561198441320548",
+   "pos": 4
+  },
+  {
+   "name": "LAKIKS",
+   "rating": 792,
+   "points": 451,
+   "rank": "Silver Elite",
+   "kills": 127,
+   "deaths": 147,
+   "kd": 0.86,
+   "headshots": 82,
+   "hsPct": 65,
+   "assists": 21,
+   "playtimeMin": 30,
+   "lastSeen": 1792776602,
+   "profile": "https://steamcommunity.com/profiles/76561198014235606",
+   "pos": 5
+  },
+  {
+   "name": ".::CAINES::.",
+   "rating": 182,
+   "points": 393,
+   "rank": "Silver IV",
+   "kills": 32,
+   "deaths": 52,
+   "kd": 0.62,
+   "headshots": 17,
+   "hsPct": 53,
+   "assists": 0,
+   "playtimeMin": 6,
+   "lastSeen": 1793207429,
+   "profile": "https://steamcommunity.com/profiles/76561198046540258",
+   "pos": 6
+  }
+ ],
+ "week": {
+  "id": "2026-W44",
+  "start": "2026-10-26",
+  "end": "2026-11-01",
+  "activePlayers": 1,
+  "players": [
+   {
+    "name": "vilov",
+    "rating": 0,
+    "points": 0,
+    "rank": "Silver I",
+    "kills": 0,
+    "deaths": 0,
+    "kd": 0.0,
+    "headshots": 0,
+    "hsPct": 0,
+    "playtimeMin": 2,
+    "profile": "https://steamcommunity.com/profiles/76561199017431717",
+    "pos": 1
+   }
+  ]
+ }
+}

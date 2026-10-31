@@ -1,0 +1,17 @@
+{
+ "host": "flowathletiq.dat.gg",
+ "port": 25082,
+ "address": "flowathletiq.dat.gg:25082",
+ "updated": 1793474004,
+ "online": true,
+ "name": "FlowAthletIQ",
+ "map": "aim_map_ancient",
+ "players": 0,
+ "humans": 0,
+ "bots": 0,
+ "maxPlayers": 12,
+ "vac": true,
+ "password": false,
+ "version": "1.41.9.4",
+ "pingMs": 139
+}
